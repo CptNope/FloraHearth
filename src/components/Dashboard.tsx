@@ -40,25 +40,25 @@ export const Dashboard: React.FC<DashboardProps> = ({
   return (
     <div className="space-y-6">
       {/* Welcome & Climate Location Card */}
-      <div className="bg-gradient-to-r from-[#1c3a27] via-[#234730] to-[#2d5a3c] text-white rounded-3xl p-6 sm:p-8 shadow-md relative overflow-hidden">
+      <div className="bg-gradient-to-r from-[#132d1d] via-[#1a3a26] to-[#234c32] dark:from-[#0e2115] dark:via-[#132c1d] dark:to-[#1a3826] text-white rounded-3xl p-6 sm:p-8 shadow-md border border-emerald-600/30 dark:border-emerald-500/25 relative overflow-hidden">
         {/* Subtle background motif */}
         <div className="absolute right-0 bottom-0 opacity-10 translate-x-8 translate-y-8 select-none pointer-events-none text-9xl">
           🌿
         </div>
 
         <div className="relative z-10 max-w-2xl space-y-3">
-          <div className="flex items-center gap-2 text-emerald-300 font-mono text-xs">
+          <div className="flex items-center gap-2 text-emerald-300 dark:text-emerald-400 font-mono text-xs">
             <MapPin className="w-4 h-4" />
             <span>
               {location.city}, {location.state} · USDA Hardiness Zone {location.usdaZone}
             </span>
           </div>
 
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight font-serif-botanical leading-tight">
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight font-serif-botanical leading-tight text-white">
             Nurture Your Harvest Cycle: Plan, Grow, Preserve.
           </h1>
 
-          <p className="text-xs sm:text-sm text-emerald-100/90 leading-relaxed">
+          <p className="text-xs sm:text-sm text-emerald-100/90 dark:text-emerald-200/85 leading-relaxed">
             Personalized for your {location.climateRegion}. Last Spring Frost is ~<strong>{location.lastSpringFrost}</strong> and First Fall Frost is ~<strong>{location.firstFallFrost}</strong> ({location.growingSeasonDays} frost-free growing days).
           </p>
 
@@ -66,14 +66,14 @@ export const Dashboard: React.FC<DashboardProps> = ({
             <button
               type="button"
               onClick={onOpenSetup}
-              className="px-4 py-2 bg-white text-[#1c3a27] font-bold text-xs rounded-xl hover:bg-emerald-50 transition-colors shadow-xs"
+              className="px-4 py-2 bg-white text-[#132d1d] dark:bg-[#10b981] dark:text-[#05140b] font-bold text-xs rounded-xl hover:bg-emerald-50 dark:hover:bg-[#34d399] transition-colors shadow-xs"
             >
               Adjust Location &amp; Goals
             </button>
             <button
               type="button"
               onClick={onOpenTroubleshooter}
-              className="px-4 py-2 bg-white/15 text-white hover:bg-white/25 border border-white/20 font-semibold text-xs rounded-xl transition-colors"
+              className="px-4 py-2 bg-white/15 dark:bg-white/10 text-white hover:bg-white/25 dark:hover:bg-white/15 border border-white/20 dark:border-white/15 font-semibold text-xs rounded-xl transition-colors"
             >
               Plant Symptom Diagnostic
             </button>
@@ -82,16 +82,16 @@ export const Dashboard: React.FC<DashboardProps> = ({
       </div>
 
       {/* Seasonal Advisory & Weather Alerts Strip */}
-      <div className="bg-amber-50/80 border border-amber-200/80 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-amber-950">
+      <div className="bg-amber-500/10 dark:bg-amber-500/10 border border-amber-500/30 dark:border-amber-500/25 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-amber-900 dark:text-amber-200">
         <div className="flex items-center gap-2.5">
-          <span className="p-2 bg-amber-100 rounded-xl text-amber-800 shrink-0">
+          <span className="p-2 bg-amber-500/20 text-amber-800 dark:text-amber-300 rounded-xl shrink-0">
             <Thermometer className="w-4 h-4" />
           </span>
           <div>
-            <strong className="font-bold text-amber-900 block">
+            <strong className="font-bold text-amber-950 dark:text-amber-300 block">
               Seasonal Climate Advisory for Zone {location.usdaZone}:
             </strong>
-            <span className="text-amber-900/90">
+            <span className="text-amber-900/90 dark:text-amber-200/90">
               {location.isMildWinter
                 ? 'Mild winter climate: prime time for cool-season brassicas, greens, and root crops while northern gardens are dormant!'
                 : 'Autumn season active: ideal timing to plant overwintering garlic cloves and establish cold-frame greens.'}
@@ -102,7 +102,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
         <button
           type="button"
           onClick={() => onNavigate('calendar')}
-          className="text-xs font-semibold text-amber-900 underline shrink-0 hover:text-amber-950"
+          className="text-xs font-semibold text-amber-900 dark:text-amber-300 underline shrink-0 hover:text-amber-950 dark:hover:text-amber-100"
         >
           View Full Timeline →
         </button>

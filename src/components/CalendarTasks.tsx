@@ -163,12 +163,14 @@ export const CalendarTasks: React.FC<CalendarTasksProps> = ({
 
         <div className="flex items-center gap-2">
           {/* Mode toggle */}
-          <div className="flex bg-stone-100 p-1 rounded-xl text-xs font-semibold">
+          <div className="flex bg-[#edf2ee] dark:bg-[#111c15] border border-[#d6e2d8] dark:border-[rgba(255,255,255,0.08)] p-1 rounded-xl text-xs font-semibold">
             <button
               type="button"
               onClick={() => setViewMode('timeline')}
               className={`px-3 py-1.5 rounded-lg transition-colors ${
-                viewMode === 'timeline' ? 'bg-white text-stone-900 shadow-2xs' : 'text-stone-600'
+                viewMode === 'timeline'
+                  ? 'bg-[#183e25] text-white dark:bg-[#10b981] dark:text-[#06150d] font-bold shadow-2xs'
+                  : 'text-[#3c5244] dark:text-[#b6cfc0] hover:text-[#122017] dark:hover:text-white'
               }`}
             >
               Crop Timeline
@@ -177,7 +179,9 @@ export const CalendarTasks: React.FC<CalendarTasksProps> = ({
               type="button"
               onClick={() => setViewMode('tasks')}
               className={`px-3 py-1.5 rounded-lg transition-colors ${
-                viewMode === 'tasks' ? 'bg-white text-stone-900 shadow-2xs' : 'text-stone-600'
+                viewMode === 'tasks'
+                  ? 'bg-[#183e25] text-white dark:bg-[#10b981] dark:text-[#06150d] font-bold shadow-2xs'
+                  : 'text-[#3c5244] dark:text-[#b6cfc0] hover:text-[#122017] dark:hover:text-white'
               }`}
             >
               Action Checklist ({tasks.filter(t => !t.completed).length})
@@ -187,17 +191,17 @@ export const CalendarTasks: React.FC<CalendarTasksProps> = ({
           <button
             type="button"
             onClick={() => window.print()}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-white border border-stone-300 text-stone-700 rounded-xl hover:bg-stone-50 transition-colors shadow-2xs"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-white dark:bg-[#131e17] border border-stone-300 dark:border-[rgba(255,255,255,0.12)] text-stone-700 dark:text-[#cad9ce] rounded-xl hover:bg-stone-50 dark:hover:bg-[#18271e] transition-colors shadow-2xs"
             title="Print planting calendar"
           >
-            <Printer className="w-4 h-4 text-stone-600" />
+            <Printer className="w-4 h-4 text-[#56705d] dark:text-[#7e9987]" />
             Print
           </button>
 
           <button
             type="button"
             onClick={() => setIsAddingTask(true)}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold bg-[#234730] text-white rounded-xl hover:bg-[#183422] transition-colors shadow-xs"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold bg-[#183e25] dark:bg-[#10b981] text-white dark:text-[#06150d] font-bold rounded-xl hover:bg-[#112d1b] dark:hover:bg-[#34d399] transition-colors shadow-xs"
           >
             <Plus className="w-4 h-4" />
             Add Task

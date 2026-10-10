@@ -249,9 +249,9 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
 
             {/* Grid Map */}
             <div
-              className="grid gap-2 select-none overflow-x-auto p-2 bg-[#f6f5f0] border-2 border-stone-300 rounded-xl"
+              className="grid gap-2 select-none overflow-x-auto p-3 bg-[#ecf3ee] dark:bg-[#0c1610] border-2 border-[#c2d6c6] dark:border-[#1f3627] rounded-2xl shadow-inner transition-colors"
               style={{
-                gridTemplateColumns: `repeat(${currentSpace?.gridCols || 4}, minmax(68px, 1fr))`,
+                gridTemplateColumns: `repeat(${currentSpace?.gridCols || 4}, minmax(72px, 1fr))`,
               }}
             >
               {Array.from({ length: currentSpace?.gridRows || 4 }).map((_, rIdx) =>
@@ -265,39 +265,39 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
                       key={`${cIdx}-${rIdx}`}
                       type="button"
                       onClick={() => handleCellClick(cIdx, rIdx)}
-                      className={`h-24 sm:h-28 rounded-lg p-1.5 flex flex-col items-center justify-between border-2 transition-all text-center relative ${
+                      className={`h-24 sm:h-28 rounded-xl p-1.5 flex flex-col items-center justify-between border-2 transition-all text-center relative ${
                         isCellActive
-                          ? 'ring-2 ring-emerald-600 border-emerald-500 bg-white'
+                          ? 'ring-2 ring-emerald-500 border-emerald-500 bg-white dark:bg-[#1c3225] shadow-md'
                           : crop
-                          ? 'bg-white border-emerald-200 shadow-2xs hover:border-emerald-400'
-                          : 'bg-[#faf9f5] border-dashed border-stone-300 hover:bg-stone-100 hover:border-stone-400'
+                          ? 'bg-white dark:bg-[#15241b] border-emerald-400/60 dark:border-emerald-500/40 shadow-xs hover:border-emerald-500 dark:hover:border-emerald-400'
+                          : 'bg-[#f4f8f5] dark:bg-[#101b14] border-dashed border-[#c2d6c6] dark:border-[rgba(255,255,255,0.12)] hover:bg-[#e7f0e9] dark:hover:bg-[#16241c] hover:border-emerald-400'
                       }`}
                     >
                       {/* Grid Coordinate indicator */}
-                      <span className="text-[9px] font-mono text-stone-400 self-start">
+                      <span className="text-[9px] font-mono text-[#56705d] dark:text-[#7e9987] self-start">
                         {cIdx + 1},{rIdx + 1}
                       </span>
 
                       {crop ? (
                         <>
-                          <span className="text-2xl">{crop.iconEmoji}</span>
+                          <span className="text-2xl drop-shadow-xs">{crop.iconEmoji}</span>
                           <div className="w-full truncate">
-                            <p className="text-[11px] font-bold text-stone-800 truncate leading-tight">
+                            <p className="text-[11px] font-bold text-[#122017] dark:text-[#f3f7f4] truncate leading-tight">
                               {crop.name.split('(')[0]}
                             </p>
-                            <span className="text-[9px] text-emerald-800 font-semibold block">
+                            <span className="text-[9px] text-emerald-700 dark:text-[#34d399] font-semibold block">
                               {cell?.count || crop.sfgPerSquare} per sq ft
                             </span>
                           </div>
 
                           {/* Family Badge Indicator */}
-                          <span className="text-[8px] px-1 bg-stone-100 text-stone-600 rounded-sm font-mono truncate max-w-full">
+                          <span className="text-[8px] px-1 bg-stone-100 dark:bg-[#18281f] text-stone-600 dark:text-[#7e9987] rounded-sm font-mono truncate max-w-full">
                             {crop.family}
                           </span>
                         </>
                       ) : (
-                        <span className="text-[10px] text-stone-400 self-center my-auto">
-                          Click to plant
+                        <span className="text-[10px] text-[#56705d] dark:text-[#7e9987] opacity-60 self-center my-auto font-medium">
+                          + Plant
                         </span>
                       )}
                     </button>

@@ -41,12 +41,14 @@ export const CompanionEcology: React.FC = () => {
           </p>
         </div>
 
-        <div className="flex bg-stone-100 p-1 rounded-xl text-xs font-semibold">
+        <div className="flex bg-[#edf2ee] dark:bg-[#111c15] border border-[#d6e2d8] dark:border-[rgba(255,255,255,0.08)] p-1 rounded-xl text-xs font-semibold">
           <button
             type="button"
             onClick={() => setActiveTab('matrix')}
             className={`px-3 py-1.5 rounded-lg transition-colors ${
-              activeTab === 'matrix' ? 'bg-white text-stone-900 shadow-2xs' : 'text-stone-600'
+              activeTab === 'matrix'
+                ? 'bg-[#183e25] text-white dark:bg-[#10b981] dark:text-[#06150d] font-bold shadow-2xs'
+                : 'text-[#3c5244] dark:text-[#b6cfc0] hover:text-[#122017] dark:hover:text-white'
             }`}
           >
             🤝 Companion Matrix
@@ -55,7 +57,9 @@ export const CompanionEcology: React.FC = () => {
             type="button"
             onClick={() => setActiveTab('insects')}
             className={`px-3 py-1.5 rounded-lg transition-colors ${
-              activeTab === 'insects' ? 'bg-white text-stone-900 shadow-2xs' : 'text-stone-600'
+              activeTab === 'insects'
+                ? 'bg-[#183e25] text-white dark:bg-[#10b981] dark:text-[#06150d] font-bold shadow-2xs'
+                : 'text-[#3c5244] dark:text-[#b6cfc0] hover:text-[#122017] dark:hover:text-white'
             }`}
           >
             🐝 Beneficial Insects &amp; Flowers
@@ -64,7 +68,9 @@ export const CompanionEcology: React.FC = () => {
             type="button"
             onClick={() => setActiveTab('pollination')}
             className={`px-3 py-1.5 rounded-lg transition-colors ${
-              activeTab === 'pollination' ? 'bg-white text-stone-900 shadow-2xs' : 'text-stone-600'
+              activeTab === 'pollination'
+                ? 'bg-[#183e25] text-white dark:bg-[#10b981] dark:text-[#06150d] font-bold shadow-2xs'
+                : 'text-[#3c5244] dark:text-[#b6cfc0] hover:text-[#122017] dark:hover:text-white'
             }`}
           >
             🌸 Pollination &amp; Fruit Set

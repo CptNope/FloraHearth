@@ -85,7 +85,7 @@ export const CropLibrary: React.FC<CropLibraryProps> = ({ onSelectForPlanner }) 
           </div>
 
           {/* Category Tabs */}
-          <div className="flex items-center gap-1 overflow-x-auto p-1 bg-stone-100 rounded-xl">
+          <div className="flex items-center gap-1 overflow-x-auto p-1 bg-[#edf2ee] dark:bg-[#111c15] border border-[#d6e2d8] dark:border-[rgba(255,255,255,0.08)] rounded-xl">
             {[
               { id: 'all', label: 'All Crops' },
               { id: 'vegetable', label: 'Vegetables' },
@@ -99,7 +99,9 @@ export const CropLibrary: React.FC<CropLibraryProps> = ({ onSelectForPlanner }) 
                 type="button"
                 onClick={() => setSelectedCategory(cat.id)}
                 className={`px-3 py-1.5 text-xs font-semibold rounded-lg whitespace-nowrap transition-colors ${
-                  selectedCategory === cat.id ? 'bg-white text-stone-900 shadow-2xs' : 'text-stone-600'
+                  selectedCategory === cat.id
+                    ? 'bg-[#183e25] text-white dark:bg-[#10b981] dark:text-[#06150d] font-bold shadow-2xs'
+                    : 'text-[#3c5244] dark:text-[#b6cfc0] hover:text-[#122017] dark:hover:text-white'
                 }`}
               >
                 {cat.label}

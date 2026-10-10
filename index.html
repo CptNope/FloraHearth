@@ -1,24 +1,66 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="dark" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
     <title>FloraHearth: US Garden, Harvest &amp; Pantry Planner</title>
     <meta name="description" content="A comprehensive gardening companion for planning, growing, companion planting, interactive bed layouts, harvesting, and safe food preservation across US growing zones." />
+
+    <!-- Open Graph & Twitter -->
     <meta property="og:title" content="FloraHearth: US Garden, Harvest &amp; Pantry Planner" />
     <meta property="og:description" content="A comprehensive gardening companion for planning, growing, companion planting, interactive bed layouts, harvesting, and safe food preservation across US growing zones." />
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="theme-color" content="#2d5a3c" />
-    <link rel="manifest" href="/manifest.json" />
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232d5a3c'><path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z'/></svg>" />
+
+    <!-- PWA Compliance & Mobile Metadata -->
+    <meta name="theme-color" content="#0b1510" id="theme-color-meta" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="FloraHearth" />
+    <meta name="application-name" content="FloraHearth" />
+
+    <link rel="manifest" href="./manifest.json" />
+    <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+    <link rel="icon" type="image/svg+xml" href="./icon.svg" />
+
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Theme Initialization: Dark mode is DEFAULT -->
+    <script>
+      (function() {
+        try {
+          const stored = localStorage.getItem('florahearth_theme');
+          // If stored is explicitly 'light', switch to light; otherwise DEFAULT TO DARK
+          if (stored === 'light') {
+            document.documentElement.classList.remove('dark');
+            document.documentElement.setAttribute('data-theme', 'light');
+            const meta = document.getElementById('theme-color-meta');
+            if (meta) meta.setAttribute('content', '#234730');
+          } else {
+            document.documentElement.classList.add('dark');
+            document.documentElement.setAttribute('data-theme', 'dark');
+            const meta = document.getElementById('theme-color-meta');
+            if (meta) meta.setAttribute('content', '#0b1510');
+          }
+        } catch (e) {
+          document.documentElement.classList.add('dark');
+        }
+
+        // GitHub Pages SPA redirect recovery
+        const redirect = sessionStorage.redirect;
+        delete sessionStorage.redirect;
+        if (redirect && redirect !== location.href) {
+          history.replaceState(null, null, redirect);
+        }
+      })();
+    </script>
   </head>
-  <body class="bg-[#fbfbf9] text-[#242b26] antialiased selection:bg-[#d8e6db] selection:text-[#183a24]">
+  <body class="bg-[#0b1510] text-[#ecfdf5] dark:bg-[#0b1510] dark:text-[#ecfdf5] antialiased selection:bg-[#10b981]/30 selection:text-emerald-200">
     <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <script type="module" src="./src/main.tsx"></script>
   </body>
 </html>
-

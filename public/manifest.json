@@ -1,24 +1,50 @@
 {
+  "id": "./",
   "name": "FloraHearth: US Garden, Harvest & Pantry Planner",
   "short_name": "FloraHearth",
   "description": "Complete lifecycle gardening, companion planting, interactive layout planner, and safe food preservation across US growing zones.",
-  "start_url": "/",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#fbfbf9",
-  "theme_color": "#234730",
+  "background_color": "#0b1510",
+  "theme_color": "#0b1510",
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/icon-192.png",
+      "src": "./pwa-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
-      "src": "/icon-512.png",
+      "src": "./pwa-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "./pwa-maskable-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "categories": ["lifestyle", "utilities", "education"],
+  "shortcuts": [
+    {
+      "name": "Bed Designer",
+      "url": "./?tab=planner",
+      "description": "Open interactive garden bed grid layout planner"
+    },
+    {
+      "name": "Seasonal Calendar",
+      "url": "./?tab=calendar",
+      "description": "Check upcoming planting dates and frost windows"
+    },
+    {
+      "name": "Crop Guides",
+      "url": "./?tab=crops",
+      "description": "Search 137 botanical vegetables, herbs, and fruits"
     }
   ]
 }

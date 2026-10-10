@@ -74,15 +74,15 @@ export const PreservationTracker: React.FC<PreservationTrackerProps> = ({
         </div>
 
         {/* Altitude elevation selector */}
-        <div className="bg-[#f3f7f4] border border-[#d6e4da] px-3.5 py-2 rounded-xl flex items-center gap-2 text-xs">
-          <Mountain className="w-4 h-4 text-emerald-800 shrink-0" />
-          <span className="text-stone-600 font-medium">Your Elevation:</span>
-          <div className="flex items-center gap-1 font-mono font-bold text-[#183a24]">
+        <div className="bg-[#edf2ee] dark:bg-[#132218] border border-[#d6e2d8] dark:border-[rgba(16,185,129,0.3)] px-3.5 py-2 rounded-xl flex items-center gap-2 text-xs">
+          <Mountain className="w-4 h-4 text-emerald-700 dark:text-[#34d399] shrink-0" />
+          <span className="text-[#3c5244] dark:text-[#cad9ce] font-medium">Your Elevation:</span>
+          <div className="flex items-center gap-1 font-mono font-bold text-[#183e25] dark:text-[#34d399]">
             <input
               type="number"
               value={elevation}
               onChange={e => setElevation(parseInt(e.target.value) || 0)}
-              className="w-16 px-1.5 py-0.5 border border-stone-300 rounded-md bg-white text-xs font-mono text-center"
+              className="w-16 px-1.5 py-0.5 border border-[#d6e2d8] dark:border-[rgba(255,255,255,0.12)] rounded-md bg-white dark:bg-[#0f1812] text-xs font-mono text-center text-[#122017] dark:text-[#f3f7f4]"
             />
             <span>ft</span>
           </div>
@@ -90,10 +90,10 @@ export const PreservationTracker: React.FC<PreservationTrackerProps> = ({
       </div>
 
       {/* Strict Anti-Tampering Safety Banner */}
-      <div className="bg-amber-50 border-2 border-amber-300/80 p-4 rounded-2xl flex items-start gap-3 text-xs text-amber-950">
-        <ShieldCheck className="w-5 h-5 text-amber-800 shrink-0 mt-0.5" />
+      <div className="bg-amber-500/10 dark:bg-amber-500/10 border-2 border-amber-500/35 dark:border-amber-500/30 p-4 rounded-2xl flex items-start gap-3 text-xs text-amber-950 dark:text-amber-200">
+        <ShieldCheck className="w-5 h-5 text-amber-700 dark:text-amber-300 shrink-0 mt-0.5" />
         <div className="space-y-1">
-          <p className="font-bold text-amber-900">
+          <p className="font-bold text-amber-950 dark:text-amber-300">
             Strict Food Safety Protocol (Botulism Prevention)
           </p>
           <p className="leading-relaxed">
@@ -103,7 +103,7 @@ export const PreservationTracker: React.FC<PreservationTrackerProps> = ({
       </div>
 
       {/* Navigation Tabs */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-1 border-b border-stone-200">
+      <div className="flex items-center gap-2 overflow-x-auto pb-1 border-b border-[#d6e2d8] dark:border-[rgba(255,255,255,0.08)]">
         {[
           { id: 'canning', label: '🥫 Tested Canning & Altitude' },
           { id: 'fermenting', label: '🥬 Salt-Brine Fermentation Calculator' },
@@ -117,8 +117,8 @@ export const PreservationTracker: React.FC<PreservationTrackerProps> = ({
             onClick={() => setActiveTab(tab.id as any)}
             className={`px-4 py-2 text-xs font-semibold rounded-xl shrink-0 transition-colors ${
               activeTab === tab.id
-                ? 'bg-[#234730] text-white shadow-xs'
-                : 'bg-white border border-stone-200 text-stone-700 hover:bg-stone-50'
+                ? 'bg-[#183e25] text-white dark:bg-[#10b981] dark:text-[#06150d] font-bold shadow-xs'
+                : 'bg-white dark:bg-[#131e17] border border-[#d6e2d8] dark:border-[rgba(255,255,255,0.08)] text-[#3c5244] dark:text-[#b6cfc0] hover:bg-[#edf2ee] dark:hover:bg-[#18271e]'
             }`}
           >
             {tab.label}
