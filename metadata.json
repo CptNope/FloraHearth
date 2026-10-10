@@ -1,0 +1,6 @@
+{
+  "name": "FloraHearth: US Garden, Harvest & Pantry Planner",
+  "description": "A comprehensive gardening companion for planning, growing, companion planting, interactive bed layouts, harvesting, and safe food preservation across US growing zones.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

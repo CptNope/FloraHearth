@@ -1,0 +1,323 @@
+import React from 'react';
+import { GardenLocation, GardenSpace, GardenTask, PantryItem } from '../types/garden';
+import { CROPS_DATA } from '../data/cropsData';
+import { Sun, Calendar, Sparkles, AlertTriangle, ArrowRight, CheckCircle2, Clock, ShieldAlert, Thermometer, Droplets, MapPin, Layers } from 'lucide-react';
+
+interface DashboardProps {
+  location: GardenLocation;
+  spaces: GardenSpace[];
+  tasks: GardenTask[];
+  pantryItems: PantryItem[];
+  onNavigate: (tabId: string) => void;
+  onOpenSetup: () => void;
+  onOpenTroubleshooter: () => void;
+}
+
+export const Dashboard: React.FC<DashboardProps> = ({
+  location,
+  spaces,
+  tasks,
+  pantryItems,
+  onNavigate,
+  onOpenSetup,
+  onOpenTroubleshooter,
+}) => {
+  // Current month & day
+  const today = new Date();
+  const currentMonthNum = today.getMonth() + 1;
+
+  // Determine what to plant now:
+  // In spring (Feb-May): cool season direct seeds & warm season indoor starts
+  // In summer (Jun-Aug): warm transplants, succession beans/squash, fall brassica seeds
+  // In fall (Sep-Nov): garlic, radishes, spinach, overwinter greens
+  const plantNowSuggestions = CROPS_DATA.slice(0, 4);
+
+  const pendingTasks = tasks.filter(t => !t.completed).slice(0, 4);
+
+  // Total plants placed across all beds
+  const totalPlacedCells = spaces.reduce((acc, s) => acc + s.cells.filter(c => c.cropId).length, 0);
+
+  return (
+    <div className="space-y-6">
+      {/* Welcome & Climate Location Card */}
+      <div className="bg-gradient-to-r from-[#1c3a27] via-[#234730] to-[#2d5a3c] text-white rounded-3xl p-6 sm:p-8 shadow-md relative overflow-hidden">
+        {/* Subtle background motif */}
+        <div className="absolute right-0 bottom-0 opacity-10 translate-x-8 translate-y-8 select-none pointer-events-none text-9xl">
+          🌿
+        </div>
+
+        <div className="relative z-10 max-w-2xl space-y-3">
+          <div className="flex items-center gap-2 text-emerald-300 font-mono text-xs">
+            <MapPin className="w-4 h-4" />
+            <span>
+              {location.city}, {location.state} · USDA Hardiness Zone {location.usdaZone}
+            </span>
+          </div>
+
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight font-serif-botanical leading-tight">
+            Nurture Your Harvest Cycle: Plan, Grow, Preserve.
+          </h1>
+
+          <p className="text-xs sm:text-sm text-emerald-100/90 leading-relaxed">
+            Personalized for your {location.climateRegion}. Last Spring Frost is ~<strong>{location.lastSpringFrost}</strong> and First Fall Frost is ~<strong>{location.firstFallFrost}</strong> ({location.growingSeasonDays} frost-free growing days).
+          </p>
+
+          <div className="pt-2 flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              onClick={onOpenSetup}
+              className="px-4 py-2 bg-white text-[#1c3a27] font-bold text-xs rounded-xl hover:bg-emerald-50 transition-colors shadow-xs"
+            >
+              Adjust Location &amp; Goals
+            </button>
+            <button
+              type="button"
+              onClick={onOpenTroubleshooter}
+              className="px-4 py-2 bg-white/15 text-white hover:bg-white/25 border border-white/20 font-semibold text-xs rounded-xl transition-colors"
+            >
+              Plant Symptom Diagnostic
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Seasonal Advisory & Weather Alerts Strip */}
+      <div className="bg-amber-50/80 border border-amber-200/80 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-amber-950">
+        <div className="flex items-center gap-2.5">
+          <span className="p-2 bg-amber-100 rounded-xl text-amber-800 shrink-0">
+            <Thermometer className="w-4 h-4" />
+          </span>
+          <div>
+            <strong className="font-bold text-amber-900 block">
+              Seasonal Climate Advisory for Zone {location.usdaZone}:
+            </strong>
+            <span className="text-amber-900/90">
+              {location.isMildWinter
+                ? 'Mild winter climate: prime time for cool-season brassicas, greens, and root crops while northern gardens are dormant!'
+                : 'Autumn season active: ideal timing to plant overwintering garlic cloves and establish cold-frame greens.'}
+            </span>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => onNavigate('calendar')}
+          className="text-xs font-semibold text-amber-900 underline shrink-0 hover:text-amber-950"
+        >
+          View Full Timeline →
+        </button>
+      </div>
+
+      {/* Main Grid: What to Plant Now + Upcoming Tasks */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Left Column: What to plant now & Beds Overview (8 cols) */}
+        <div className="lg:col-span-8 space-y-6">
+          {/* What to Plant Now */}
+          <div className="bg-white border border-stone-200 rounded-2xl p-5 shadow-xs space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-bold text-base text-[#183a24] font-serif-botanical">
+                  What to Plant Now in Your Climate
+                </h3>
+                <p className="text-xs text-stone-500">
+                  Top performing crops tailored to your frost window and season length.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => onNavigate('crops')}
+                className="text-xs font-semibold text-emerald-800 hover:text-emerald-950 flex items-center gap-1"
+              >
+                Browse All ({CROPS_DATA.length}) <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {plantNowSuggestions.map(crop => (
+                <div
+                  key={crop.id}
+                  onClick={() => onNavigate('crops')}
+                  className="p-3 rounded-xl border border-stone-200 hover:border-emerald-500 hover:bg-[#fafbf9] transition-all cursor-pointer flex items-center justify-between group"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl p-2 bg-[#f4f7f4] rounded-xl group-hover:scale-105 transition-transform">
+                      {crop.iconEmoji}
+                    </span>
+                    <div>
+                      <h4 className="font-bold text-xs text-stone-900 group-hover:text-emerald-900">
+                        {crop.name.split('(')[0]}
+                      </h4>
+                      <p className="text-[11px] text-stone-500">
+                        {crop.sfgPerSquare}/sq ft · {crop.daysToMaturityRange[0]}-{crop.daysToMaturityRange[1]}d
+                      </p>
+                    </div>
+                  </div>
+
+                  <span className="text-[11px] font-semibold text-emerald-800 group-hover:underline">
+                    View Guide
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Active Garden Spaces Preview */}
+          <div className="bg-white border border-stone-200 rounded-2xl p-5 shadow-xs space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-bold text-base text-[#183a24] font-serif-botanical">
+                  Active Beds &amp; Growing Spaces
+                </h3>
+                <p className="text-xs text-stone-500">
+                  {spaces.length} active spaces · {totalPlacedCells} planted square feet
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => onNavigate('planner')}
+                className="text-xs font-semibold text-emerald-800 hover:text-emerald-950 flex items-center gap-1"
+              >
+                Open Bed Designer <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {spaces.map(sp => (
+                <div
+                  key={sp.id}
+                  onClick={() => onNavigate('planner')}
+                  className="p-4 rounded-xl border border-stone-200 bg-[#faf9f5] hover:border-emerald-500 transition-all cursor-pointer space-y-2"
+                >
+                  <div className="flex items-center justify-between">
+                    <h4 className="font-bold text-xs text-stone-900">{sp.name}</h4>
+                    <span className="text-[10px] font-mono font-semibold bg-white px-2 py-0.5 rounded-md border border-stone-200">
+                      {sp.gridCols}×{sp.gridRows} ft
+                    </span>
+                  </div>
+
+                  <p className="text-[11px] text-stone-600 line-clamp-1">
+                    {sp.cells.filter(c => c.cropId).length} of {sp.gridCols * sp.gridRows} sq ft planted
+                  </p>
+
+                  <div className="flex items-center gap-1 text-base pt-1">
+                    {sp.cells.slice(0, 6).map((c, i) => {
+                      const crop = CROPS_DATA.find(cr => cr.id === c.cropId);
+                      return crop ? (
+                        <span key={i} title={crop.name}>{crop.iconEmoji}</span>
+                      ) : null;
+                    })}
+                    {sp.cells.length > 6 && (
+                      <span className="text-[10px] font-mono text-stone-400 pl-1">
+                        +{sp.cells.length - 6} more
+                      </span>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column: Upcoming Tasks & Preservation Highlights (4 cols) */}
+        <div className="lg:col-span-4 space-y-6">
+          {/* Action Tasks */}
+          <div className="bg-white border border-stone-200 rounded-2xl p-5 shadow-xs space-y-3">
+            <div className="flex items-center justify-between">
+              <h3 className="font-bold text-sm text-[#183a24] font-serif-botanical flex items-center gap-2">
+                <Clock className="w-4 h-4 text-emerald-800" />
+                Upcoming Action Tasks
+              </h3>
+              <button
+                type="button"
+                onClick={() => onNavigate('calendar')}
+                className="text-[11px] text-emerald-800 font-semibold underline"
+              >
+                View all
+              </button>
+            </div>
+
+            <div className="space-y-2">
+              {pendingTasks.map(task => (
+                <div key={task.id} className="p-2.5 rounded-xl border border-stone-200 bg-stone-50/50 text-xs space-y-1">
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-stone-800 truncate">{task.title}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-[10px] text-stone-500 font-mono">
+                    <span>Due: {task.dueDate}</span>
+                    <span className="capitalize">{task.type.replace('-', ' ')}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Pantry & Harvest Highlights */}
+          <div className="bg-white border border-stone-200 rounded-2xl p-5 shadow-xs space-y-3">
+            <div className="flex items-center justify-between">
+              <h3 className="font-bold text-sm text-[#183a24] font-serif-botanical">
+                Preserved Pantry Stores
+              </h3>
+              <button
+                type="button"
+                onClick={() => onNavigate('preservation')}
+                className="text-[11px] text-emerald-800 font-semibold underline"
+              >
+                Canning Center
+              </button>
+            </div>
+
+            <div className="space-y-2 text-xs">
+              {pantryItems.slice(0, 3).map(p => (
+                <div key={p.id} className="p-2.5 rounded-xl border border-stone-200 bg-[#fbfbfa] flex items-center justify-between">
+                  <div>
+                    <h5 className="font-bold text-stone-900">{p.cropName}</h5>
+                    <span className="text-[10px] text-stone-500">
+                      {p.storageLocation} · Use by {p.bestByDate}
+                    </span>
+                  </div>
+                  <span className="font-bold text-emerald-800 font-mono">
+                    {p.quantity} {p.unit.split(' ')[0]}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Quick Helper Tools */}
+          <div className="p-4 bg-[#f3f7f4] border border-[#d6e4da] rounded-2xl text-xs space-y-2.5">
+            <h4 className="font-bold text-emerald-950 flex items-center gap-1.5">
+              <Sparkles className="w-4 h-4 text-emerald-800" />
+              Specialized Tools
+            </h4>
+            <div className="space-y-1.5">
+              <button
+                type="button"
+                onClick={() => onNavigate('companions')}
+                className="w-full text-left p-2 bg-white rounded-lg border border-stone-200 hover:border-emerald-600 font-medium text-stone-700 flex justify-between"
+              >
+                <span>🤝 Companion Planting Matrix</span>
+                <span>→</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => onNavigate('hydro')}
+                className="w-full text-left p-2 bg-white rounded-lg border border-stone-200 hover:border-emerald-600 font-medium text-stone-700 flex justify-between"
+              >
+                <span>💡 Grow Light DLI &amp; Hydroponics</span>
+                <span>→</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => onNavigate('soil')}
+                className="w-full text-left p-2 bg-white rounded-lg border border-stone-200 hover:border-emerald-600 font-medium text-stone-700 flex justify-between"
+              >
+                <span>🔬 Soil Testing &amp; Composting</span>
+                <span>→</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
