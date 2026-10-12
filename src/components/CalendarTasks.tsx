@@ -191,20 +191,22 @@ export const CalendarTasks: React.FC<CalendarTasksProps> = ({
           <button
             type="button"
             onClick={() => window.print()}
+            aria-label="Print planting calendar and task schedule"
             className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-white dark:bg-[#131e17] border border-stone-300 dark:border-[rgba(255,255,255,0.12)] text-stone-700 dark:text-[#cad9ce] rounded-xl hover:bg-stone-50 dark:hover:bg-[#18271e] transition-colors shadow-2xs"
             title="Print planting calendar"
           >
-            <Printer className="w-4 h-4 text-[#56705d] dark:text-[#7e9987]" />
-            Print
+            <Printer className="w-4 h-4 text-[#56705d] dark:text-[#7e9987]" aria-hidden="true" />
+            <span>Print</span>
           </button>
 
           <button
             type="button"
             onClick={() => setIsAddingTask(true)}
+            aria-label="Add custom garden task or reminder"
             className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold bg-[#183e25] dark:bg-[#10b981] text-white dark:text-[#06150d] font-bold rounded-xl hover:bg-[#112d1b] dark:hover:bg-[#34d399] transition-colors shadow-xs"
           >
-            <Plus className="w-4 h-4" />
-            Add Task
+            <Plus className="w-4 h-4" aria-hidden="true" />
+            <span>Add Task</span>
           </button>
         </div>
       </div>
@@ -286,7 +288,7 @@ export const CalendarTasks: React.FC<CalendarTasksProps> = ({
                     {/* Indoor Start Bar */}
                     {indoorStart && (
                       <div
-                        className="absolute h-4 bg-indigo-500/80 rounded-xs text-[9px] text-white flex items-center justify-center font-semibold"
+                        className="absolute h-4 bg-indigo-500/80 rounded-xs text-[10px] text-white flex items-center justify-center font-bold"
                         style={{
                           left: `${((indoorStart.start.getMonth() * 30 + indoorStart.start.getDate()) / 365) * 100}%`,
                           width: `${Math.max(3, ((indoorStart.end.getTime() - indoorStart.start.getTime()) / (365 * 86400000)) * 100)}%`,
@@ -300,7 +302,7 @@ export const CalendarTasks: React.FC<CalendarTasksProps> = ({
                     {/* Transplant Bar */}
                     {transplant && (
                       <div
-                        className="absolute h-4 bg-emerald-600/90 rounded-xs text-[9px] text-white flex items-center justify-center font-semibold"
+                        className="absolute h-4 bg-emerald-600/90 rounded-xs text-[10px] text-white flex items-center justify-center font-bold"
                         style={{
                           left: `${((transplant.start.getMonth() * 30 + transplant.start.getDate()) / 365) * 100}%`,
                           width: `${Math.max(3, ((transplant.end.getTime() - transplant.start.getTime()) / (365 * 86400000)) * 100)}%`,
@@ -314,7 +316,7 @@ export const CalendarTasks: React.FC<CalendarTasksProps> = ({
                     {/* Direct Sow Bar */}
                     {directSow && (
                       <div
-                        className="absolute h-4 bg-amber-500/90 rounded-xs text-[9px] text-white flex items-center justify-center font-semibold"
+                        className="absolute h-4 bg-amber-500/90 rounded-xs text-[10px] text-white flex items-center justify-center font-bold"
                         style={{
                           left: `${((directSow.start.getMonth() * 30 + directSow.start.getDate()) / 365) * 100}%`,
                           width: `${Math.max(3, ((directSow.end.getTime() - directSow.start.getTime()) / (365 * 86400000)) * 100)}%`,
@@ -328,7 +330,7 @@ export const CalendarTasks: React.FC<CalendarTasksProps> = ({
                     {/* Fall Sowing */}
                     {fallSow && (
                       <div
-                        className="absolute h-4 bg-purple-500/80 rounded-xs text-[9px] text-white flex items-center justify-center font-semibold"
+                        className="absolute h-4 bg-purple-500/80 rounded-xs text-[10px] text-white flex items-center justify-center font-bold"
                         style={{
                           left: `${((fallSow.start.getMonth() * 30 + fallSow.start.getDate()) / 365) * 100}%`,
                           width: `${Math.max(3, ((fallSow.end.getTime() - fallSow.start.getTime()) / (365 * 86400000)) * 100)}%`,
@@ -342,7 +344,7 @@ export const CalendarTasks: React.FC<CalendarTasksProps> = ({
                     {/* Estimated Harvest Window */}
                     {harvestWindow && (
                       <div
-                        className="absolute h-4 bg-rose-500/80 rounded-xs text-[9px] text-white flex items-center justify-center font-semibold"
+                        className="absolute h-4 bg-rose-500/80 rounded-xs text-[10px] text-white flex items-center justify-center font-bold"
                         style={{
                           left: `${((harvestWindow.start.getMonth() * 30 + harvestWindow.start.getDate()) / 365) * 100}%`,
                           width: `${Math.max(4, ((harvestWindow.end.getTime() - harvestWindow.start.getTime()) / (365 * 86400000)) * 100)}%`,
@@ -415,16 +417,22 @@ export const CalendarTasks: React.FC<CalendarTasksProps> = ({
 
       {/* Add Task Modal */}
       {isAddingTask && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="add-task-dialog-heading"
+        >
           <form
             onSubmit={handleCreateCustomTask}
             className="bg-white border border-stone-200 rounded-2xl p-6 w-full max-w-md shadow-2xl space-y-4"
           >
-            <h3 className="text-base font-bold text-[#183a24] font-serif-botanical">Add Garden Task or Reminder</h3>
+            <h3 id="add-task-dialog-heading" className="text-base font-bold text-[#183a24] font-serif-botanical">Add Garden Task or Reminder</h3>
 
             <div>
-              <label className="block text-xs font-semibold text-stone-700 mb-1">Task Title</label>
+              <label htmlFor="task-title-input" className="block text-xs font-semibold text-stone-700 mb-1">Task Title</label>
               <input
+                id="task-title-input"
                 type="text"
                 value={newTaskTitle}
                 onChange={e => setNewTaskTitle(e.target.value)}
@@ -436,8 +444,9 @@ export const CalendarTasks: React.FC<CalendarTasksProps> = ({
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-semibold text-stone-700 mb-1">Target Due Date</label>
+                <label htmlFor="task-due-date-input" className="block text-xs font-semibold text-stone-700 mb-1">Target Due Date</label>
                 <input
+                  id="task-due-date-input"
                   type="date"
                   value={newTaskDueDate}
                   onChange={e => setNewTaskDueDate(e.target.value)}
@@ -447,8 +456,9 @@ export const CalendarTasks: React.FC<CalendarTasksProps> = ({
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-stone-700 mb-1">Category</label>
+                <label htmlFor="task-category-select" className="block text-xs font-semibold text-stone-700 mb-1">Category</label>
                 <select
+                  id="task-category-select"
                   value={newTaskType}
                   onChange={e => setNewTaskType(e.target.value as any)}
                   className="w-full text-xs p-2 border border-stone-300 rounded-xl"

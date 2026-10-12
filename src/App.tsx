@@ -138,19 +138,32 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#fbfbf9] text-[#242b26] dark:bg-[#0b1510] dark:text-[#ecfdf5] flex flex-col font-sans-botanical pb-20 lg:pb-12 transition-colors duration-200">
+      {/* Skip to Main Content Link for Keyboard and Screen Reader Accessibility */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only"
+      >
+        Skip to main content
+      </a>
+
       {/* PWA Update Banner */}
       {swUpdateAvailable && (
-        <div className="bg-emerald-600 dark:bg-emerald-700 text-white px-4 py-2 text-xs font-medium flex items-center justify-between gap-3 shadow-md z-50 animate-fadeIn">
+        <div
+          role="status"
+          aria-live="polite"
+          className="bg-emerald-600 dark:bg-emerald-700 text-white px-4 py-2 text-xs font-medium flex items-center justify-between gap-3 shadow-md z-50 animate-fadeIn"
+        >
           <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-emerald-200 shrink-0" />
+            <Sparkles className="w-4 h-4 text-emerald-200 shrink-0" aria-hidden="true" />
             <span>A new version of FloraHearth (v{APP_VERSION}) is available with updated features!</span>
           </div>
           <button
             type="button"
             onClick={handleTriggerSwUpdate}
+            aria-label="Update to latest version now"
             className="px-3 py-1 bg-white text-emerald-950 font-bold rounded-lg hover:bg-emerald-100 transition-colors shrink-0 flex items-center gap-1.5 shadow-xs"
           >
-            <RefreshCw className="w-3.5 h-3.5" />
+            <RefreshCw className="w-3.5 h-3.5" aria-hidden="true" />
             <span>Update Now</span>
           </button>
         </div>
@@ -168,7 +181,7 @@ export default function App() {
       />
 
       {/* Main App Content Viewport */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8">
+      <main id="main-content" tabIndex={-1} role="main" aria-label="Garden and pantry main content" className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8 outline-hidden">
         {activeTab === 'dashboard' && (
           <Dashboard
             location={location}

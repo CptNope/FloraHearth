@@ -170,30 +170,34 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
           <button
             type="button"
             onClick={() => window.print()}
+            aria-label="Print garden bed layout and planting plan"
             className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-white border border-stone-300 text-stone-700 rounded-xl hover:bg-stone-50 transition-colors shadow-2xs"
             title="Print garden bed layout"
           >
-            <Printer className="w-4 h-4 text-stone-600" />
-            Print Plan
+            <Printer className="w-4 h-4 text-stone-600" aria-hidden="true" />
+            <span>Print Plan</span>
           </button>
 
           <button
             type="button"
             onClick={() => setIsCreatingSpace(true)}
+            aria-label="Add new garden bed or container space"
             className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold bg-[#234730] text-white rounded-xl hover:bg-[#183422] transition-colors shadow-xs"
           >
-            <Plus className="w-4 h-4" />
-            Add Garden Space
+            <Plus className="w-4 h-4" aria-hidden="true" />
+            <span>Add Garden Space</span>
           </button>
         </div>
       </div>
 
       {/* Space Selector Tabs */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-1">
+      <div role="tablist" aria-label="Garden bed spaces" className="flex items-center gap-2 overflow-x-auto pb-1">
         {spaces.map(space => (
           <button
             key={space.id}
             type="button"
+            role="tab"
+            aria-selected={space.id === selectedSpaceId}
             onClick={() => {
               setSelectedSpaceId(space.id);
               setActiveCellCoords(null);
@@ -265,7 +269,12 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
                       key={`${cIdx}-${rIdx}`}
                       type="button"
                       onClick={() => handleCellClick(cIdx, rIdx)}
-                      className={`h-24 sm:h-28 rounded-xl p-1.5 flex flex-col items-center justify-between border-2 transition-all text-center relative ${
+                      aria-label={
+                        crop
+                          ? `Grid cell Column ${cIdx + 1}, Row ${rIdx + 1}: ${crop.name}, ${cell?.count || crop.sfgPerSquare} plants per square foot. Click to replace or clear.`
+                          : `Grid cell Column ${cIdx + 1}, Row ${rIdx + 1}: empty square. Click to plant ${selectedCropToPlace?.name || 'selected crop'}.`
+                      }
+                      className={`h-24 sm:h-28 rounded-xl p-1.5 flex flex-col items-center justify-between border-2 transition-all text-center relative focus:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-500 ${
                         isCellActive
                           ? 'ring-2 ring-emerald-500 border-emerald-500 bg-white dark:bg-[#1c3225] shadow-md'
                           : crop
@@ -274,29 +283,29 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
                       }`}
                     >
                       {/* Grid Coordinate indicator */}
-                      <span className="text-[9px] font-mono text-[#56705d] dark:text-[#7e9987] self-start">
+                      <span className="text-[10px] font-mono text-[#56705d] dark:text-[#7e9987] self-start" aria-hidden="true">
                         {cIdx + 1},{rIdx + 1}
                       </span>
 
                       {crop ? (
                         <>
-                          <span className="text-2xl drop-shadow-xs">{crop.iconEmoji}</span>
+                          <span className="text-2xl drop-shadow-xs" aria-hidden="true">{crop.iconEmoji}</span>
                           <div className="w-full truncate">
                             <p className="text-[11px] font-bold text-[#122017] dark:text-[#f3f7f4] truncate leading-tight">
                               {crop.name.split('(')[0]}
                             </p>
-                            <span className="text-[9px] text-emerald-700 dark:text-[#34d399] font-semibold block">
+                            <span className="text-[10px] text-emerald-700 dark:text-[#34d399] font-semibold block">
                               {cell?.count || crop.sfgPerSquare} per sq ft
                             </span>
                           </div>
 
                           {/* Family Badge Indicator */}
-                          <span className="text-[8px] px-1 bg-stone-100 dark:bg-[#18281f] text-stone-600 dark:text-[#7e9987] rounded-sm font-mono truncate max-w-full">
+                          <span className="text-[10px] px-1 bg-stone-100 dark:bg-[#18281f] text-stone-600 dark:text-[#7e9987] rounded-sm font-mono truncate max-w-full" aria-hidden="true">
                             {crop.family}
                           </span>
                         </>
                       ) : (
-                        <span className="text-[10px] text-[#56705d] dark:text-[#7e9987] opacity-60 self-center my-auto font-medium">
+                        <span className="text-[11px] text-[#56705d] dark:text-[#7e9987] opacity-60 self-center my-auto font-medium" aria-hidden="true">
                           + Plant
                         </span>
                       )}
@@ -444,16 +453,22 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
 
       {/* Modal for Creating New Space */}
       {isCreatingSpace && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="add-space-modal-title"
+        >
           <form
             onSubmit={handleCreateSpace}
             className="bg-white border border-stone-200 rounded-2xl p-6 w-full max-w-md shadow-2xl space-y-4"
           >
-            <h3 className="text-base font-bold text-[#183a24] font-serif-botanical">Add Garden Bed or Container Space</h3>
+            <h3 id="add-space-modal-title" className="text-base font-bold text-[#183a24] font-serif-botanical">Add Garden Bed or Container Space</h3>
 
             <div>
-              <label className="block text-xs font-semibold text-stone-700 mb-1">Space Name</label>
+              <label htmlFor="new-space-name-input" className="block text-xs font-semibold text-stone-700 mb-1">Space Name</label>
               <input
+                id="new-space-name-input"
                 type="text"
                 value={newSpaceName}
                 onChange={e => setNewSpaceName(e.target.value)}
@@ -465,8 +480,9 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-semibold text-stone-700 mb-1">Width (ft)</label>
+                <label htmlFor="new-space-cols-input" className="block text-xs font-semibold text-stone-700 mb-1">Width (ft)</label>
                 <input
+                  id="new-space-cols-input"
                   type="number"
                   min="1"
                   max="12"
@@ -476,8 +492,9 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-stone-700 mb-1">Length (ft)</label>
+                <label htmlFor="new-space-rows-input" className="block text-xs font-semibold text-stone-700 mb-1">Length (ft)</label>
                 <input
+                  id="new-space-rows-input"
                   type="number"
                   min="1"
                   max="12"
@@ -489,8 +506,9 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-stone-700 mb-1">Growing Method</label>
+              <label htmlFor="new-space-type-select" className="block text-xs font-semibold text-stone-700 mb-1">Growing Method</label>
               <select
+                id="new-space-type-select"
                 value={newSpaceType}
                 onChange={e => setNewSpaceType(e.target.value as GrowingMethod)}
                 className="w-full text-xs p-2 border border-stone-300 rounded-xl"

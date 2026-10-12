@@ -9,45 +9,45 @@
     --font-mono: 'JetBrains Mono', monospace;
 
     /* Light Theme: Crisp Botanical Herbarium */
-    --canvas-bg: #f5f7f5;
+    --canvas-bg: #f5f8f5;
     --surface-card: #ffffff;
-    --surface-subtle: #edf2ee;
-    --surface-active: #e2ece3;
-    --surface-input: #f4f8f5;
+    --surface-subtle: #edf3ee;
+    --surface-active: #e1ede3;
+    --surface-input: #f8faf8;
     --border-subtle: #d6e2d8;
-    --border-hover: #b5c7b8;
+    --border-hover: #b2c7b7;
     --border-emerald: #a7f3d0;
-    --text-heading: #122017;
-    --text-body: #2d4334;
-    --text-caption: #56705d;
-    --header-bg: rgba(245, 247, 245, 0.94);
+    --text-heading: #102417;
+    --text-body: #284030;
+    --text-caption: #3f5847;
+    --header-bg: rgba(245, 248, 245, 0.94);
 
     /* Brand Accent */
     --accent-btn: #183e25;
-    --accent-btn-hover: #112d1b;
+    --accent-btn-hover: #102b1a;
     --accent-btn-text: #ffffff;
-    --accent-emerald: #10b981;
+    --accent-emerald: #047857;
   }
 
   html.dark {
-    /* Dark Theme: Deep Obsidian Spruce */
-    --canvas-bg: #0d1410;
-    --surface-card: #131e17;
-    --surface-subtle: #18271e;
-    --surface-active: #1f3427;
-    --surface-input: #0f1812;
+    /* Dark Theme: Deep Midnight Obsidian Spruce (Rich, non-fatiguing, luminous contrast) */
+    --canvas-bg: #0a130e;
+    --surface-card: #121e17;
+    --surface-subtle: #17271e;
+    --surface-active: #1e3528;
+    --surface-input: #0e1711;
     --border-subtle: rgba(255, 255, 255, 0.08);
-    --border-hover: rgba(255, 255, 255, 0.16);
+    --border-hover: rgba(52, 211, 153, 0.35);
     --border-emerald: rgba(16, 185, 129, 0.35);
     --text-heading: #f3f7f4;
-    --text-body: #cad9ce;
-    --text-caption: #7e9987;
-    --header-bg: rgba(19, 30, 23, 0.94);
+    --text-body: #cad8ce;
+    --text-caption: #8cb099;
+    --header-bg: rgba(18, 30, 23, 0.94);
 
-    /* Brand Accent */
+    /* Brand Accent: Glowing Botanical Mint/Emerald */
     --accent-btn: #10b981;
     --accent-btn-hover: #34d399;
-    --accent-btn-text: #06150d;
+    --accent-btn-text: #05140b;
     --accent-emerald: #34d399;
   }
 
@@ -55,7 +55,7 @@
     font-family: var(--font-sans);
     color: var(--text-body);
     background-color: var(--canvas-bg);
-    transition: background-color 0.25s ease, color 0.25s ease;
+    transition: background-color 0.2s ease, color 0.2s ease;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -73,6 +73,109 @@
 
 .font-mono-botanical {
   font-family: 'JetBrains Mono', monospace;
+}
+
+/* =========================================================
+   WCAG AA Compliance: Focus Visible & Accessible Interactions
+   ========================================================= */
+
+/* WCAG 2.4.7 Focus Visible: High-contrast focus indicators for all keyboard navigators */
+:focus-visible {
+  outline: 2px solid var(--accent-emerald) !important;
+  outline-offset: 2px !important;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[role="button"]:focus-visible,
+[tabindex="0"]:focus-visible {
+  outline: 2px solid var(--accent-emerald) !important;
+  outline-offset: 2px !important;
+}
+
+/* WCAG 1.4.3 Contrast Ratio minimum (4.5:1 for normal text) in light mode */
+.text-stone-400 {
+  color: #576b5e; /* 5.72:1 contrast against white cards, 5.35:1 on parchment */
+}
+
+.text-emerald-600 {
+  color: #047857; /* 5.6:1 contrast against white */
+}
+
+.text-amber-600 {
+  color: #b45309; /* 5.17:1 contrast against white */
+}
+
+/* WCAG 2.3.3 Reduced Motion: Respect system preferences */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Screen reader utility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.focus\:not-sr-only:focus {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 9999;
+  width: auto;
+  height: auto;
+  padding: 0.75rem 1.25rem;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+  border-radius: 0.75rem;
+  background-color: var(--accent-btn);
+  color: var(--accent-btn-text);
+  font-weight: 700;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+}
+
+/* Custom Botanical Scrollbars */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(120, 150, 130, 0.35);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(120, 150, 130, 0.55);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(52, 211, 153, 0.45);
 }
 
 /* Print Styles */
@@ -94,14 +197,25 @@
 }
 
 /* =========================================================
-   Harmonious Theme Utilities for Smooth Light/Dark Rendering
+   WCAG 1.4.3 Contrast Enforcement: Light & Dark Themes
    ========================================================= */
 
-/* Surface mapping */
+/* In light mode, ensure muted stone colors meet 4.5:1 ratio */
+:root .text-stone-400 {
+  color: #4b6352 !important;
+}
+
+:root .text-stone-500 {
+  color: #374e3e !important;
+}
+
+/* Surface mapping in Dark Mode */
 .dark .bg-white,
 .dark .bg-\[\#fbfbf8\],
 .dark .bg-\[\#fbfbf9\],
-.dark .bg-\[\#fcfcf9\] {
+.dark .bg-\[\#fcfcf9\],
+.dark .bg-\[\#fafbf9\],
+.dark .bg-\[\#fbfbfa\] {
   background-color: var(--surface-card) !important;
 }
 
@@ -112,40 +226,82 @@
 .dark .bg-\[\#f6f8f6\],
 .dark .bg-\[\#f4f6f4\],
 .dark .bg-\[\#faf8f5\],
-.dark .bg-\[\#f6f5f0\] {
+.dark .bg-\[\#f6f5f0\],
+.dark .bg-\[\#f3f7f4\],
+.dark .bg-\[\#f4f7f4\],
+.dark .bg-\[\#f0f5f1\],
+.dark .bg-\[\#f4f8fa\],
+.dark .bg-\[\#faf8f2\],
+.dark .bg-\[\#edf2ee\],
+.dark .bg-\[\#e2ece3\],
+.dark .bg-\[\#ecf3ee\],
+.dark .bg-\[\#e7f0e9\] {
   background-color: var(--surface-subtle) !important;
 }
 
-/* Hairline border mapping */
+/* Hairline border mapping in Dark Mode */
 .dark .border-stone-100,
 .dark .border-stone-200,
 .dark .border-stone-300,
 .dark .border-stone-200\/50,
 .dark .border-stone-200\/60,
-.dark .border-stone-200\/80 {
+.dark .border-stone-200\/80,
+.dark .border-\[\#d6e2d8\],
+.dark .border-\[\#d6e4da\],
+.dark .border-\[\#d4e2d6\],
+.dark .border-\[\#c2d6c6\],
+.dark .border-\[\#d6ddd6\] {
   border-color: var(--border-subtle) !important;
 }
 
-/* Text Hierarchy mapping */
+/* Text Hierarchy mapping in Dark Mode */
 .dark .text-stone-900,
 .dark .text-stone-800,
 .dark .text-\[\#183a24\],
 .dark .text-\[\#1c3a27\],
-.dark .text-\[\#242b26\] {
+.dark .text-\[\#132d1d\],
+.dark .text-\[\#122017\],
+.dark .text-\[\#242b26\],
+.dark .text-\[\#183e25\],
+.dark .text-\[\#234730\] {
   color: var(--text-heading) !important;
 }
 
 .dark .text-stone-700,
-.dark .text-stone-600 {
+.dark .text-stone-600,
+.dark .text-\[\#2d4334\],
+.dark .text-\[\#3c5244\] {
   color: var(--text-body) !important;
 }
 
 .dark .text-stone-500,
-.dark .text-stone-400 {
+.dark .text-stone-400,
+.dark .text-\[\#56705d\],
+.dark .text-\[\#7e9987\] {
   color: var(--text-caption) !important;
 }
 
-/* Form Inputs & Selects */
+.dark .text-stone-300 {
+  color: #9ab5a3 !important;
+}
+
+/* Dark Primary Buttons */
+.dark .bg-\[\#234730\],
+.dark .bg-\[\#183e25\],
+.dark .bg-\[\#183422\],
+.dark .bg-\[\#1c3a27\] {
+  background-color: var(--accent-btn) !important;
+  color: var(--accent-btn-text) !important;
+}
+
+.dark .bg-\[\#234730\]:hover,
+.dark .bg-\[\#183e25\]:hover,
+.dark .bg-\[\#183422\]:hover,
+.dark .bg-\[\#1c3a27\]:hover {
+  background-color: var(--accent-btn-hover) !important;
+}
+
+/* Form Inputs, Selects & Textareas in Dark Mode */
 .dark input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
 .dark select,
 .dark textarea {
@@ -162,13 +318,14 @@
   box-shadow: 0 0 0 1px var(--accent-emerald) !important;
 }
 
-/* Semantic Badge: Emerald / Beneficial / Healthy */
+/* Semantic Badges in Dark Mode */
+/* Emerald / Beneficial / Healthy */
 .dark .bg-emerald-50,
 .dark .bg-emerald-50\/70,
 .dark .bg-emerald-50\/80,
 .dark .bg-\[\#f0f7f4\] {
-  background-color: rgba(16, 185, 129, 0.12) !important;
-  border-color: rgba(16, 185, 129, 0.28) !important;
+  background-color: rgba(16, 185, 129, 0.14) !important;
+  border-color: rgba(16, 185, 129, 0.3) !important;
 }
 
 .dark .text-emerald-950,
@@ -178,13 +335,13 @@
   color: #34d399 !important;
 }
 
-/* Semantic Badge: Amber / Advisory / Caution */
+/* Amber / Advisory / Caution / Sunlight */
 .dark .bg-amber-50,
 .dark .bg-amber-50\/70,
 .dark .bg-amber-50\/80,
 .dark .bg-amber-100 {
-  background-color: rgba(245, 158, 11, 0.12) !important;
-  border-color: rgba(245, 158, 11, 0.28) !important;
+  background-color: rgba(245, 158, 11, 0.14) !important;
+  border-color: rgba(245, 158, 11, 0.3) !important;
 }
 
 .dark .text-amber-950,
@@ -193,12 +350,12 @@
   color: #fbbf24 !important;
 }
 
-/* Semantic Badge: Rose / Antagonist / Toxic Hazard */
+/* Rose / Antagonist / Toxic Hazard */
 .dark .bg-rose-50,
 .dark .bg-rose-50\/70,
 .dark .bg-rose-50\/80 {
-  background-color: rgba(244, 63, 94, 0.12) !important;
-  border-color: rgba(244, 63, 94, 0.28) !important;
+  background-color: rgba(244, 63, 94, 0.14) !important;
+  border-color: rgba(244, 63, 94, 0.3) !important;
 }
 
 .dark .text-rose-950,
@@ -207,10 +364,10 @@
   color: #fb7185 !important;
 }
 
-/* Semantic Badge: Teal / Apothecary */
+/* Teal / Apothecary & Hydro */
 .dark .bg-teal-50 {
-  background-color: rgba(20, 184, 166, 0.12) !important;
-  border-color: rgba(20, 184, 166, 0.28) !important;
+  background-color: rgba(20, 184, 166, 0.14) !important;
+  border-color: rgba(20, 184, 166, 0.3) !important;
 }
 
 .dark .text-teal-900,
@@ -218,14 +375,25 @@
   color: #5eead4 !important;
 }
 
+/* Purple / Heirloom & Fruits */
+.dark .bg-purple-50 {
+  background-color: rgba(168, 85, 247, 0.14) !important;
+  border-color: rgba(168, 85, 247, 0.3) !important;
+}
+
+.dark .text-purple-900,
+.dark .text-purple-800 {
+  color: #c084fc !important;
+}
+
 /* Active navigation item pill */
 .dark .nav-active-pill {
   background-color: #10b981 !important;
-  color: #06150d !important;
+  color: #05140b !important;
 }
 
 /* Card hover glow */
 .dark .hover-card:hover {
   border-color: rgba(16, 185, 129, 0.35) !important;
-  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.45) !important;
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5) !important;
 }

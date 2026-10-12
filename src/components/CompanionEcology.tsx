@@ -41,9 +41,11 @@ export const CompanionEcology: React.FC = () => {
           </p>
         </div>
 
-        <div className="flex bg-[#edf2ee] dark:bg-[#111c15] border border-[#d6e2d8] dark:border-[rgba(255,255,255,0.08)] p-1 rounded-xl text-xs font-semibold">
+        <div role="tablist" aria-label="Ecology views" className="flex bg-[#edf2ee] dark:bg-[#111c15] border border-[#d6e2d8] dark:border-[rgba(255,255,255,0.08)] p-1 rounded-xl text-xs font-semibold">
           <button
             type="button"
+            role="tab"
+            aria-selected={activeTab === 'matrix'}
             onClick={() => setActiveTab('matrix')}
             className={`px-3 py-1.5 rounded-lg transition-colors ${
               activeTab === 'matrix'
@@ -55,6 +57,8 @@ export const CompanionEcology: React.FC = () => {
           </button>
           <button
             type="button"
+            role="tab"
+            aria-selected={activeTab === 'insects'}
             onClick={() => setActiveTab('insects')}
             className={`px-3 py-1.5 rounded-lg transition-colors ${
               activeTab === 'insects'
@@ -66,6 +70,8 @@ export const CompanionEcology: React.FC = () => {
           </button>
           <button
             type="button"
+            role="tab"
+            aria-selected={activeTab === 'pollination'}
             onClick={() => setActiveTab('pollination')}
             className={`px-3 py-1.5 rounded-lg transition-colors ${
               activeTab === 'pollination'
@@ -82,7 +88,7 @@ export const CompanionEcology: React.FC = () => {
         <div className="space-y-5">
           {/* Scientific Disclaimer Banner */}
           <div className="bg-[#f4f7f4] border border-[#d6e4da] p-4 rounded-2xl flex items-start gap-3 text-xs text-stone-700">
-            <Info className="w-5 h-5 text-emerald-800 shrink-0 mt-0.5" />
+            <Info className="w-5 h-5 text-emerald-800 shrink-0 mt-0.5" aria-hidden="true" />
             <div className="space-y-1">
               <span className="font-bold text-[#183a24] block">
                 Evidence-Based Horticultural Distinction:
@@ -97,12 +103,13 @@ export const CompanionEcology: React.FC = () => {
           <div className="bg-white border border-stone-200 rounded-2xl p-4 shadow-xs space-y-3">
             <div className="flex flex-col sm:flex-row gap-3">
               <div className="relative flex-1">
-                <Search className="w-4 h-4 text-stone-400 absolute left-3 top-3" />
+                <Search className="w-4 h-4 text-stone-400 absolute left-3 top-3" aria-hidden="true" />
                 <input
                   type="text"
                   value={search}
                   onChange={e => setSearch(e.target.value)}
                   placeholder="Search companion crops (e.g. Tomato, Basil, Beans, Garlic)..."
+                  aria-label="Search companion crops by plant name or relationship notes"
                   className="w-full pl-9 pr-3 py-2 text-xs bg-stone-50 border border-stone-200 rounded-xl focus:outline-hidden focus:border-emerald-600 focus:bg-white"
                 />
               </div>
@@ -111,6 +118,7 @@ export const CompanionEcology: React.FC = () => {
                 <select
                   value={filterType}
                   onChange={e => setFilterType(e.target.value)}
+                  aria-label="Filter companion combinations by relationship type"
                   className="text-xs p-2 border border-stone-200 rounded-xl bg-stone-50"
                 >
                   <option value="all">All Combinations</option>
@@ -121,6 +129,7 @@ export const CompanionEcology: React.FC = () => {
                 <select
                   value={filterEvidence}
                   onChange={e => setFilterEvidence(e.target.value)}
+                  aria-label="Filter companion pairs by scientific evidence level"
                   className="text-xs p-2 border border-stone-200 rounded-xl bg-stone-50"
                 >
                   <option value="all">All Evidence Levels</option>

@@ -25,30 +25,36 @@ export const HydroIndoorGuide: React.FC = () => {
           </p>
         </div>
 
-        <div className="flex bg-stone-100 p-1 rounded-xl text-xs font-semibold">
+        <div role="tablist" aria-label="Indoor growing guides" className="flex bg-stone-100 dark:bg-[#111c15] p-1 rounded-xl text-xs font-semibold">
           <button
             type="button"
+            role="tab"
+            aria-selected={activeTab === 'lighting'}
             onClick={() => setActiveTab('lighting')}
             className={`px-3 py-1.5 rounded-lg transition-colors ${
-              activeTab === 'lighting' ? 'bg-white text-stone-900 shadow-2xs' : 'text-stone-600'
+              activeTab === 'lighting' ? 'bg-white dark:bg-[#183e25] text-stone-900 dark:text-white shadow-2xs font-bold' : 'text-stone-600 dark:text-stone-300'
             }`}
           >
             💡 Grow Light DLI Calculator
           </button>
           <button
             type="button"
+            role="tab"
+            aria-selected={activeTab === 'hydro'}
             onClick={() => setActiveTab('hydro')}
             className={`px-3 py-1.5 rounded-lg transition-colors ${
-              activeTab === 'hydro' ? 'bg-white text-stone-900 shadow-2xs' : 'text-stone-600'
+              activeTab === 'hydro' ? 'bg-white dark:bg-[#183e25] text-stone-900 dark:text-white shadow-2xs font-bold' : 'text-stone-600 dark:text-stone-300'
             }`}
           >
             💧 Hydroponic Systems &amp; EC
           </button>
           <button
             type="button"
+            role="tab"
+            aria-selected={activeTab === 'aquaponics'}
             onClick={() => setActiveTab('aquaponics')}
             className={`px-3 py-1.5 rounded-lg transition-colors ${
-              activeTab === 'aquaponics' ? 'bg-white text-stone-900 shadow-2xs' : 'text-stone-600'
+              activeTab === 'aquaponics' ? 'bg-white dark:bg-[#183e25] text-stone-900 dark:text-white shadow-2xs font-bold' : 'text-stone-600 dark:text-stone-300'
             }`}
           >
             🐟 Aquaponics &amp; Nitrogen Cycle
@@ -63,7 +69,7 @@ export const HydroIndoorGuide: React.FC = () => {
             {/* Calculator Card */}
             <div className="md:col-span-5 bg-white border border-stone-200 rounded-2xl p-5 shadow-xs space-y-4 text-xs">
               <h3 className="font-bold text-sm text-[#183a24] font-serif-botanical flex items-center gap-2">
-                <Lightbulb className="w-4 h-4 text-amber-600" />
+                <Lightbulb className="w-4 h-4 text-amber-600" aria-hidden="true" />
                 Daily Light Integral (DLI) Calculator
               </h3>
               <p className="text-stone-600 leading-relaxed">
@@ -71,16 +77,18 @@ export const HydroIndoorGuide: React.FC = () => {
               </p>
 
               <div>
-                <label className="block font-semibold text-stone-700 mb-1">
+                <label htmlFor="ppfd-slider" className="block font-semibold text-stone-700 mb-1">
                   PPFD at Canopy Height: <span className="font-mono text-emerald-800 font-bold">{ppfdValue} µmol/m²/s</span>
                 </label>
                 <input
+                  id="ppfd-slider"
                   type="range"
                   min="100"
                   max="1000"
                   step="25"
                   value={ppfdValue}
                   onChange={e => setPpfdValue(parseInt(e.target.value))}
+                  aria-label="PPFD at canopy height in micromoles per square meter per second"
                   className="w-full accent-amber-600"
                 />
                 <div className="flex justify-between text-[10px] text-stone-400">
@@ -91,16 +99,18 @@ export const HydroIndoorGuide: React.FC = () => {
               </div>
 
               <div>
-                <label className="block font-semibold text-stone-700 mb-1">
+                <label htmlFor="photoperiod-slider" className="block font-semibold text-stone-700 mb-1">
                   Photoperiod: <span className="font-mono text-emerald-800 font-bold">{hoursOn} hours/day</span>
                 </label>
                 <input
+                  id="photoperiod-slider"
                   type="range"
                   min="8"
                   max="20"
                   step="1"
                   value={hoursOn}
                   onChange={e => setHoursOn(parseInt(e.target.value))}
+                  aria-label="Photoperiod in hours of light per day"
                   className="w-full accent-amber-600"
                 />
               </div>

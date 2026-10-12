@@ -82,18 +82,19 @@ export const Navigation: React.FC<NavigationProps> = ({
             <button
               type="button"
               onClick={onOpenSetup}
+              aria-label={`Current location: ${location.city}, ${location.state}, USDA Zone ${location.usdaZone}. Click to edit climate settings.`}
               className="hidden md:flex items-center gap-1.5 ml-2 px-2.5 py-1 bg-[#edf2ee] hover:bg-[#e2ece3] dark:bg-[#18271e] dark:hover:bg-[#1f3427] text-[#2d4334] dark:text-[#cad9ce] text-xs rounded-lg transition-colors border border-[#d6e2d8] dark:border-[rgba(255,255,255,0.08)] font-mono"
               title="Click to edit location and climate"
             >
               <span className="text-emerald-700 dark:text-[#34d399] font-bold">Zone {location.usdaZone}</span>
               <span className="text-stone-300 dark:text-stone-600">·</span>
               <span>{location.city}, {location.state}</span>
-              <Settings className="w-3 h-3 text-[#7e9987] ml-0.5" />
+              <Settings className="w-3 h-3 text-[#7e9987] ml-0.5" aria-hidden="true" />
             </button>
           </div>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden xl:flex items-center gap-1 overflow-x-auto text-xs font-semibold">
+          <nav aria-label="Main navigation" className="hidden xl:flex items-center gap-1 overflow-x-auto text-xs font-semibold">
             {navItems.map(item => {
               const Icon = item.icon;
               const isActive = activeTab === item.id;
@@ -102,13 +103,14 @@ export const Navigation: React.FC<NavigationProps> = ({
                   key={item.id}
                   type="button"
                   onClick={() => onSelectTab(item.id)}
+                  aria-current={isActive ? 'page' : undefined}
                   className={`px-3 py-1.5 rounded-xl transition-all flex items-center gap-1.5 whitespace-nowrap ${
                     isActive
                       ? 'bg-[#183e25] text-white dark:bg-[#10b981] dark:text-[#06150d] font-bold shadow-xs'
                       : 'text-[#3c5244] dark:text-[#b6cfc0] hover:text-[#122017] dark:hover:text-white hover:bg-[#edf2ee] dark:hover:bg-[#18271e]'
                   }`}
                 >
-                  <Icon className="w-3.5 h-3.5" />
+                  <Icon className="w-3.5 h-3.5" aria-hidden="true" />
                   <span>{item.label}</span>
                 </button>
               );
@@ -121,10 +123,11 @@ export const Navigation: React.FC<NavigationProps> = ({
             <button
               type="button"
               onClick={onOpenVersionModal}
+              aria-label={`Application version ${APP_VERSION}. Click to open storage diagnostics and cache control.`}
               className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono font-medium rounded-lg border transition-colors bg-[#edf2ee] hover:bg-[#e2ece3] text-[#183e25] border-[#d6e2d8] dark:bg-[#18271e] dark:hover:bg-[#1f3427] dark:text-[#34d399] dark:border-[rgba(16,185,129,0.3)]"
               title="Version Control, Hard Cache Reset & Storage Diagnostics"
             >
-              <Layers className="w-3.5 h-3.5 text-emerald-600 dark:text-[#34d399]" />
+              <Layers className="w-3.5 h-3.5 text-emerald-600 dark:text-[#34d399]" aria-hidden="true" />
               <span>v{APP_VERSION}</span>
             </button>
 
@@ -134,12 +137,12 @@ export const Navigation: React.FC<NavigationProps> = ({
               onClick={onToggleTheme}
               className="p-2 rounded-xl text-[#3c5244] dark:text-[#cad9ce] hover:text-[#122017] dark:hover:text-white hover:bg-[#edf2ee] dark:hover:bg-[#18271e] border border-transparent dark:border-[rgba(255,255,255,0.06)] transition-all"
               title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode (Default)'}
-              aria-label="Toggle dark mode / light mode"
+              aria-label={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode (Default)'}
             >
               {theme === 'dark' ? (
-                <Sun className="w-4 h-4 text-amber-300 hover:rotate-45 transition-transform" />
+                <Sun className="w-4 h-4 text-amber-300 hover:rotate-45 transition-transform" aria-hidden="true" />
               ) : (
-                <Moon className="w-4 h-4 text-emerald-800 hover:-rotate-12 transition-transform" />
+                <Moon className="w-4 h-4 text-emerald-800 hover:-rotate-12 transition-transform" aria-hidden="true" />
               )}
             </button>
 
@@ -148,6 +151,7 @@ export const Navigation: React.FC<NavigationProps> = ({
               <button
                 type="button"
                 onClick={onOpenSetup}
+                aria-label={`Zone ${location.usdaZone} climate settings`}
                 className="px-2 py-1 text-xs bg-[#edf2ee] dark:bg-[#18271e] text-[#2d4334] dark:text-[#cad9ce] rounded-lg border border-[#d6e2d8] dark:border-[rgba(255,255,255,0.08)] font-mono sm:inline-block hidden"
               >
                 Zone {location.usdaZone}
@@ -155,10 +159,11 @@ export const Navigation: React.FC<NavigationProps> = ({
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                aria-expanded={mobileMenuOpen}
+                aria-label={mobileMenuOpen ? 'Close navigation drawer menu' : 'Open navigation drawer menu'}
                 className="p-2 text-[#3c5244] dark:text-[#cad9ce] hover:text-[#122017] dark:hover:text-white rounded-lg"
-                aria-label="Toggle navigation menu"
               >
-                {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+                {mobileMenuOpen ? <X className="w-5 h-5" aria-hidden="true" /> : <Menu className="w-5 h-5" aria-hidden="true" />}
               </button>
             </div>
           </div>

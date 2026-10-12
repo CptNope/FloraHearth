@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { GardenLocation, UserPreferences, GrowingMethod, SunlightLevel, SoilType, WaterAccess } from '../types/garden';
 import { lookupLocation, US_REGIONAL_CLIMATES } from '../data/usClimates';
 import { CROPS_DATA } from '../data/cropsData';
@@ -74,31 +74,45 @@ export const SetupModal: React.FC<SetupModalProps> = ({
     onClose();
   };
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 overflow-y-auto">
-      <div className="bg-[#fcfcf9] border border-[#d6ddd6] rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl flex flex-col my-8 max-h-[90vh]">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 overflow-y-auto"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="setup-modal-title"
+    >
+      <div className="bg-[#fcfcf9] dark:bg-[#0e1912] border border-[#d6ddd6] dark:border-[#223d2e] rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl flex flex-col my-8 max-h-[90vh]">
         {/* Modal Header */}
         <div className="bg-[#1c3a27] text-white px-6 py-5 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <span className="p-2 bg-white/10 rounded-xl text-emerald-300">
-              <Sparkles className="w-5 h-5" />
+              <Sparkles className="w-5 h-5" aria-hidden="true" />
             </span>
             <div>
-              <h2 className="text-xl font-bold tracking-tight font-serif-botanical">Personalized Garden Setup</h2>
-              <p className="text-xs text-emerald-200/80">Step {step} of 3 · Tailor your climate, goals, and crops</p>
+              <h2 id="setup-modal-title" className="text-xl font-bold tracking-tight font-serif-botanical text-white">Personalized Garden Setup</h2>
+              <p className="text-xs text-emerald-200/90">Step {step} of 3 · Tailor your climate, goals, and crops</p>
             </div>
           </div>
           <button
+            type="button"
             onClick={onClose}
-            className="p-1.5 text-white/70 hover:text-white rounded-lg hover:bg-white/10 transition-colors"
-            aria-label="Close modal"
+            className="p-1.5 text-white/70 hover:text-white rounded-lg hover:bg-white/10 transition-colors focus:ring-2 focus:ring-white"
+            aria-label="Close personalized garden setup"
           >
-            <X className="w-5 h-5" />
+            <X className="w-5 h-5" aria-hidden="true" />
           </button>
         </div>
 
         {/* Modal Body */}
-        <div className="p-6 overflow-y-auto flex-1 space-y-6">
+        <div className="p-6 overflow-y-auto flex-1 space-y-6 text-stone-800 dark:text-[#d3e3d8]">
           {step === 1 && (
             <div className="space-y-5">
               <div>
@@ -111,12 +125,13 @@ export const SetupModal: React.FC<SetupModalProps> = ({
               {/* Search Bar */}
               <div className="flex gap-2">
                 <div className="relative flex-1">
-                  <MapPin className="w-4 h-4 text-stone-400 absolute left-3 top-3" />
+                  <MapPin className="w-4 h-4 text-stone-400 absolute left-3 top-3" aria-hidden="true" />
                   <input
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Enter 5-digit ZIP (e.g. 75201, 98101, 33101) or City, ST"
+                    aria-label="Enter 5-digit US ZIP code or City and State"
                     className="w-full pl-9 pr-3 py-2 text-sm bg-white border border-stone-300 rounded-xl focus:outline-hidden focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/20"
                     onKeyDown={(e) => e.key === 'Enter' && handleLocationSearch()}
                   />
@@ -211,20 +226,24 @@ export const SetupModal: React.FC<SetupModalProps> = ({
                   {isManualFrost && (
                     <div className="grid grid-cols-2 gap-3 mt-2 bg-white p-3 rounded-lg border border-stone-200">
                       <div>
-                        <label className="block text-[11px] font-medium text-stone-600 mb-1">Last Spring Frost (MM-DD)</label>
+                        <label htmlFor="spring-frost-input" className="block text-[11px] font-medium text-stone-600 mb-1">Last Spring Frost (MM-DD)</label>
                         <input
+                          id="spring-frost-input"
                           type="text"
                           value={location.lastSpringFrost}
                           onChange={(e) => setLocation({ ...location, lastSpringFrost: e.target.value })}
+                          aria-label="Last Spring Frost date in MM-DD format"
                           className="w-full px-2 py-1 text-xs border border-stone-300 rounded-md"
                         />
                       </div>
                       <div>
-                        <label className="block text-[11px] font-medium text-stone-600 mb-1">First Fall Frost (MM-DD)</label>
+                        <label htmlFor="fall-frost-input" className="block text-[11px] font-medium text-stone-600 mb-1">First Fall Frost (MM-DD)</label>
                         <input
+                          id="fall-frost-input"
                           type="text"
                           value={location.firstFallFrost}
                           onChange={(e) => setLocation({ ...location, firstFallFrost: e.target.value })}
+                          aria-label="First Fall Frost date in MM-DD format"
                           className="w-full px-2 py-1 text-xs border border-stone-300 rounded-md"
                         />
                       </div>
@@ -260,6 +279,7 @@ export const SetupModal: React.FC<SetupModalProps> = ({
                       key={m.id}
                       type="button"
                       onClick={() => setGardenType(m.id as GrowingMethod)}
+                      aria-pressed={gardenType === m.id}
                       className={`text-left p-2.5 rounded-xl border transition-all ${
                         gardenType === m.id
                           ? 'border-emerald-600 bg-emerald-50/70 text-[#183a24] ring-1 ring-emerald-600'
@@ -276,8 +296,9 @@ export const SetupModal: React.FC<SetupModalProps> = ({
               {/* Sunlight & Water Access */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-stone-700 mb-1">Sunlight Availability</label>
+                  <label htmlFor="sunlight-select" className="block text-xs font-semibold text-stone-700 mb-1">Sunlight Availability</label>
                   <select
+                    id="sunlight-select"
                     value={sunlight}
                     onChange={(e) => setSunlight(e.target.value as SunlightLevel)}
                     className="w-full text-xs p-2 bg-white border border-stone-300 rounded-xl focus:border-emerald-600"
@@ -290,8 +311,9 @@ export const SetupModal: React.FC<SetupModalProps> = ({
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-stone-700 mb-1">Watering Access</label>
+                  <label htmlFor="water-access-select" className="block text-xs font-semibold text-stone-700 mb-1">Watering Access</label>
                   <select
+                    id="water-access-select"
                     value={waterAccess}
                     onChange={(e) => setWaterAccess(e.target.value as WaterAccess)}
                     className="w-full text-xs p-2 bg-white border border-stone-300 rounded-xl focus:border-emerald-600"
@@ -307,14 +329,16 @@ export const SetupModal: React.FC<SetupModalProps> = ({
               {/* Household Size & Available Time */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-stone-700 mb-1">Household Size</label>
+                  <label htmlFor="household-size-range" className="block text-xs font-semibold text-stone-700 mb-1">Household Size</label>
                   <div className="flex items-center gap-2">
                     <input
+                      id="household-size-range"
                       type="range"
                       min="1"
                       max="8"
                       value={preferences.householdSize}
                       onChange={(e) => setPreferences({ ...preferences, householdSize: parseInt(e.target.value) })}
+                      aria-label="Household size in number of people"
                       className="flex-1 accent-emerald-700"
                     />
                     <span className="text-xs font-bold text-[#183a24] w-12 text-center bg-stone-100 py-1 rounded-md">
@@ -324,14 +348,16 @@ export const SetupModal: React.FC<SetupModalProps> = ({
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-stone-700 mb-1">Weekly Gardening Time</label>
+                  <label htmlFor="weekly-hours-range" className="block text-xs font-semibold text-stone-700 mb-1">Weekly Gardening Time</label>
                   <div className="flex items-center gap-2">
                     <input
+                      id="weekly-hours-range"
                       type="range"
                       min="1"
                       max="20"
                       value={preferences.availableHoursPerWeek}
                       onChange={(e) => setPreferences({ ...preferences, availableHoursPerWeek: parseInt(e.target.value) })}
+                      aria-label="Available weekly gardening time in hours"
                       className="flex-1 accent-emerald-700"
                     />
                     <span className="text-xs font-bold text-[#183a24] w-14 text-center bg-stone-100 py-1 rounded-md">
@@ -451,14 +477,14 @@ export const SetupModal: React.FC<SetupModalProps> = ({
         </div>
 
         {/* Modal Footer */}
-        <div className="bg-stone-50 border-t border-stone-200 px-6 py-4 flex items-center justify-between">
+        <div className="bg-stone-50 dark:bg-[#0a140e] border-t border-stone-200 dark:border-[#223d2e] px-6 py-4 flex items-center justify-between">
           {step > 1 ? (
             <button
               type="button"
               onClick={() => setStep(step - 1)}
-              className="flex items-center gap-1.5 px-4 py-2 text-xs font-medium text-stone-600 hover:text-stone-900 bg-white border border-stone-200 rounded-xl hover:bg-stone-100 transition-colors"
+              className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-stone-700 dark:text-stone-200 hover:text-stone-900 bg-white dark:bg-[#13241a] border border-stone-200 dark:border-[#223d2e] rounded-xl hover:bg-stone-100 dark:hover:bg-[#1d3527] transition-colors"
             >
-              <ChevronLeft className="w-4 h-4" />
+              <ChevronLeft className="w-4 h-4" aria-hidden="true" />
               Back
             </button>
           ) : (
@@ -469,19 +495,19 @@ export const SetupModal: React.FC<SetupModalProps> = ({
             <button
               type="button"
               onClick={() => setStep(step + 1)}
-              className="flex items-center gap-1.5 px-5 py-2 text-xs font-semibold text-white bg-[#234730] hover:bg-[#183422] rounded-xl transition-colors shadow-xs"
+              className="flex items-center gap-1.5 px-5 py-2 text-xs font-semibold text-white dark:text-[#06150b] bg-[#234730] dark:bg-[#10b981] hover:bg-[#183422] dark:hover:bg-[#34d399] rounded-xl transition-colors shadow-xs"
             >
               Continue
-              <ChevronRight className="w-4 h-4" />
+              <ChevronRight className="w-4 h-4" aria-hidden="true" />
             </button>
           ) : (
             <button
               type="button"
               onClick={handleFinish}
-              className="flex items-center gap-1.5 px-6 py-2 text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-800 rounded-xl transition-colors shadow-sm"
+              className="flex items-center gap-1.5 px-6 py-2 text-xs font-bold text-white dark:text-[#06150b] bg-emerald-700 dark:bg-[#10b981] hover:bg-emerald-800 dark:hover:bg-[#34d399] rounded-xl transition-colors shadow-sm"
             >
               Save &amp; Generate Calendar
-              <Check className="w-4 h-4" />
+              <Check className="w-4 h-4" aria-hidden="true" />
             </button>
           )}
         </div>

@@ -125,30 +125,36 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
           </p>
         </div>
 
-        <div className="flex bg-stone-100 p-1 rounded-xl text-xs font-semibold">
+        <div role="tablist" aria-label="Journal and finance sections" className="flex bg-stone-100 dark:bg-[#111c15] p-1 rounded-xl text-xs font-semibold">
           <button
             type="button"
+            role="tab"
+            aria-selected={activeTab === 'journal'}
             onClick={() => setActiveTab('journal')}
             className={`px-3 py-1.5 rounded-lg transition-colors ${
-              activeTab === 'journal' ? 'bg-white text-stone-900 shadow-2xs' : 'text-stone-600'
+              activeTab === 'journal' ? 'bg-white dark:bg-[#183e25] text-stone-900 dark:text-white shadow-2xs font-bold' : 'text-stone-600 dark:text-stone-300'
             }`}
           >
             📓 Garden Logbook ({journalEntries.length})
           </button>
           <button
             type="button"
+            role="tab"
+            aria-selected={activeTab === 'finances'}
             onClick={() => setActiveTab('finances')}
             className={`px-3 py-1.5 rounded-lg transition-colors ${
-              activeTab === 'finances' ? 'bg-white text-stone-900 shadow-2xs' : 'text-stone-600'
+              activeTab === 'finances' ? 'bg-white dark:bg-[#183e25] text-stone-900 dark:text-white shadow-2xs font-bold' : 'text-stone-600 dark:text-stone-300'
             }`}
           >
             💵 Costs &amp; Grocery ROI
           </button>
           <button
             type="button"
+            role="tab"
+            aria-selected={activeTab === 'backup'}
             onClick={() => setActiveTab('backup')}
             className={`px-3 py-1.5 rounded-lg transition-colors ${
-              activeTab === 'backup' ? 'bg-white text-stone-900 shadow-2xs' : 'text-stone-600'
+              activeTab === 'backup' ? 'bg-white dark:bg-[#183e25] text-stone-900 dark:text-white shadow-2xs font-bold' : 'text-stone-600 dark:text-stone-300'
             }`}
           >
             💾 Data Sovereignty &amp; JSON
@@ -166,13 +172,14 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
               className="md:col-span-5 bg-white border border-stone-200 rounded-2xl p-5 shadow-xs space-y-4 text-xs"
             >
               <h3 className="font-bold text-sm text-[#183a24] font-serif-botanical flex items-center gap-2">
-                <BookOpen className="w-4 h-4 text-emerald-800" />
+                <BookOpen className="w-4 h-4 text-emerald-800" aria-hidden="true" />
                 Add New Garden Log Entry
               </h3>
 
               <div>
-                <label className="block font-semibold text-stone-700 mb-1">Title</label>
+                <label htmlFor="journal-entry-title" className="block font-semibold text-stone-700 mb-1">Title</label>
                 <input
+                  id="journal-entry-title"
                   type="text"
                   value={entryTitle}
                   onChange={e => setEntryTitle(e.target.value)}
@@ -184,8 +191,9 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-semibold text-stone-700 mb-1">Category</label>
+                  <label htmlFor="journal-entry-category" className="block font-semibold text-stone-700 mb-1">Category</label>
                   <select
+                    id="journal-entry-category"
                     value={entryCategory}
                     onChange={e => setEntryCategory(e.target.value as any)}
                     className="w-full p-2 border border-stone-300 rounded-xl"
@@ -200,8 +208,9 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-stone-700 mb-1">Harvest (lbs)</label>
+                  <label htmlFor="journal-entry-yield" className="block font-semibold text-stone-700 mb-1">Harvest (lbs)</label>
                   <input
+                    id="journal-entry-yield"
                     type="number"
                     min="0"
                     step="0.5"
@@ -213,8 +222,9 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
               </div>
 
               <div>
-                <label className="block font-semibold text-stone-700 mb-1">Observations &amp; Notes</label>
+                <label htmlFor="journal-entry-content" className="block font-semibold text-stone-700 mb-1">Observations &amp; Notes</label>
                 <textarea
+                  id="journal-entry-content"
                   rows={4}
                   value={entryContent}
                   onChange={e => setEntryContent(e.target.value)}
@@ -225,8 +235,9 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
               </div>
 
               <div>
-                <label className="block font-semibold text-stone-700 mb-1">Tags (comma separated)</label>
+                <label htmlFor="journal-entry-tags" className="block font-semibold text-stone-700 mb-1">Tags (comma separated)</label>
                 <input
+                  id="journal-entry-tags"
                   type="text"
                   value={entryTags}
                   onChange={e => setEntryTags(e.target.value)}
@@ -336,8 +347,9 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
               </h3>
 
               <div>
-                <label className="block font-semibold text-stone-700 mb-1">Item Description</label>
+                <label htmlFor="exp-desc-input" className="block font-semibold text-stone-700 mb-1">Item Description</label>
                 <input
+                  id="exp-desc-input"
                   type="text"
                   value={expDesc}
                   onChange={e => setExpDesc(e.target.value)}
@@ -349,8 +361,9 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-semibold text-stone-700 mb-1">Category</label>
+                  <label htmlFor="exp-cat-select" className="block font-semibold text-stone-700 mb-1">Category</label>
                   <select
+                    id="exp-cat-select"
                     value={expCategory}
                     onChange={e => setExpCategory(e.target.value as any)}
                     className="w-full p-2 border border-stone-300 rounded-xl"
@@ -365,8 +378,9 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-stone-700 mb-1">Amount ($ USD)</label>
+                  <label htmlFor="exp-cost-input" className="block font-semibold text-stone-700 mb-1">Amount ($ USD)</label>
                   <input
+                    id="exp-cost-input"
                     type="number"
                     min="0"
                     step="0.01"
@@ -427,7 +441,7 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
               onClick={handleExportJson}
               className="w-full flex items-center justify-center gap-2 py-3 bg-[#234730] text-white font-semibold rounded-xl hover:bg-[#183422] transition-colors shadow-xs text-xs"
             >
-              <Download className="w-4 h-4" />
+              <Download className="w-4 h-4" aria-hidden="true" />
               Download Complete Garden Backup (.JSON)
             </button>
 
@@ -436,10 +450,11 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
                 type="file"
                 accept=".json"
                 onChange={handleImportJson}
+                aria-label="Upload JSON backup file to restore records"
                 className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
               />
               <div className="flex flex-col items-center gap-1.5 text-stone-600">
-                <Upload className="w-5 h-5 text-stone-400" />
+                <Upload className="w-5 h-5 text-stone-400" aria-hidden="true" />
                 <span className="font-semibold text-xs">Restore Data from JSON File</span>
                 <span className="text-[11px] text-stone-400">Click or drag a .json backup here</span>
               </div>
