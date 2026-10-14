@@ -31,7 +31,18 @@ export const SetupModal: React.FC<SetupModalProps> = ({
   const [waterAccess, setWaterAccess] = useState<WaterAccess>('drip');
   const [isManualFrost, setIsManualFrost] = useState(false);
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    if (!isOpen) return;
+    setSearchQuery(currentLocation.zipCode || currentLocation.city);
+    setLocation(currentLocation);
+    setPreferences(currentPreferences);
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose, currentLocation, currentPreferences]);
 
   const handleLocationSearch = () => {
     if (!searchQuery.trim()) return;
@@ -69,18 +80,30 @@ export const SetupModal: React.FC<SetupModalProps> = ({
     }
   };
 
+  const handleNextFromStep1 = () => {
+    if (searchQuery.trim()) {
+      try {
+        const found = lookupLocation(searchQuery);
+        if (found) setLocation(found);
+      } catch (_) {}
+    }
+    setStep(2);
+  };
+
   const handleFinish = () => {
-    onSave(location, preferences);
+    try {
+      onSave(location, preferences);
+    } catch (e) {
+      console.warn('Error in onSave:', e);
+    }
     onClose();
   };
 
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [onClose]);
+  const handleSkipSetup = () => {
+    onClose();
+  };
+
+  if (!isOpen) return null;
 
   return (
     <div
@@ -477,7 +500,7 @@ export const SetupModal: React.FC<SetupModalProps> = ({
         </div>
 
         {/* Modal Footer */}
-        <div className="bg-stone-50 dark:bg-[#0a140e] border-t border-stone-200 dark:border-[#223d2e] px-6 py-4 flex items-center justify-between">
+        <div className="bg-stone-50 dark:bg-[#0a140e] border-t border-stone-200 dark:border-[#223d2e] px-6 py-4 flex items-center justify-between gap-3">
           {step > 1 ? (
             <button
               type="button"
@@ -488,28 +511,55 @@ export const SetupModal: React.FC<SetupModalProps> = ({
               Back
             </button>
           ) : (
-            <div />
+            <button
+              type="button"
+              onClick={handleSkipSetup}
+              className="px-3.5 py-2 text-xs font-medium text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200 transition-colors"
+            >
+              Skip &amp; Keep Sample Garden
+            </button>
           )}
 
-          {step < 3 ? (
-            <button
-              type="button"
-              onClick={() => setStep(step + 1)}
-              className="flex items-center gap-1.5 px-5 py-2 text-xs font-semibold text-white dark:text-[#06150b] bg-[#234730] dark:bg-[#10b981] hover:bg-[#183422] dark:hover:bg-[#34d399] rounded-xl transition-colors shadow-xs"
-            >
-              Continue
-              <ChevronRight className="w-4 h-4" aria-hidden="true" />
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={handleFinish}
-              className="flex items-center gap-1.5 px-6 py-2 text-xs font-bold text-white dark:text-[#06150b] bg-emerald-700 dark:bg-[#10b981] hover:bg-emerald-800 dark:hover:bg-[#34d399] rounded-xl transition-colors shadow-sm"
-            >
-              Save &amp; Generate Calendar
-              <Check className="w-4 h-4" aria-hidden="true" />
-            </button>
-          )}
+          <div className="flex items-center gap-2">
+            {step > 1 && (
+              <button
+                type="button"
+                onClick={handleSkipSetup}
+                className="px-3 py-2 text-xs font-medium text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200 transition-colors hidden sm:inline-block"
+              >
+                Cancel
+              </button>
+            )}
+
+            {step === 1 ? (
+              <button
+                type="button"
+                onClick={handleNextFromStep1}
+                className="flex items-center gap-1.5 px-5 py-2 text-xs font-semibold text-white dark:text-[#06150b] bg-[#234730] dark:bg-[#10b981] hover:bg-[#183422] dark:hover:bg-[#34d399] rounded-xl transition-colors shadow-xs"
+              >
+                Continue
+                <ChevronRight className="w-4 h-4" aria-hidden="true" />
+              </button>
+            ) : step < 3 ? (
+              <button
+                type="button"
+                onClick={() => setStep(step + 1)}
+                className="flex items-center gap-1.5 px-5 py-2 text-xs font-semibold text-white dark:text-[#06150b] bg-[#234730] dark:bg-[#10b981] hover:bg-[#183422] dark:hover:bg-[#34d399] rounded-xl transition-colors shadow-xs"
+              >
+                Continue
+                <ChevronRight className="w-4 h-4" aria-hidden="true" />
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={handleFinish}
+                className="flex items-center gap-1.5 px-6 py-2 text-xs font-bold text-white dark:text-[#06150b] bg-emerald-700 dark:bg-[#10b981] hover:bg-emerald-800 dark:hover:bg-[#34d399] rounded-xl transition-colors shadow-sm"
+              >
+                Save &amp; Generate Calendar
+                <Check className="w-4 h-4" aria-hidden="true" />
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>

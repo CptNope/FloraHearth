@@ -29,9 +29,46 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
-    <!-- Theme Initialization: Dark mode is DEFAULT -->
+    <!-- Theme Initialization: Dark mode is DEFAULT & Extension Error Shield -->
     <script>
       (function() {
+        // Suppress browser extension background errors (such as MetaMask or Web3 inpage.js)
+        window.addEventListener('unhandledrejection', function(event) {
+          var reason = event.reason;
+          var msg = (typeof reason === 'string' ? reason : (reason && reason.message) || '') + '';
+          var stack = (reason && reason.stack) || '';
+          if (
+            msg.indexOf('MetaMask') !== -1 ||
+            msg.indexOf('ethereum') !== -1 ||
+            stack.indexOf('chrome-extension://') !== -1 ||
+            stack.indexOf('moz-extension://') !== -1
+          ) {
+            event.preventDefault();
+            if (typeof event.stopImmediatePropagation === 'function') {
+              event.stopImmediatePropagation();
+            }
+          }
+        });
+
+        window.addEventListener('error', function(event) {
+          var filename = event.filename || '';
+          var message = (event.message || '') + '';
+          var stack = (event.error && event.error.stack) || '';
+          if (
+            filename.indexOf('chrome-extension://') !== -1 ||
+            filename.indexOf('moz-extension://') !== -1 ||
+            stack.indexOf('chrome-extension://') !== -1 ||
+            stack.indexOf('moz-extension://') !== -1 ||
+            message.indexOf('MetaMask') !== -1 ||
+            message.indexOf('ethereum') !== -1
+          ) {
+            event.preventDefault();
+            if (typeof event.stopImmediatePropagation === 'function') {
+              event.stopImmediatePropagation();
+            }
+          }
+        });
+
         try {
           const stored = localStorage.getItem('florahearth_theme');
           // If stored is explicitly 'light', switch to light; otherwise DEFAULT TO DARK

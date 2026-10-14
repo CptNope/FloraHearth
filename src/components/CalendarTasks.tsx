@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { GardenLocation, GardenTask } from '../types/garden';
 import { CROPS_DATA } from '../data/cropsData';
-import { Calendar, CheckCircle2, Circle, Clock, Printer, Plus, Sparkles, Filter, AlertCircle } from 'lucide-react';
+import { Calendar, CheckCircle2, Circle, Clock, Printer, Plus, Sparkles, Filter, AlertCircle, Moon } from 'lucide-react';
+import { getLunarPlantingInfo } from '../services/weatherAlmanacService';
 
 interface CalendarTasksProps {
   location: GardenLocation;
@@ -22,15 +23,24 @@ export const CalendarTasks: React.FC<CalendarTasksProps> = ({
   const [newTaskType, setNewTaskType] = useState<GardenTask['type']>('maintenance');
 
   const currentYear = new Date().getFullYear();
+  const lunarToday = getLunarPlantingInfo(new Date());
 
-  // Helper to parse MM-DD into a real Date in the current year
-  const parseFrostDate = (mmdd: string, year = currentYear): Date => {
-    const [month, day] = mmdd.split('-').map(Number);
+  // Helper to parse MM-DD into a real Date in the current year with safe fallbacks
+  const parseFrostDate = (mmdd?: string, year = currentYear): Date => {
+    if (!mmdd || typeof mmdd !== 'string' || !mmdd.includes('-')) {
+      return new Date(year, 3, 15); // April 15 safe default
+    }
+    const parts = mmdd.split('-').map(Number);
+    const month = parts[0];
+    const day = parts[1];
+    if (isNaN(month) || isNaN(day) || month < 1 || month > 12 || day < 1 || day > 31) {
+      return new Date(year, 3, 15);
+    }
     return new Date(year, month - 1, day);
   };
 
-  const springFrostDate = parseFrostDate(location.lastSpringFrost);
-  const fallFrostDate = parseFrostDate(location.firstFallFrost);
+  const springFrostDate = parseFrostDate(location?.lastSpringFrost);
+  const fallFrostDate = parseFrostDate(location?.firstFallFrost, currentYear);
 
   // Compute planting calendar windows dynamically for each crop
   const calendarWindows = CROPS_DATA.map(crop => {
@@ -142,7 +152,8 @@ export const CalendarTasks: React.FC<CalendarTasksProps> = ({
     setIsAddingTask(false);
   };
 
-  const formatDateShort = (d: Date) => {
+  const formatDateShort = (d?: Date | null) => {
+    if (!d || isNaN(d.getTime())) return 'N/A';
     return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   };
 
@@ -208,6 +219,32 @@ export const CalendarTasks: React.FC<CalendarTasksProps> = ({
             <Plus className="w-4 h-4" aria-hidden="true" />
             <span>Add Task</span>
           </button>
+        </div>
+      </div>
+
+      {/* Farmer's Almanac Lunar Planting Guide Strip */}
+      <div className="bg-emerald-950/5 dark:bg-emerald-950/30 border border-emerald-500/25 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+        <div className="flex items-center gap-3">
+          <span className="text-3xl select-none shrink-0" role="img" aria-label="moon">
+            {lunarToday.phaseEmoji}
+          </span>
+          <div className="space-y-0.5">
+            <div className="flex items-center gap-2 font-mono text-[11px] text-emerald-800 dark:text-emerald-400 font-bold">
+              <span>Almanac Moon: {lunarToday.phase} ({lunarToday.illuminationPct}% illuminated)</span>
+              <span>·</span>
+              <span>Sign: {lunarToday.zodiacSign} ({lunarToday.element})</span>
+              <span>·</span>
+              <span className="text-stone-500 dark:text-stone-400 font-normal">{lunarToday.fertility}</span>
+            </div>
+            <p className="text-stone-800 dark:text-stone-200">
+              <strong className="text-emerald-900 dark:text-emerald-300">{lunarToday.actionTitle}:</strong>{' '}
+              {lunarToday.lunarRuleSummary}
+            </p>
+          </div>
+        </div>
+
+        <div className="text-[11px] font-mono text-emerald-800 dark:text-emerald-400 font-semibold shrink-0 bg-white dark:bg-[#14261b] px-3 py-1.5 rounded-xl border border-emerald-500/20 shadow-2xs">
+          Best Chore: {lunarToday.almanacChoreToday.slice(0, 50)}...
         </div>
       </div>
 

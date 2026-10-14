@@ -2,8 +2,8 @@
  * FloraHearth PWA Version Control, Hard Cache Reset & Theme Management Service
  */
 
-export const APP_VERSION = '2.4.0';
-export const BUILD_DATE = '2026-10-10';
+export const APP_VERSION = '2.5.0';
+export const BUILD_DATE = '2026-10-14';
 export const APP_VERSION_STORAGE_KEY = 'florahearth_version';
 export const THEME_STORAGE_KEY = 'florahearth_theme';
 

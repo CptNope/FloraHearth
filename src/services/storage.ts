@@ -221,11 +221,49 @@ export const INITIAL_SAMPLE_SOIL: SoilTestRecord[] = [
   }
 ];
 
-// Helper functions for reading and writing to localStorage
+// Helper functions for reading and writing to localStorage safely
+function safeSetItem(key: string, value: string): void {
+  try {
+    if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
+      window.localStorage.setItem(key, value);
+    }
+  } catch (e) {
+    console.warn(`Failed to write to localStorage for key: ${key}`, e);
+  }
+}
+
+function safeGetItem(key: string): string | null {
+  try {
+    if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
+      return window.localStorage.getItem(key);
+    }
+    return null;
+  } catch (e) {
+    console.warn(`Failed to read from localStorage for key: ${key}`, e);
+    return null;
+  }
+}
+
 export function getSavedLocation(): GardenLocation {
   try {
-    const raw = localStorage.getItem(STORAGE_KEYS.LOCATION);
-    if (raw) return JSON.parse(raw);
+    const raw = safeGetItem(STORAGE_KEYS.LOCATION);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === 'object') {
+        return {
+          ...DEFAULT_LOCATION,
+          ...parsed,
+          city: parsed.city || DEFAULT_LOCATION.city,
+          state: parsed.state || DEFAULT_LOCATION.state,
+          usdaZone: parsed.usdaZone || DEFAULT_LOCATION.usdaZone,
+          lastSpringFrost: parsed.lastSpringFrost || DEFAULT_LOCATION.lastSpringFrost,
+          firstFallFrost: parsed.firstFallFrost || DEFAULT_LOCATION.firstFallFrost,
+          growingSeasonDays: Number(parsed.growingSeasonDays) || DEFAULT_LOCATION.growingSeasonDays,
+          climateRegion: parsed.climateRegion || DEFAULT_LOCATION.climateRegion,
+          isMildWinter: typeof parsed.isMildWinter === 'boolean' ? parsed.isMildWinter : DEFAULT_LOCATION.isMildWinter,
+        };
+      }
+    }
   } catch (e) {
     console.warn('Failed to parse saved location', e);
   }
@@ -233,13 +271,26 @@ export function getSavedLocation(): GardenLocation {
 }
 
 export function saveLocation(loc: GardenLocation): void {
-  localStorage.setItem(STORAGE_KEYS.LOCATION, JSON.stringify(loc));
+  safeSetItem(STORAGE_KEYS.LOCATION, JSON.stringify(loc));
 }
 
 export function getSavedPreferences(): UserPreferences {
   try {
-    const raw = localStorage.getItem(STORAGE_KEYS.PREFERENCES);
-    if (raw) return JSON.parse(raw);
+    const raw = safeGetItem(STORAGE_KEYS.PREFERENCES);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === 'object') {
+        return {
+          ...DEFAULT_PREFERENCES,
+          ...parsed,
+          goals: Array.isArray(parsed.goals) ? parsed.goals : DEFAULT_PREFERENCES.goals,
+          favoriteCrops: Array.isArray(parsed.favoriteCrops) ? parsed.favoriteCrops : DEFAULT_PREFERENCES.favoriteCrops,
+          householdSize: Number(parsed.householdSize) || DEFAULT_PREFERENCES.householdSize,
+          availableHoursPerWeek: Number(parsed.availableHoursPerWeek) || DEFAULT_PREFERENCES.availableHoursPerWeek,
+          unitSystem: parsed.unitSystem === 'metric' ? 'metric' : 'us',
+        };
+      }
+    }
   } catch (e) {
     console.warn('Failed to parse preferences', e);
   }
@@ -247,13 +298,28 @@ export function getSavedPreferences(): UserPreferences {
 }
 
 export function savePreferences(pref: UserPreferences): void {
-  localStorage.setItem(STORAGE_KEYS.PREFERENCES, JSON.stringify(pref));
+  safeSetItem(STORAGE_KEYS.PREFERENCES, JSON.stringify(pref));
 }
 
 export function getSavedSpaces(): GardenSpace[] {
   try {
-    const raw = localStorage.getItem(STORAGE_KEYS.SPACES);
-    if (raw) return JSON.parse(raw);
+    const raw = safeGetItem(STORAGE_KEYS.SPACES);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed.map((sp, idx) => ({
+          ...sp,
+          id: sp.id || `space-${idx}`,
+          name: sp.name || `Garden Bed ${idx + 1}`,
+          type: sp.type || 'raised-bed',
+          widthFt: Number(sp.widthFt) || 4,
+          lengthFt: Number(sp.lengthFt) || 8,
+          gridCols: Number(sp.gridCols) || 8,
+          gridRows: Number(sp.gridRows) || 4,
+          cells: Array.isArray(sp.cells) ? sp.cells : [],
+        }));
+      }
+    }
   } catch (e) {
     console.warn('Failed to parse spaces', e);
   }
@@ -261,13 +327,25 @@ export function getSavedSpaces(): GardenSpace[] {
 }
 
 export function saveSpaces(spaces: GardenSpace[]): void {
-  localStorage.setItem(STORAGE_KEYS.SPACES, JSON.stringify(spaces));
+  safeSetItem(STORAGE_KEYS.SPACES, JSON.stringify(spaces));
 }
 
 export function getSavedTasks(): GardenTask[] {
   try {
-    const raw = localStorage.getItem(STORAGE_KEYS.TASKS);
-    if (raw) return JSON.parse(raw);
+    const raw = safeGetItem(STORAGE_KEYS.TASKS);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed.map((t, idx) => ({
+          ...t,
+          id: t.id || `task-${idx}`,
+          title: t.title || 'Garden Task',
+          type: t.type || 'maintenance',
+          dueDate: t.dueDate || new Date().toISOString().split('T')[0],
+          completed: Boolean(t.completed),
+        }));
+      }
+    }
   } catch (e) {
     console.warn('Failed to parse tasks', e);
   }
@@ -275,13 +353,24 @@ export function getSavedTasks(): GardenTask[] {
 }
 
 export function saveTasks(tasks: GardenTask[]): void {
-  localStorage.setItem(STORAGE_KEYS.TASKS, JSON.stringify(tasks));
+  safeSetItem(STORAGE_KEYS.TASKS, JSON.stringify(tasks));
 }
 
 export function getSavedPantry(): PantryItem[] {
   try {
-    const raw = localStorage.getItem(STORAGE_KEYS.PANTRY);
-    if (raw) return JSON.parse(raw);
+    const raw = safeGetItem(STORAGE_KEYS.PANTRY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed.map((p, idx) => ({
+          ...p,
+          id: p.id || `pantry-${idx}`,
+          cropName: p.cropName || 'Preserved Crop',
+          quantity: Number(p.quantity) || 1,
+          unit: p.unit || 'units',
+        }));
+      }
+    }
   } catch (e) {
     console.warn('Failed to parse pantry', e);
   }
@@ -289,13 +378,16 @@ export function getSavedPantry(): PantryItem[] {
 }
 
 export function savePantry(items: PantryItem[]): void {
-  localStorage.setItem(STORAGE_KEYS.PANTRY, JSON.stringify(items));
+  safeSetItem(STORAGE_KEYS.PANTRY, JSON.stringify(items));
 }
 
 export function getSavedJournal(): JournalEntry[] {
   try {
-    const raw = localStorage.getItem(STORAGE_KEYS.JOURNAL);
-    if (raw) return JSON.parse(raw);
+    const raw = safeGetItem(STORAGE_KEYS.JOURNAL);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) return parsed;
+    }
   } catch (e) {
     console.warn('Failed to parse journal', e);
   }
@@ -303,13 +395,16 @@ export function getSavedJournal(): JournalEntry[] {
 }
 
 export function saveJournal(entries: JournalEntry[]): void {
-  localStorage.setItem(STORAGE_KEYS.JOURNAL, JSON.stringify(entries));
+  safeSetItem(STORAGE_KEYS.JOURNAL, JSON.stringify(entries));
 }
 
 export function getSavedExpenses(): ExpenseRecord[] {
   try {
-    const raw = localStorage.getItem(STORAGE_KEYS.EXPENSES);
-    if (raw) return JSON.parse(raw);
+    const raw = safeGetItem(STORAGE_KEYS.EXPENSES);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) return parsed;
+    }
   } catch (e) {
     console.warn('Failed to parse expenses', e);
   }
@@ -317,13 +412,16 @@ export function getSavedExpenses(): ExpenseRecord[] {
 }
 
 export function saveExpenses(records: ExpenseRecord[]): void {
-  localStorage.setItem(STORAGE_KEYS.EXPENSES, JSON.stringify(records));
+  safeSetItem(STORAGE_KEYS.EXPENSES, JSON.stringify(records));
 }
 
 export function getSavedSoilTests(): SoilTestRecord[] {
   try {
-    const raw = localStorage.getItem(STORAGE_KEYS.SOIL_TESTS);
-    if (raw) return JSON.parse(raw);
+    const raw = safeGetItem(STORAGE_KEYS.SOIL_TESTS);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) return parsed;
+    }
   } catch (e) {
     console.warn('Failed to parse soil tests', e);
   }
@@ -331,7 +429,7 @@ export function getSavedSoilTests(): SoilTestRecord[] {
 }
 
 export function saveSoilTests(records: SoilTestRecord[]): void {
-  localStorage.setItem(STORAGE_KEYS.SOIL_TESTS, JSON.stringify(records));
+  safeSetItem(STORAGE_KEYS.SOIL_TESTS, JSON.stringify(records));
 }
 
 export function exportAllDataJson(): string {
@@ -369,9 +467,13 @@ export function importAllDataJson(jsonString: string): boolean {
 }
 
 export function isSetupComplete(): boolean {
-  return localStorage.getItem(STORAGE_KEYS.SETUP_DONE) === 'true';
+  try {
+    return safeGetItem(STORAGE_KEYS.SETUP_DONE) === 'true';
+  } catch (_) {
+    return false;
+  }
 }
 
 export function setSetupComplete(val: boolean): void {
-  localStorage.setItem(STORAGE_KEYS.SETUP_DONE, val ? 'true' : 'false');
+  safeSetItem(STORAGE_KEYS.SETUP_DONE, val ? 'true' : 'false');
 }

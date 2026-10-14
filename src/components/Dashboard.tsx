@@ -1,7 +1,29 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { GardenLocation, GardenSpace, GardenTask, PantryItem } from '../types/garden';
 import { CROPS_DATA } from '../data/cropsData';
-import { Sun, Calendar, Sparkles, AlertTriangle, ArrowRight, CheckCircle2, Clock, ShieldAlert, Thermometer, Droplets, MapPin, Layers } from 'lucide-react';
+import {
+  Sun,
+  Moon,
+  CloudSun,
+  Calendar,
+  Sparkles,
+  AlertTriangle,
+  ArrowRight,
+  CheckCircle2,
+  Clock,
+  ShieldAlert,
+  Thermometer,
+  Droplets,
+  MapPin,
+  Layers,
+  BookOpen,
+} from 'lucide-react';
+import {
+  getLunarPlantingInfo,
+  fetchWeatherAndAlmanac,
+  getLoreOfTheDay,
+} from '../services/weatherAlmanacService';
+import { WeatherAlmanacData, LunarPlantingInfo } from '../types/weatherAlmanac';
 
 interface DashboardProps {
   location: GardenLocation;
@@ -25,6 +47,20 @@ export const Dashboard: React.FC<DashboardProps> = ({
   // Current month & day
   const today = new Date();
   const currentMonthNum = today.getMonth() + 1;
+  const lunar = getLunarPlantingInfo(today);
+  const todayLore = getLoreOfTheDay(today);
+
+  const [weatherData, setWeatherData] = useState<WeatherAlmanacData | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    fetchWeatherAndAlmanac(location, false).then((res) => {
+      if (active) setWeatherData(res);
+    });
+    return () => {
+      active = false;
+    };
+  }, [location.city, location.state, location.zipCode, location.latitude, location.longitude]);
 
   // Determine what to plant now:
   // In spring (Feb-May): cool season direct seeds & warm season indoor starts
@@ -32,10 +68,11 @@ export const Dashboard: React.FC<DashboardProps> = ({
   // In fall (Sep-Nov): garlic, radishes, spinach, overwinter greens
   const plantNowSuggestions = CROPS_DATA.slice(0, 4);
 
-  const pendingTasks = tasks.filter(t => !t.completed).slice(0, 4);
+  const pendingTasks = (tasks || []).filter(t => !t.completed).slice(0, 4);
 
   // Total plants placed across all beds
-  const totalPlacedCells = spaces.reduce((acc, s) => acc + s.cells.filter(c => c.cropId).length, 0);
+  const safeSpaces = spaces || [];
+  const totalPlacedCells = safeSpaces.reduce((acc, s) => acc + (s.cells || []).filter(c => c.cropId).length, 0);
 
   return (
     <div className="space-y-6">
@@ -77,6 +114,86 @@ export const Dashboard: React.FC<DashboardProps> = ({
             >
               Plant Symptom Diagnostic
             </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Live Weather & Farmer's Almanac Snapshot */}
+      <div className="bg-white dark:bg-[#112217] rounded-3xl p-5 sm:p-6 border border-stone-200 dark:border-[rgba(255,255,255,0.08)] shadow-xs transition-colors space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-stone-100 dark:border-white/5 pb-3">
+          <div className="flex items-center gap-2">
+            <span className="p-1.5 bg-emerald-500/10 text-emerald-800 dark:text-emerald-400 rounded-xl">
+              <CloudSun className="w-4 h-4" />
+            </span>
+            <div>
+              <h3 className="font-bold text-sm text-[#112217] dark:text-[#ecfdf5] font-serif-botanical">
+                Live Weather &amp; Farmer&apos;s Almanac Guide
+              </h3>
+              <p className="text-[11px] text-stone-500 dark:text-stone-400 font-mono">
+                {location.city}, {location.state} · Synchronized with Open-Meteo &amp; Lunar Calendar
+              </p>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => onNavigate('weather-almanac')}
+            className="text-xs font-bold text-emerald-800 dark:text-emerald-400 hover:text-emerald-950 dark:hover:text-emerald-300 flex items-center gap-1 shrink-0 self-start sm:self-auto"
+          >
+            <span>Full Weather &amp; Almanac Hub</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+          {/* Current Weather Snapshot (5 cols) */}
+          <div className="md:col-span-5 flex items-center gap-4 p-3.5 bg-stone-50 dark:bg-[#172d1f] rounded-2xl border border-stone-200/80 dark:border-white/5">
+            <span className="text-4xl select-none" role="img" aria-label="weather">
+              {weatherData?.current.weatherIcon || '⛅'}
+            </span>
+            <div>
+              <div className="flex items-baseline gap-2">
+                <span className="text-3xl font-extrabold text-[#112217] dark:text-[#f0fdf4] font-serif-botanical">
+                  {weatherData?.current.tempF ?? 68}°F
+                </span>
+                <span className="text-xs text-stone-500 dark:text-stone-400">
+                  {weatherData?.current.weatherDesc || 'Partly Sunny & Mild'}
+                </span>
+              </div>
+              <div className="flex items-center gap-2 text-[11px] font-mono text-stone-500 dark:text-stone-400 mt-0.5">
+                <span>Soil: {weatherData?.indices.soilGermination.soilTempF ?? 62}°F</span>
+                <span>·</span>
+                <span
+                  className={
+                    weatherData?.indices.frostWarning.level !== 'none'
+                      ? 'text-rose-600 dark:text-rose-400 font-bold'
+                      : 'text-emerald-700 dark:text-emerald-400 font-bold'
+                  }
+                >
+                  {weatherData?.indices.frostWarning.badge || 'No Frost Expected'}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Farmer's Almanac Lunar Rule Snapshot (7 cols) */}
+          <div className="md:col-span-7 flex items-center gap-3.5 p-3.5 bg-emerald-950/5 dark:bg-emerald-950/30 rounded-2xl border border-emerald-500/20">
+            <span className="text-3xl select-none shrink-0" role="img" aria-label="moon">
+              {lunar.phaseEmoji}
+            </span>
+            <div className="space-y-0.5 text-xs">
+              <div className="flex items-center gap-2 font-mono text-[11px] text-emerald-800 dark:text-emerald-400 font-bold">
+                <span>{lunar.phase} ({lunar.illuminationPct}% illuminated)</span>
+                <span>·</span>
+                <span>Sign: {lunar.zodiacSign}</span>
+              </div>
+              <p className="font-semibold text-stone-800 dark:text-stone-200 leading-tight">
+                {lunar.actionTitle}: {lunar.lunarRuleSummary}
+              </p>
+              <p className="text-[11px] text-stone-500 dark:text-stone-400 italic">
+                Almanac lore: &ldquo;{todayLore.saying}&rdquo;
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -182,38 +299,42 @@ export const Dashboard: React.FC<DashboardProps> = ({
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {spaces.map(sp => (
-                <div
-                  key={sp.id}
-                  onClick={() => onNavigate('planner')}
-                  className="p-4 rounded-xl border border-stone-200 bg-[#faf9f5] hover:border-emerald-500 transition-all cursor-pointer space-y-2"
-                >
-                  <div className="flex items-center justify-between">
-                    <h4 className="font-bold text-xs text-stone-900">{sp.name}</h4>
-                    <span className="text-[10px] font-mono font-semibold bg-white px-2 py-0.5 rounded-md border border-stone-200">
-                      {sp.gridCols}×{sp.gridRows} ft
-                    </span>
-                  </div>
-
-                  <p className="text-[11px] text-stone-600 line-clamp-1">
-                    {sp.cells.filter(c => c.cropId).length} of {sp.gridCols * sp.gridRows} sq ft planted
-                  </p>
-
-                  <div className="flex items-center gap-1 text-base pt-1">
-                    {sp.cells.slice(0, 6).map((c, i) => {
-                      const crop = CROPS_DATA.find(cr => cr.id === c.cropId);
-                      return crop ? (
-                        <span key={i} title={crop.name}>{crop.iconEmoji}</span>
-                      ) : null;
-                    })}
-                    {sp.cells.length > 6 && (
-                      <span className="text-[10px] font-mono text-stone-400 pl-1">
-                        +{sp.cells.length - 6} more
+              {safeSpaces.map(sp => {
+                const cells = sp.cells || [];
+                const plantedCount = cells.filter(c => c.cropId).length;
+                return (
+                  <div
+                    key={sp.id}
+                    onClick={() => onNavigate('planner')}
+                    className="p-4 rounded-xl border border-stone-200 bg-[#faf9f5] hover:border-emerald-500 transition-all cursor-pointer space-y-2"
+                  >
+                    <div className="flex items-center justify-between">
+                      <h4 className="font-bold text-xs text-stone-900">{sp.name}</h4>
+                      <span className="text-[10px] font-mono font-semibold bg-white px-2 py-0.5 rounded-md border border-stone-200">
+                        {sp.gridCols || 4}×{sp.gridRows || 4} ft
                       </span>
-                    )}
+                    </div>
+
+                    <p className="text-[11px] text-stone-600 line-clamp-1">
+                      {plantedCount} of {(sp.gridCols || 4) * (sp.gridRows || 4)} sq ft planted
+                    </p>
+
+                    <div className="flex items-center gap-1 text-base pt-1">
+                      {cells.slice(0, 6).map((c, i) => {
+                        const crop = CROPS_DATA.find(cr => cr.id === c.cropId);
+                        return crop ? (
+                          <span key={i} title={crop.name}>{crop.iconEmoji}</span>
+                        ) : null;
+                      })}
+                      {cells.length > 6 && (
+                        <span className="text-[10px] font-mono text-stone-400 pl-1">
+                          +{cells.length - 6} more
+                        </span>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>
@@ -276,7 +397,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                     </span>
                   </div>
                   <span className="font-bold text-emerald-800 font-mono">
-                    {p.quantity} {p.unit.split(' ')[0]}
+                    {p.quantity} {(p.unit || 'units').split(' ')[0]}
                   </span>
                 </div>
               ))}

@@ -17,6 +17,8 @@ export interface GardenLocation {
   humidityLevel: 'low' | 'moderate' | 'high';
   elevationFt: number;
   isMildWinter: boolean;
+  latitude?: number;
+  longitude?: number;
 }
 
 export interface UserPreferences {

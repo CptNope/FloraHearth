@@ -2,6 +2,42 @@ import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
 import { getInitialTheme, applyTheme } from './services/pwaVersionService';
+import { ErrorBoundary } from './components/ErrorBoundary';
+
+// Prevent third-party browser extensions (e.g. MetaMask / web3 extensions) from triggering unhandled runtime errors
+if (typeof window !== 'undefined') {
+  window.addEventListener('unhandledrejection', (event) => {
+    const reason = event.reason;
+    const msg = String(typeof reason === 'string' ? reason : reason?.message || '');
+    const stack = String(reason?.stack || '');
+    if (
+      msg.includes('MetaMask') ||
+      msg.includes('ethereum') ||
+      stack.includes('chrome-extension://') ||
+      stack.includes('moz-extension://')
+    ) {
+      event.preventDefault();
+      event.stopImmediatePropagation?.();
+    }
+  });
+
+  window.addEventListener('error', (event) => {
+    const filename = String(event.filename || '');
+    const message = String(event.message || '');
+    const stack = String(event.error?.stack || '');
+    if (
+      filename.includes('chrome-extension://') ||
+      filename.includes('moz-extension://') ||
+      stack.includes('chrome-extension://') ||
+      stack.includes('moz-extension://') ||
+      message.includes('MetaMask') ||
+      message.includes('ethereum')
+    ) {
+      event.preventDefault();
+      event.stopImmediatePropagation?.();
+    }
+  });
+}
 
 // 1. Immediately apply the default theme (dark mode by default)
 const initialTheme = getInitialTheme();
@@ -31,10 +67,11 @@ if ('serviceWorker' in navigator) {
         console.warn('Service worker registration error:', err);
       });
 
-    // Listen for controllerchange to reload if skipWaiting is triggered
+    // Listen for controllerchange to reload ONLY when an existing worker is superseded (never on initial install)
     let refreshing = false;
+    const hadInitialController = Boolean(navigator.serviceWorker.controller);
     navigator.serviceWorker.addEventListener('controllerchange', () => {
-      if (!refreshing) {
+      if (hadInitialController && !refreshing) {
         refreshing = true;
         window.location.reload();
       }
@@ -42,4 +79,8 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-createRoot(document.getElementById('root')!).render(<App />);
+createRoot(document.getElementById('root')!).render(
+  <ErrorBoundary>
+    <App />
+  </ErrorBoundary>
+);

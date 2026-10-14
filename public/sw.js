@@ -1,5 +1,5 @@
 // FloraHearth Service Worker - Version Controlled Cache
-const APP_VERSION = 'v2.4.0';
+const APP_VERSION = 'v2.5.0';
 const CACHE_NAME = `florahearth-static-${APP_VERSION}`;
 const DATA_CACHE_NAME = `florahearth-data-${APP_VERSION}`;
 
@@ -95,21 +95,21 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Application script & style chunks -> Stale-While-Revalidate
+  // Application script & style chunks -> Network first with cache fallback
   event.respondWith(
-    caches.match(req).then((cached) => {
-      const fetchPromise = fetch(req)
-        .then((networkRes) => {
-          if (networkRes && networkRes.status === 200) {
-            const clone = networkRes.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(req, clone));
-          }
-          return networkRes;
-        })
-        .catch(() => null);
-
-      return cached || fetchPromise.then((res) => res || new Response('Offline resource not cached', { status: 503 }));
-    })
+    fetch(req)
+      .then((networkRes) => {
+        if (networkRes && networkRes.status === 200) {
+          const clone = networkRes.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(req, clone));
+        }
+        return networkRes;
+      })
+      .catch(async () => {
+        const cached = await caches.match(req);
+        if (cached) return cached;
+        return new Response('', { status: 404 });
+      })
   );
 });
 

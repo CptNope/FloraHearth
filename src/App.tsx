@@ -32,6 +32,8 @@ import { JournalSavings } from './components/JournalSavings';
 import { SetupModal } from './components/SetupModal';
 import { TroubleshooterModal } from './components/TroubleshooterModal';
 import { VersionCacheModal } from './components/VersionCacheModal';
+import { WeatherAlmanac } from './components/WeatherAlmanac';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { RefreshCw, Sparkles, Layers, ShieldCheck } from 'lucide-react';
 
 export default function App() {
@@ -45,7 +47,8 @@ export default function App() {
   const [expenses, setExpenses] = useState<ExpenseRecord[]>(getSavedExpenses);
   const [soilTests, setSoilTests] = useState<SoilTestRecord[]>(getSavedSoilTests);
 
-  const [isSetupOpen, setIsSetupOpen] = useState<boolean>(!isSetupComplete());
+  // Garden setup is NOT forced on initial load; sample garden is ready immediately
+  const [isSetupOpen, setIsSetupOpen] = useState<boolean>(false);
   const [isTroubleshooterOpen, setIsTroubleshooterOpen] = useState<boolean>(false);
   const [isVersionModalOpen, setIsVersionModalOpen] = useState<boolean>(false);
 
@@ -137,7 +140,8 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#fbfbf9] text-[#242b26] dark:bg-[#0b1510] dark:text-[#ecfdf5] flex flex-col font-sans-botanical pb-20 lg:pb-12 transition-colors duration-200">
+    <ErrorBoundary>
+      <div className="min-h-screen bg-[#fbfbf9] text-[#242b26] dark:bg-[#0b1510] dark:text-[#ecfdf5] flex flex-col font-sans-botanical pb-20 lg:pb-12 transition-colors duration-200">
       {/* Skip to Main Content Link for Keyboard and Screen Reader Accessibility */}
       <a
         href="#main-content"
@@ -178,10 +182,11 @@ export default function App() {
         theme={theme}
         onToggleTheme={handleToggleTheme}
         onOpenVersionModal={() => setIsVersionModalOpen(true)}
+        onOpenTroubleshooter={() => setIsTroubleshooterOpen(true)}
       />
 
       {/* Main App Content Viewport */}
-      <main id="main-content" tabIndex={-1} role="main" aria-label="Garden and pantry main content" className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8 outline-hidden">
+      <main id="main-content" tabIndex={-1} role="main" aria-label="Garden and pantry main content" className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8 pb-24 lg:pb-8 outline-hidden">
         {activeTab === 'dashboard' && (
           <Dashboard
             location={location}
@@ -191,6 +196,17 @@ export default function App() {
             onNavigate={setActiveTab}
             onOpenSetup={() => setIsSetupOpen(true)}
             onOpenTroubleshooter={() => setIsTroubleshooterOpen(true)}
+          />
+        )}
+
+        {activeTab === 'weather-almanac' && (
+          <WeatherAlmanac
+            location={location}
+            onUpdateLocation={(newLoc) => {
+              setLocation(newLoc);
+              saveLocation(newLoc);
+            }}
+            onOpenSetup={() => setIsSetupOpen(true)}
           />
         )}
 
@@ -301,5 +317,6 @@ export default function App() {
         onReloadRequested={handleReloadAllState}
       />
     </div>
+    </ErrorBoundary>
   );
 }
