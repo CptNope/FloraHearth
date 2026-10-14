@@ -20,7 +20,11 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+    # ubuntu-latest automatically migrates to Ubuntu 26 on Oct 19, 2026
     runs-on: ubuntu-latest
+    env:
+      # Proactively enable Node 24 execution for JavaScript actions to avoid deprecation warnings
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -29,6 +33,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: 'npm'
 
       - name: Install Dependencies
         run: |
@@ -42,7 +47,7 @@ jobs:
         run: npm run build
 
       - name: Setup Pages
-        uses: actions/configure-pages@v4
+        uses: actions/configure-pages@v5
 
       - name: Upload Artifact
         uses: actions/upload-pages-artifact@v3
