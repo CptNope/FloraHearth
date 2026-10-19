@@ -699,7 +699,7 @@ export const HydroIndoorGuide: React.FC<HydroIndoorGuideProps> = ({
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Date</label>
-                  <input
+                  <input aria-label="Date"
                     type="date"
                     required
                     value={formDate}
@@ -709,7 +709,7 @@ export const HydroIndoorGuide: React.FC<HydroIndoorGuideProps> = ({
                 </div>
                 <div>
                   <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">System Type</label>
-                  <select
+                  <select aria-label="System Type"
                     value={formSystem}
                     onChange={e => setFormSystem(e.target.value as any)}
                     className="w-full px-3 py-1.5 border border-stone-300 dark:border-[#223d2e] dark:bg-[#182c20] rounded-xl text-xs"
@@ -726,7 +726,7 @@ export const HydroIndoorGuide: React.FC<HydroIndoorGuideProps> = ({
               <div className="grid grid-cols-3 gap-3">
                 <div>
                   <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">pH Level</label>
-                  <input
+                  <input aria-label="pH Level"
                     type="number"
                     step="0.1"
                     min="3.0"
@@ -739,7 +739,7 @@ export const HydroIndoorGuide: React.FC<HydroIndoorGuideProps> = ({
                 </div>
                 <div>
                   <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">EC (PPM)</label>
-                  <input
+                  <input aria-label="EC (PPM)"
                     type="number"
                     step="25"
                     min="100"
@@ -752,7 +752,7 @@ export const HydroIndoorGuide: React.FC<HydroIndoorGuideProps> = ({
                 </div>
                 <div>
                   <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Temp (°F)</label>
-                  <input
+                  <input aria-label="Temp (°F)"
                     type="number"
                     step="1"
                     min="45"
@@ -769,7 +769,7 @@ export const HydroIndoorGuide: React.FC<HydroIndoorGuideProps> = ({
                 <div className="grid grid-cols-3 gap-3 p-3 bg-stone-50 dark:bg-[#182c20] rounded-xl border border-stone-200 dark:border-[#223d2e]">
                   <div>
                     <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Ammonia PPM</label>
-                    <input
+                    <input aria-label="Ammonia PPM"
                       type="number"
                       step="0.1"
                       min="0"
@@ -780,7 +780,7 @@ export const HydroIndoorGuide: React.FC<HydroIndoorGuideProps> = ({
                   </div>
                   <div>
                     <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Nitrite PPM</label>
-                    <input
+                    <input aria-label="Nitrite PPM"
                       type="number"
                       step="0.1"
                       min="0"
@@ -791,7 +791,7 @@ export const HydroIndoorGuide: React.FC<HydroIndoorGuideProps> = ({
                   </div>
                   <div>
                     <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Nitrate PPM</label>
-                    <input
+                    <input aria-label="Nitrate PPM"
                       type="number"
                       step="1"
                       min="0"
@@ -805,7 +805,7 @@ export const HydroIndoorGuide: React.FC<HydroIndoorGuideProps> = ({
 
               <div>
                 <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Notes / Adjustments</label>
-                <textarea
+                <textarea aria-label="Notes / Adjustments"
                   rows={2}
                   value={formNotes}
                   onChange={e => setFormNotes(e.target.value)}

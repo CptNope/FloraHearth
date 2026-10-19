@@ -496,7 +496,7 @@ export const CropLibrary: React.FC<CropLibraryProps> = ({
             <form onSubmit={handleSaveSeed} className="space-y-3">
               <div>
                 <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Crop Type</label>
-                <select
+                <select aria-label="Crop Type"
                   value={formCropId}
                   onChange={e => setFormCropId(e.target.value)}
                   className="w-full px-3 py-1.5 border border-stone-300 dark:border-[#223d2e] dark:bg-[#182c20] rounded-xl text-xs font-medium"
@@ -511,7 +511,7 @@ export const CropLibrary: React.FC<CropLibraryProps> = ({
 
               <div>
                 <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Variety Name</label>
-                <input
+                <input aria-label="Variety Name"
                   type="text"
                   required
                   value={formVariety}
@@ -524,7 +524,7 @@ export const CropLibrary: React.FC<CropLibraryProps> = ({
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Seed House / Brand</label>
-                  <input
+                  <input aria-label="Seed House / Brand"
                     type="text"
                     value={formBrand}
                     onChange={e => setFormBrand(e.target.value)}
@@ -535,7 +535,7 @@ export const CropLibrary: React.FC<CropLibraryProps> = ({
 
                 <div>
                   <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Year Bought</label>
-                  <input
+                  <input aria-label="Year Bought"
                     type="number"
                     min="2015"
                     max={currentYear + 1}
@@ -550,7 +550,7 @@ export const CropLibrary: React.FC<CropLibraryProps> = ({
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Packet Status</label>
-                  <select
+                  <select aria-label="Packet Status"
                     value={formStatus}
                     onChange={e => setFormStatus(e.target.value as any)}
                     className="w-full px-3 py-1.5 border border-stone-300 dark:border-[#223d2e] dark:bg-[#182c20] rounded-xl text-xs"
@@ -564,7 +564,7 @@ export const CropLibrary: React.FC<CropLibraryProps> = ({
 
                 <div>
                   <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Germination %</label>
-                  <input
+                  <input aria-label="Germination %"
                     type="number"
                     min="10"
                     max="100"
@@ -577,7 +577,7 @@ export const CropLibrary: React.FC<CropLibraryProps> = ({
 
               <div>
                 <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Notes</label>
-                <textarea
+                <textarea aria-label="Notes"
                   rows={2}
                   value={formNotes}
                   onChange={e => setFormNotes(e.target.value)}

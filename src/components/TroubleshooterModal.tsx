@@ -123,7 +123,7 @@ export const TroubleshooterModal: React.FC<TroubleshooterModalProps> = ({ isOpen
     >
       <div className="bg-[#fcfcf9] dark:bg-[#0e1912] border border-stone-300 dark:border-[#223d2e] rounded-2xl w-full max-w-xl overflow-hidden shadow-2xl flex flex-col my-8 max-h-[90vh]">
         {/* Header */}
-        <div className="bg-[#1c3a27] text-white px-6 py-4 flex items-center justify-between">
+        <div className="bg-[#1c3a27] dark:bg-[#14301f] text-white px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <HelpCircle className="w-5 h-5 text-emerald-300" aria-hidden="true" />
             <div>

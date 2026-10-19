@@ -622,7 +622,7 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
 
             <div>
               <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Space Name</label>
-              <input
+              <input aria-label="Space Name"
                 type="text"
                 value={newSpaceName}
                 onChange={e => setNewSpaceName(e.target.value)}
@@ -635,7 +635,7 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Width (ft)</label>
-                <input
+                <input aria-label="Width (ft)"
                   type="number"
                   min="1"
                   max="12"
@@ -646,7 +646,7 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
               </div>
               <div>
                 <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Length (ft)</label>
-                <input
+                <input aria-label="Length (ft)"
                   type="number"
                   min="1"
                   max="12"
@@ -659,7 +659,7 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
 
             <div>
               <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Growing Method</label>
-              <select
+              <select aria-label="Growing Method"
                 value={newSpaceType}
                 onChange={e => setNewSpaceType(e.target.value as GrowingMethod)}
                 className="w-full px-3 py-1.5 border border-stone-300 dark:border-[#223d2e] dark:bg-[#182c20] rounded-xl text-xs"
@@ -704,7 +704,7 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
                 <RotateCcw className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
                 Archive Season Layout
               </h3>
-              <button type="button" onClick={() => setIsArchiveModalOpen(false)}>
+              <button type="button" onClick={() => setIsArchiveModalOpen(false)} aria-label="Close" className="p-1 rounded-lg hover:bg-stone-100 dark:hover:bg-[#1e3528]">
                 <X className="w-4 h-4 text-stone-400" />
               </button>
             </div>
@@ -715,7 +715,7 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
 
             <div>
               <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Season Identifier</label>
-              <input
+              <input aria-label="Season Identifier"
                 type="text"
                 required
                 value={archiveSeasonName}

@@ -96,16 +96,18 @@ textarea:focus-visible,
   outline-offset: 2px !important;
 }
 
-/* WCAG 1.4.3 Contrast Ratio minimum (4.5:1 for normal text) in light mode */
-.text-stone-400 {
+/* WCAG 1.4.3 Contrast Ratio minimum (4.5:1 for normal text) in light mode.
+   Scoped to light mode: these rules are unlayered, so unscoped they would beat
+   Tailwind's layered dark:text-* utilities and keep light-mode colors in dark mode. */
+:root:not(.dark) .text-stone-400 {
   color: #576b5e; /* 5.72:1 contrast against white cards, 5.35:1 on parchment */
 }
 
-.text-emerald-600 {
+:root:not(.dark) .text-emerald-600 {
   color: #047857; /* 5.6:1 contrast against white */
 }
 
-.text-amber-600 {
+:root:not(.dark) .text-amber-600 {
   color: #b45309; /* 5.17:1 contrast against white */
 }
 
@@ -201,44 +203,48 @@ textarea:focus-visible,
    ========================================================= */
 
 /* In light mode, ensure muted stone colors meet 4.5:1 ratio */
-:root .text-stone-400 {
+:root:not(.dark) .text-stone-400 {
   color: #4b6352 !important;
 }
 
-:root .text-stone-500 {
+:root:not(.dark) .text-stone-500 {
   color: #374e3e !important;
 }
 
 /* Surface mapping in Dark Mode */
-.dark .bg-white,
-.dark .bg-\[\#fbfbf8\],
-.dark .bg-\[\#fbfbf9\],
-.dark .bg-\[\#fcfcf9\],
-.dark .bg-\[\#fafbf9\],
-.dark .bg-\[\#fbfbfa\] {
+.dark .bg-white:not([class*="dark:bg-"]),
+.dark .bg-\[\#fbfbf8\]:not([class*="dark:bg-"]),
+.dark .bg-\[\#fbfbf9\]:not([class*="dark:bg-"]),
+.dark .bg-\[\#fcfcf9\]:not([class*="dark:bg-"]),
+.dark .bg-\[\#fafbf9\]:not([class*="dark:bg-"]),
+.dark .bg-\[\#fbfbfa\]:not([class*="dark:bg-"]),
+.dark .bg-white\/95:not([class*="dark:bg-"]),
+.dark .bg-white\/80:not([class*="dark:bg-"]),
+.dark .bg-white\/60:not([class*="dark:bg-"]) {
   background-color: var(--surface-card) !important;
 }
-
-.dark .bg-stone-50,
-.dark .bg-stone-100,
-.dark .bg-\[\#faf9f5\],
-.dark .bg-\[\#f5f8f5\],
-.dark .bg-\[\#f6f8f6\],
-.dark .bg-\[\#f4f6f4\],
-.dark .bg-\[\#faf8f5\],
-.dark .bg-\[\#f6f5f0\],
-.dark .bg-\[\#f3f7f4\],
-.dark .bg-\[\#f4f7f4\],
-.dark .bg-\[\#f0f5f1\],
-.dark .bg-\[\#f4f8fa\],
-.dark .bg-\[\#faf8f2\],
-.dark .bg-\[\#edf2ee\],
-.dark .bg-\[\#e2ece3\],
-.dark .bg-\[\#ecf3ee\],
-.dark .bg-\[\#e7f0e9\] {
+.dark .bg-stone-50:not([class*="dark:bg-"]),
+.dark .bg-stone-100:not([class*="dark:bg-"]),
+.dark .bg-\[\#faf9f5\]:not([class*="dark:bg-"]),
+.dark .bg-\[\#f5f8f5\]:not([class*="dark:bg-"]),
+.dark .bg-\[\#f6f8f6\]:not([class*="dark:bg-"]),
+.dark .bg-\[\#f4f6f4\]:not([class*="dark:bg-"]),
+.dark .bg-\[\#faf8f5\]:not([class*="dark:bg-"]),
+.dark .bg-\[\#f6f5f0\]:not([class*="dark:bg-"]),
+.dark .bg-\[\#f3f7f4\]:not([class*="dark:bg-"]),
+.dark .bg-\[\#f4f7f4\]:not([class*="dark:bg-"]),
+.dark .bg-\[\#f0f5f1\]:not([class*="dark:bg-"]),
+.dark .bg-\[\#f4f8fa\]:not([class*="dark:bg-"]),
+.dark .bg-\[\#faf8f2\]:not([class*="dark:bg-"]),
+.dark .bg-\[\#edf2ee\]:not([class*="dark:bg-"]),
+.dark .bg-\[\#e2ece3\]:not([class*="dark:bg-"]),
+.dark .bg-\[\#ecf3ee\]:not([class*="dark:bg-"]),
+.dark .bg-\[\#e7f0e9\]:not([class*="dark:bg-"]),
+.dark .bg-stone-50\/50:not([class*="dark:bg-"]),
+.dark .bg-stone-50\/80:not([class*="dark:bg-"]),
+.dark .bg-stone-200:not([class*="dark:bg-"]) {
   background-color: var(--surface-subtle) !important;
 }
-
 /* Hairline border mapping in Dark Mode */
 .dark .border-stone-100,
 .dark .border-stone-200,
@@ -253,54 +259,47 @@ textarea:focus-visible,
 .dark .border-\[\#d6ddd6\] {
   border-color: var(--border-subtle) !important;
 }
-
 /* Text Hierarchy mapping in Dark Mode */
-.dark .text-stone-900,
-.dark .text-stone-800,
-.dark .text-\[\#183a24\],
-.dark .text-\[\#1c3a27\],
-.dark .text-\[\#132d1d\],
-.dark .text-\[\#122017\],
-.dark .text-\[\#242b26\],
-.dark .text-\[\#183e25\],
-.dark .text-\[\#234730\] {
+.dark .text-stone-900:not([class*="dark:text-"]),
+.dark .text-stone-800:not([class*="dark:text-"]),
+.dark .text-\[\#183a24\]:not([class*="dark:text-"]),
+.dark .text-\[\#1c3a27\]:not([class*="dark:text-"]),
+.dark .text-\[\#132d1d\]:not([class*="dark:text-"]),
+.dark .text-\[\#122017\]:not([class*="dark:text-"]),
+.dark .text-\[\#242b26\]:not([class*="dark:text-"]),
+.dark .text-\[\#183e25\]:not([class*="dark:text-"]),
+.dark .text-\[\#234730\]:not([class*="dark:text-"]) {
   color: var(--text-heading) !important;
 }
-
-.dark .text-stone-700,
-.dark .text-stone-600,
-.dark .text-\[\#2d4334\],
-.dark .text-\[\#3c5244\] {
+.dark .text-stone-700:not([class*="dark:text-"]),
+.dark .text-stone-600:not([class*="dark:text-"]),
+.dark .text-\[\#2d4334\]:not([class*="dark:text-"]),
+.dark .text-\[\#3c5244\]:not([class*="dark:text-"]) {
   color: var(--text-body) !important;
 }
-
-.dark .text-stone-500,
-.dark .text-stone-400,
-.dark .text-\[\#56705d\],
-.dark .text-\[\#7e9987\] {
+.dark .text-stone-500:not([class*="dark:text-"]),
+.dark .text-stone-400:not([class*="dark:text-"]),
+.dark .text-\[\#56705d\]:not([class*="dark:text-"]),
+.dark .text-\[\#7e9987\]:not([class*="dark:text-"]) {
   color: var(--text-caption) !important;
 }
-
-.dark .text-stone-300 {
+.dark .text-stone-300:not([class*="dark:text-"]) {
   color: #9ab5a3 !important;
 }
-
 /* Dark Primary Buttons */
-.dark .bg-\[\#234730\],
-.dark .bg-\[\#183e25\],
-.dark .bg-\[\#183422\],
-.dark .bg-\[\#1c3a27\] {
+.dark .bg-\[\#234730\]:not([class*="dark:bg-"]),
+.dark .bg-\[\#183e25\]:not([class*="dark:bg-"]),
+.dark .bg-\[\#183422\]:not([class*="dark:bg-"]),
+.dark .bg-\[\#1c3a27\]:not([class*="dark:bg-"]) {
   background-color: var(--accent-btn) !important;
   color: var(--accent-btn-text) !important;
 }
-
 .dark .bg-\[\#234730\]:hover,
 .dark .bg-\[\#183e25\]:hover,
 .dark .bg-\[\#183422\]:hover,
 .dark .bg-\[\#1c3a27\]:hover {
   background-color: var(--accent-btn-hover) !important;
 }
-
 /* Form Inputs, Selects & Textareas in Dark Mode */
 .dark input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
 .dark select,
@@ -309,7 +308,6 @@ textarea:focus-visible,
   border-color: var(--border-subtle) !important;
   color: var(--text-heading) !important;
 }
-
 .dark input:focus,
 .dark select:focus,
 .dark textarea:focus {
@@ -317,73 +315,143 @@ textarea:focus-visible,
   outline: none !important;
   box-shadow: 0 0 0 1px var(--accent-emerald) !important;
 }
-
 /* Semantic Badges in Dark Mode */
 /* Emerald / Beneficial / Healthy */
-.dark .bg-emerald-50,
-.dark .bg-emerald-50\/70,
-.dark .bg-emerald-50\/80,
-.dark .bg-\[\#f0f7f4\] {
+.dark .bg-emerald-50:not([class*="dark:bg-"]),
+.dark .bg-emerald-50\/70:not([class*="dark:bg-"]),
+.dark .bg-emerald-50\/80:not([class*="dark:bg-"]),
+.dark .bg-\[\#f0f7f4\]:not([class*="dark:bg-"]),
+.dark .bg-emerald-50\/60:not([class*="dark:bg-"]),
+.dark .bg-emerald-100:not([class*="dark:bg-"]) {
   background-color: rgba(16, 185, 129, 0.14) !important;
   border-color: rgba(16, 185, 129, 0.3) !important;
 }
-
-.dark .text-emerald-950,
-.dark .text-emerald-900,
-.dark .text-emerald-800,
-.dark .text-emerald-700 {
+.dark .text-emerald-950:not([class*="dark:text-"]),
+.dark .text-emerald-900:not([class*="dark:text-"]),
+.dark .text-emerald-800:not([class*="dark:text-"]),
+.dark .text-emerald-700:not([class*="dark:text-"]) {
   color: #34d399 !important;
 }
-
 /* Amber / Advisory / Caution / Sunlight */
-.dark .bg-amber-50,
-.dark .bg-amber-50\/70,
-.dark .bg-amber-50\/80,
-.dark .bg-amber-100 {
+.dark .bg-amber-50:not([class*="dark:bg-"]),
+.dark .bg-amber-50\/70:not([class*="dark:bg-"]),
+.dark .bg-amber-50\/80:not([class*="dark:bg-"]),
+.dark .bg-amber-100:not([class*="dark:bg-"]) {
   background-color: rgba(245, 158, 11, 0.14) !important;
   border-color: rgba(245, 158, 11, 0.3) !important;
 }
-
-.dark .text-amber-950,
-.dark .text-amber-900,
-.dark .text-amber-800 {
+.dark .text-amber-950:not([class*="dark:text-"]),
+.dark .text-amber-900:not([class*="dark:text-"]),
+.dark .text-amber-800:not([class*="dark:text-"]) {
   color: #fbbf24 !important;
 }
-
 /* Rose / Antagonist / Toxic Hazard */
-.dark .bg-rose-50,
-.dark .bg-rose-50\/70,
-.dark .bg-rose-50\/80 {
+.dark .bg-rose-50:not([class*="dark:bg-"]),
+.dark .bg-rose-50\/70:not([class*="dark:bg-"]),
+.dark .bg-rose-50\/80:not([class*="dark:bg-"]),
+.dark .bg-rose-100:not([class*="dark:bg-"]) {
   background-color: rgba(244, 63, 94, 0.14) !important;
   border-color: rgba(244, 63, 94, 0.3) !important;
 }
-
-.dark .text-rose-950,
-.dark .text-rose-900,
-.dark .text-rose-800 {
+.dark .text-rose-950:not([class*="dark:text-"]),
+.dark .text-rose-900:not([class*="dark:text-"]),
+.dark .text-rose-800:not([class*="dark:text-"]) {
   color: #fb7185 !important;
 }
-
 /* Teal / Apothecary & Hydro */
-.dark .bg-teal-50 {
+.dark .bg-teal-50:not([class*="dark:bg-"]) {
   background-color: rgba(20, 184, 166, 0.14) !important;
   border-color: rgba(20, 184, 166, 0.3) !important;
 }
-
-.dark .text-teal-900,
-.dark .text-teal-800 {
+.dark .text-teal-900:not([class*="dark:text-"]),
+.dark .text-teal-800:not([class*="dark:text-"]) {
   color: #5eead4 !important;
 }
-
 /* Purple / Heirloom & Fruits */
-.dark .bg-purple-50 {
+.dark .bg-purple-50:not([class*="dark:bg-"]) {
   background-color: rgba(168, 85, 247, 0.14) !important;
   border-color: rgba(168, 85, 247, 0.3) !important;
 }
-
-.dark .text-purple-900,
-.dark .text-purple-800 {
+.dark .text-purple-900:not([class*="dark:text-"]),
+.dark .text-purple-800:not([class*="dark:text-"]) {
   color: #c084fc !important;
+}
+/* Sky / Indigo / Blue informational accents in Dark Mode */
+.dark .bg-blue-50:not([class*="dark:bg-"]),
+.dark .bg-sky-50:not([class*="dark:bg-"]),
+.dark .bg-indigo-50:not([class*="dark:bg-"]) {
+  background-color: rgba(99, 102, 241, 0.14) !important;
+  border-color: rgba(99, 102, 241, 0.3) !important;
+}
+
+.dark .text-indigo-900:not([class*="dark:text-"]),
+.dark .text-indigo-800:not([class*="dark:text-"]),
+.dark .text-indigo-700:not([class*="dark:text-"]) {
+  color: #a5b4fc !important;
+}
+
+.dark .text-sky-900:not([class*="dark:text-"]),
+.dark .text-sky-800:not([class*="dark:text-"]),
+.dark .text-sky-700:not([class*="dark:text-"]),
+.dark .text-blue-900:not([class*="dark:text-"]),
+.dark .text-blue-800:not([class*="dark:text-"]),
+.dark .text-blue-700:not([class*="dark:text-"]) {
+  color: #7dd3fc !important;
+}
+
+/* =========================================================
+   WCAG 1.4.3 on hover: light hover backgrounds in Dark Mode
+   The rules above remap base backgrounds, but a light `hover:bg-*`
+   would still paint a near-white surface under light dark-mode text
+   (e.g. Cancel buttons, crop cards, table rows). Elements that set
+   their own dark:hover:bg-* keep it.
+   ========================================================= */
+.dark .hover\:bg-white:not([class*="dark:hover:bg-"]):hover,
+.dark .hover\:bg-stone-50:not([class*="dark:hover:bg-"]):hover,
+.dark .hover\:bg-stone-50\/50:not([class*="dark:hover:bg-"]):hover,
+.dark .hover\:bg-stone-100:not([class*="dark:hover:bg-"]):hover,
+.dark .hover\:bg-stone-200:not([class*="dark:hover:bg-"]):hover,
+.dark .hover\:bg-stone-200\/60:not([class*="dark:hover:bg-"]):hover,
+.dark .hover\:bg-stone-200\/80:not([class*="dark:hover:bg-"]):hover,
+.dark .hover\:bg-emerald-50:not([class*="dark:hover:bg-"]):hover,
+.dark .hover\:bg-emerald-100:not([class*="dark:hover:bg-"]):hover,
+.dark .hover\:bg-emerald-200:not([class*="dark:hover:bg-"]):hover,
+.dark .hover\:bg-amber-50:not([class*="dark:hover:bg-"]):hover,
+.dark .hover\:bg-amber-100:not([class*="dark:hover:bg-"]):hover,
+.dark .hover\:bg-rose-50:not([class*="dark:hover:bg-"]):hover,
+.dark .hover\:bg-rose-100:not([class*="dark:hover:bg-"]):hover,
+.dark .hover\:bg-\[\#fafbf9\]:not([class*="dark:hover:bg-"]):hover,
+.dark .hover\:bg-\[\#f4f7f4\]:not([class*="dark:hover:bg-"]):hover,
+.dark .hover\:bg-\[\#edf2ee\]:not([class*="dark:hover:bg-"]):hover,
+.dark .hover\:bg-\[\#e1ece2\]:not([class*="dark:hover:bg-"]):hover,
+.dark .hover\:bg-\[\#fef3c7\]:not([class*="dark:hover:bg-"]):hover,
+.dark .hover\:bg-emerald-50\/50:not([class*="dark:hover:bg-"]):hover,
+.dark .hover\:bg-stone-300:not([class*="dark:hover:bg-"]):hover,
+.dark .hover\:bg-stone-50\/70:not([class*="dark:hover:bg-"]):hover,
+.dark .hover\:bg-\[\#e2ece3\]:not([class*="dark:hover:bg-"]):hover {
+  background-color: var(--surface-active) !important;
+}
+
+/* Hover text colors in Dark Mode: dark hover text (e.g. hover:text-stone-900)
+   would land on a dark surface. Elements with their own dark:hover:text-* keep it. */
+.dark .hover\:text-stone-900:not([class*="dark:hover:text-"]):hover,
+.dark .hover\:text-stone-800:not([class*="dark:hover:text-"]):hover,
+.dark .hover\:text-stone-700:not([class*="dark:hover:text-"]):hover,
+.dark .hover\:text-\[\#122017\]:not([class*="dark:hover:text-"]):hover,
+.dark .hover\:text-amber-950:not([class*="dark:hover:text-"]):hover {
+  color: var(--text-heading) !important;
+}
+
+.dark .hover\:text-emerald-950:not([class*="dark:hover:text-"]):hover,
+.dark .hover\:text-emerald-900:not([class*="dark:hover:text-"]):hover,
+.dark .hover\:text-emerald-800:not([class*="dark:hover:text-"]):hover,
+.dark .hover\:text-emerald-700:not([class*="dark:hover:text-"]):hover,
+.dark .hover\:text-emerald-600:not([class*="dark:hover:text-"]):hover {
+  color: #6ee7b7 !important;
+}
+
+.dark .hover\:text-rose-600:not([class*="dark:hover:text-"]):hover {
+  color: #fda4af !important;
 }
 
 /* Active navigation item pill */

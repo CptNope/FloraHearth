@@ -114,7 +114,7 @@ export const SetupModal: React.FC<SetupModalProps> = ({
     >
       <div className="bg-[#fcfcf9] dark:bg-[#0e1912] border border-[#d6ddd6] dark:border-[#223d2e] rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl flex flex-col my-8 max-h-[90vh]">
         {/* Modal Header */}
-        <div className="bg-[#1c3a27] text-white px-6 py-5 flex items-center justify-between">
+        <div className="bg-[#1c3a27] dark:bg-[#14301f] text-white px-6 py-5 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <span className="p-2 bg-white/10 rounded-xl text-emerald-300">
               <Sparkles className="w-5 h-5" aria-hidden="true" />

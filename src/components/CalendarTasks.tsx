@@ -311,19 +311,19 @@ export const CalendarTasks: React.FC<CalendarTasksProps> = ({
 
         <div className="flex items-center gap-3 text-[11px]">
           <span className="flex items-center gap-1.5">
-            <span className="w-3 h-3 rounded-xs bg-indigo-500 inline-block" /> Indoor Starts
+            <span className="w-3 h-3 rounded-xs bg-indigo-700 inline-block" /> Indoor Starts
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="w-3 h-3 rounded-xs bg-emerald-600 inline-block" /> Transplant
+            <span className="w-3 h-3 rounded-xs bg-emerald-700 inline-block" /> Transplant
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="w-3 h-3 rounded-xs bg-amber-500 inline-block" /> Direct Sow
+            <span className="w-3 h-3 rounded-xs bg-amber-300 inline-block" /> Direct Sow
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="w-3 h-3 rounded-xs bg-purple-500 inline-block" /> Fall Succession
+            <span className="w-3 h-3 rounded-xs bg-purple-700 inline-block" /> Fall Succession
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="w-3 h-3 rounded-xs bg-rose-500 inline-block" /> Estimated Harvest
+            <span className="w-3 h-3 rounded-xs bg-rose-700 inline-block" /> Estimated Harvest
           </span>
         </div>
       </div>
@@ -370,7 +370,7 @@ export const CalendarTasks: React.FC<CalendarTasksProps> = ({
                     {/* Indoor Start Bar */}
                     {indoorStart && (
                       <div
-                        className="absolute h-4 bg-indigo-500/80 rounded-xs text-[10px] text-white flex items-center justify-center font-bold"
+                        className="absolute h-4 bg-indigo-700 rounded-xs text-[10px] text-white flex items-center justify-center font-bold"
                         style={{
                           left: `${((indoorStart.start.getMonth() * 30 + indoorStart.start.getDate()) / 365) * 100}%`,
                           width: `${Math.max(3, ((indoorStart.end.getTime() - indoorStart.start.getTime()) / (365 * 86400000)) * 100)}%`,
@@ -384,7 +384,7 @@ export const CalendarTasks: React.FC<CalendarTasksProps> = ({
                     {/* Transplant Bar */}
                     {transplant && (
                       <div
-                        className="absolute h-4 bg-emerald-600/90 rounded-xs text-[10px] text-white flex items-center justify-center font-bold"
+                        className="absolute h-4 bg-emerald-700 rounded-xs text-[10px] text-white flex items-center justify-center font-bold"
                         style={{
                           left: `${((transplant.start.getMonth() * 30 + transplant.start.getDate()) / 365) * 100}%`,
                           width: `${Math.max(3, ((transplant.end.getTime() - transplant.start.getTime()) / (365 * 86400000)) * 100)}%`,
@@ -398,7 +398,7 @@ export const CalendarTasks: React.FC<CalendarTasksProps> = ({
                     {/* Direct Sow Bar */}
                     {directSow && (
                       <div
-                        className="absolute h-4 bg-amber-500/90 rounded-xs text-[10px] text-white flex items-center justify-center font-bold"
+                        className="absolute h-4 bg-amber-300 rounded-xs text-[10px] text-amber-950 dark:text-amber-950 flex items-center justify-center font-bold"
                         style={{
                           left: `${((directSow.start.getMonth() * 30 + directSow.start.getDate()) / 365) * 100}%`,
                           width: `${Math.max(3, ((directSow.end.getTime() - directSow.start.getTime()) / (365 * 86400000)) * 100)}%`,
@@ -412,7 +412,7 @@ export const CalendarTasks: React.FC<CalendarTasksProps> = ({
                     {/* Fall Sowing */}
                     {fallSow && (
                       <div
-                        className="absolute h-4 bg-purple-500/80 rounded-xs text-[10px] text-white flex items-center justify-center font-bold"
+                        className="absolute h-4 bg-purple-700 rounded-xs text-[10px] text-white flex items-center justify-center font-bold"
                         style={{
                           left: `${((fallSow.start.getMonth() * 30 + fallSow.start.getDate()) / 365) * 100}%`,
                           width: `${Math.max(3, ((fallSow.end.getTime() - fallSow.start.getTime()) / (365 * 86400000)) * 100)}%`,
@@ -426,7 +426,7 @@ export const CalendarTasks: React.FC<CalendarTasksProps> = ({
                     {/* Estimated Harvest Window */}
                     {harvestWindow && (
                       <div
-                        className="absolute h-4 bg-rose-500/80 rounded-xs text-[10px] text-white flex items-center justify-center font-bold"
+                        className="absolute h-4 bg-rose-700 rounded-xs text-[10px] text-white flex items-center justify-center font-bold"
                         style={{
                           left: `${((harvestWindow.start.getMonth() * 30 + harvestWindow.start.getDate()) / 365) * 100}%`,
                           width: `${Math.max(4, ((harvestWindow.end.getTime() - harvestWindow.start.getTime()) / (365 * 86400000)) * 100)}%`,

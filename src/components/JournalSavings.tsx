@@ -577,7 +577,7 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
             <form onSubmit={handleSaveJournal} className="space-y-3">
               <div>
                 <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Title</label>
-                <input
+                <input aria-label="Title"
                   type="text"
                   required
                   value={entryTitle}
@@ -590,7 +590,7 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Category</label>
-                  <select
+                  <select aria-label="Category"
                     value={entryCategory}
                     onChange={e => setEntryCategory(e.target.value as any)}
                     className="w-full px-3 py-1.5 border border-stone-300 dark:border-[#223d2e] dark:bg-[#182c20] rounded-xl text-xs"
@@ -607,7 +607,7 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
                 {entryCategory === 'harvest' && (
                   <div>
                     <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Crop Harvested</label>
-                    <select
+                    <select aria-label="Crop Harvested"
                       value={entryCropId}
                       onChange={e => setEntryCropId(e.target.value)}
                       className="w-full px-3 py-1.5 border border-stone-300 dark:border-[#223d2e] dark:bg-[#182c20] rounded-xl text-xs font-medium"
@@ -627,7 +627,7 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
                   <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">
                     Harvest Weight (lbs)
                   </label>
-                  <input
+                  <input aria-label="Harvest Weight (lbs)"
                     type="number"
                     step="0.1"
                     min="0"
@@ -642,7 +642,7 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
 
               <div>
                 <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Observations &amp; Notes</label>
-                <textarea
+                <textarea aria-label="Observations & Notes"
                   rows={3}
                   required
                   value={entryContent}
@@ -654,7 +654,7 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
 
               <div>
                 <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Tags (comma separated)</label>
-                <input
+                <input aria-label="Tags (comma separated)"
                   type="text"
                   value={entryTags}
                   onChange={e => setEntryTags(e.target.value)}
@@ -680,7 +680,7 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
                     </button>
                   )}
                 </label>
-                <input
+                <input aria-label="Attach plant photo"
                   type="file"
                   accept="image/*"
                   onChange={handlePhotoSelect}
@@ -886,7 +886,7 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
               <form onSubmit={handleSaveExpense} className="space-y-3">
                 <div>
                   <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Item Description</label>
-                  <input
+                  <input aria-label="Item Description"
                     type="text"
                     required
                     value={expDesc}
@@ -899,7 +899,7 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
                 <div className="grid grid-cols-2 gap-3">
                   <div>
                     <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Category</label>
-                    <select
+                    <select aria-label="Category"
                       value={expCategory}
                       onChange={e => setExpCategory(e.target.value as any)}
                       className="w-full px-3 py-1.5 border border-stone-300 dark:border-[#223d2e] dark:bg-[#182c20] rounded-xl text-xs"
@@ -915,7 +915,7 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
 
                   <div>
                     <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Cost ($ USD)</label>
-                    <input
+                    <input aria-label="Cost ($ USD)"
                       type="number"
                       step="0.01"
                       min="0"
@@ -1026,7 +1026,7 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
                 <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">
                   Cloudflare Worker Endpoint URL
                 </label>
-                <input
+                <input aria-label="Cloudflare Worker Endpoint URL"
                   type="url"
                   value={cfWorkerUrl}
                   onChange={e => setCfWorkerUrl(e.target.value)}
@@ -1039,7 +1039,7 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
                 <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">
                   Bearer Secret / Sync Token (Optional)
                 </label>
-                <input
+                <input aria-label="Bearer Secret / Sync Token (Optional)"
                   type="password"
                   value={cfWorkerToken}
                   onChange={e => setCfWorkerToken(e.target.value)}
@@ -1110,7 +1110,7 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
             <form onSubmit={handleUpdateJournalSubmit} className="space-y-3">
               <div>
                 <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Title</label>
-                <input
+                <input aria-label="Title"
                   type="text"
                   required
                   value={editingJournal.title}
@@ -1121,7 +1121,7 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
 
               <div>
                 <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Content</label>
-                <textarea
+                <textarea aria-label="Content"
                   rows={4}
                   required
                   value={editingJournal.content}
@@ -1133,7 +1133,7 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
               {editingJournal.yieldLbs !== undefined && (
                 <div>
                   <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Harvest Weight (lbs)</label>
-                  <input
+                  <input aria-label="Harvest Weight (lbs)"
                     type="number"
                     step="0.1"
                     min="0"
@@ -1178,7 +1178,7 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
             <form onSubmit={handleUpdateExpenseSubmit} className="space-y-3">
               <div>
                 <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Description</label>
-                <input
+                <input aria-label="Description"
                   type="text"
                   required
                   value={editingExpense.itemDescription}
@@ -1189,7 +1189,7 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
 
               <div>
                 <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Cost ($)</label>
-                <input
+                <input aria-label="Cost ($)"
                   type="number"
                   step="0.01"
                   required

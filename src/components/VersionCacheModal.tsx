@@ -339,7 +339,7 @@ export const VersionCacheModal: React.FC<VersionCacheModalProps> = ({
                 type="button"
                 onClick={handleExecuteReset}
                 disabled={isResetting}
-                className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-600 dark:hover:bg-emerald-500 disabled:opacity-50 text-white font-bold rounded-xl transition-colors flex items-center gap-2 shadow-xs"
+                className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-700 dark:hover:bg-emerald-800 disabled:opacity-50 text-white font-bold rounded-xl transition-colors flex items-center gap-2 shadow-xs"
               >
                 <RefreshCw className={`w-4 h-4 ${isResetting ? 'animate-spin' : ''}`} />
                 <span>{isResetting ? 'Purging Caches...' : 'Execute Hard Cache Reset'}</span>
