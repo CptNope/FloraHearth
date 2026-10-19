@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { buildBedTasks, mergeBedTasks } from '../services/bedSchedule';
 import { GardenSpace, GridCell, Crop, PlantFamily, GrowingMethod, SunlightLevel, GardenLocation, GardenTask, BedSeasonRecord } from '../types/garden';
 import { CROPS_DATA, getCropById } from '../data/cropsData';
 import { COMPANION_PAIRS } from '../data/companionData';
@@ -128,111 +129,28 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
   };
 
   // BED -> CALENDAR AUTOMATIC TASK GENERATION
+  // Scheduling rules live in services/bedSchedule.ts (next plantable season,
+  // harvest from planting date, fall crops, id-based de-duplication).
   const handleSyncBedTasksToCalendar = () => {
     if (!currentSpace || !onUpdateTasks || !location) return;
 
-    const currentYear = new Date().getFullYear();
-    const [springMonth, springDay] = (location.lastSpringFrost || '04-15').split('-').map(Number);
-    const springFrostDate = new Date(currentYear, (springMonth || 4) - 1, springDay || 15);
-
-    const uniqueCropIds = Array.from(new Set(currentSpace.cells.map(c => c.cropId).filter(Boolean))) as string[];
-    const generatedTasks: GardenTask[] = [];
-
-    uniqueCropIds.forEach(cropId => {
-      const crop = getCropById(cropId);
-      if (!crop) return;
-
-      const cleanName = crop.name.split('(')[0].trim();
-
-      // 1. Seed start indoors
-      if (crop.plantingTiming.indoorStartWeeksBeforeLastFrost) {
-        const weeks = Array.isArray(crop.plantingTiming.indoorStartWeeksBeforeLastFrost)
-          ? crop.plantingTiming.indoorStartWeeksBeforeLastFrost[0]
-          : crop.plantingTiming.indoorStartWeeksBeforeLastFrost;
-        const dueDate = new Date(springFrostDate);
-        dueDate.setDate(dueDate.getDate() - (weeks * 7));
-
-        generatedTasks.push({
-          id: `task-bed-${crop.id}-seed-${currentSpace.id}`,
-          title: `Seed start indoors: ${cleanName} for ${currentSpace.name}`,
-          type: 'seed-start',
-          cropId: crop.id,
-          cropName: cleanName,
-          dueDate: dueDate.toISOString().split('T')[0],
-          completed: false,
-          notes: `Start indoors under grow lights ${weeks} weeks before final spring frost (${location.lastSpringFrost}).`
-        });
-      }
-
-      // 2. Transplant seedlings or direct sow
-      if (crop.plantingTiming.transplantWeeksAfterLastFrost) {
-        const weeks = Array.isArray(crop.plantingTiming.transplantWeeksAfterLastFrost)
-          ? crop.plantingTiming.transplantWeeksAfterLastFrost[0]
-          : crop.plantingTiming.transplantWeeksAfterLastFrost;
-        const dueDate = new Date(springFrostDate);
-        dueDate.setDate(dueDate.getDate() + (weeks * 7));
-
-        generatedTasks.push({
-          id: `task-bed-${crop.id}-transplant-${currentSpace.id}`,
-          title: `Transplant ${cleanName} into ${currentSpace.name}`,
-          type: 'transplant',
-          cropId: crop.id,
-          cropName: cleanName,
-          dueDate: dueDate.toISOString().split('T')[0],
-          completed: false,
-          notes: `Harden off 7-10 days before outdoor planting. Plant at ${crop.sfgPerSquare}/sq ft.`
-        });
-      } else if (crop.plantingTiming.directSowWeeksBeforeLastFrost || crop.plantingTiming.directSowWeeksAfterLastFrost) {
-        const weeksBefore = crop.plantingTiming.directSowWeeksBeforeLastFrost;
-        const weeksAfter = crop.plantingTiming.directSowWeeksAfterLastFrost;
-        const dueDate = new Date(springFrostDate);
-        if (weeksBefore) {
-          const w = Array.isArray(weeksBefore) ? weeksBefore[0] : weeksBefore;
-          dueDate.setDate(dueDate.getDate() - (w * 7));
-        } else if (weeksAfter) {
-          const w = Array.isArray(weeksAfter) ? weeksAfter[0] : weeksAfter;
-          dueDate.setDate(dueDate.getDate() + (w * 7));
-        }
-
-        generatedTasks.push({
-          id: `task-bed-${crop.id}-sow-${currentSpace.id}`,
-          title: `Direct sow ${cleanName} into ${currentSpace.name}`,
-          type: 'direct-sow',
-          cropId: crop.id,
-          cropName: cleanName,
-          dueDate: dueDate.toISOString().split('T')[0],
-          completed: false,
-          notes: `Sow ${crop.plantingDepthInches} deep directly into ${currentSpace.name}.`
-        });
-      }
-
-      // 3. Harvest flush
-      const avgMaturity = Math.round((crop.daysToMaturityRange[0] + crop.daysToMaturityRange[1]) / 2);
-      const harvestDate = new Date(springFrostDate);
-      harvestDate.setDate(harvestDate.getDate() + avgMaturity);
-
-      generatedTasks.push({
-        id: `task-bed-${crop.id}-harvest-${currentSpace.id}`,
-        title: `Harvest ${cleanName} from ${currentSpace.name}`,
-        type: 'harvest',
-        cropId: crop.id,
-        cropName: cleanName,
-        dueDate: harvestDate.toISOString().split('T')[0],
-        completed: false,
-        notes: `Estimated maturity (${avgMaturity} days). ${crop.harvestGuidance}`
-      });
-    });
-
-    // Check duplicates against existing tasks
-    const existingTitles = new Set((tasks || []).map(t => t.title));
-    const toAdd = generatedTasks.filter(t => !existingTitles.has(t.title));
-
-    if (toAdd.length > 0) {
-      onUpdateTasks([...(tasks || []), ...toAdd]);
-      setSyncFeedback(`✓ Added ${toAdd.length} synchronized tasks for ${currentSpace.name} to your calendar!`);
-    } else {
-      setSyncFeedback(`All planting and harvest tasks for ${currentSpace.name} are already up to date on your calendar.`);
+    const generated = buildBedTasks(currentSpace, location);
+    if (generated.length === 0) {
+      setSyncFeedback(`Add crops to ${currentSpace.name} first, then sync them to your calendar.`);
+      return;
     }
+
+    const { tasks: merged, added, updated } = mergeBedTasks(tasks || [], generated);
+    if (added === 0 && updated === 0) {
+      setSyncFeedback(`${currentSpace.name}'s planting and harvest tasks are already up to date on your calendar.`);
+      return;
+    }
+    onUpdateTasks(merged);
+    const parts = [
+      added > 0 ? `added ${added} task${added === 1 ? '' : 's'}` : '',
+      updated > 0 ? `updated ${updated}` : '',
+    ].filter(Boolean).join(' and ');
+    setSyncFeedback(`✓ ${parts.charAt(0).toUpperCase() + parts.slice(1)} for ${currentSpace.name} on your calendar.`);
   };
 
   // ARCHIVE SEASON LAYOUT TO ROTATION HISTORY
