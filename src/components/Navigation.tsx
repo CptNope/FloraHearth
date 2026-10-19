@@ -140,8 +140,8 @@ export const Navigation: React.FC<NavigationProps> = ({
               className="hidden sm:flex items-center gap-1.5 ml-1 px-2.5 py-1 bg-[#edf2ee] hover:bg-[#e2ece3] dark:bg-[#18271e] dark:hover:bg-[#1f3427] text-[#2d4334] dark:text-[#cad9ce] text-xs rounded-lg transition-colors border border-[#d6e2d8] dark:border-[rgba(255,255,255,0.08)] font-mono"
               title="Click to edit location and climate"
             >
-              <span className="text-emerald-700 dark:text-[#34d399] font-bold">Zone {location.usdaZone}</span>
-              <span className="text-stone-300 dark:text-stone-600">·</span>
+              <span className="text-emerald-800 dark:text-[#34d399] font-bold">Zone {location.usdaZone}</span>
+              <span className="text-stone-300 dark:text-stone-600" aria-hidden="true">·</span>
               <span className="truncate max-w-[120px]">{location.city}, {location.state}</span>
               <Settings className="w-3 h-3 text-[#7e9987] ml-0.5" aria-hidden="true" />
             </button>

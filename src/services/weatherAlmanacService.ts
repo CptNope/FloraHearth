@@ -13,6 +13,7 @@ import {
   ZodiacElement,
   FertilityGrade,
 } from '../types/weatherAlmanac';
+import { localDateStr } from './dates';
 
 // ==========================================
 // 1. ASTROLOGICAL & LUNAR ALMANAC ENGINE
@@ -265,7 +266,7 @@ export function get30DayAlmanacCalendar(startDate: Date = new Date()): BestAlman
     const lunar = getLunarPlantingInfo(targetDate);
     const dayOfWeek = targetDate.toLocaleDateString('en-US', { weekday: 'short' });
     const formattedDate = targetDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    const isoDate = targetDate.toISOString().split('T')[0];
+    const isoDate = localDateStr(targetDate);
 
     const bestFor: ('above-ground-crops' | 'root-crops' | 'pruning' | 'weeding' | 'harvest-storage' | 'compost-fertilize')[] = [];
     let rating: 'exceptional' | 'favorable' | 'neutral' = 'neutral';
@@ -1009,7 +1010,7 @@ function generateFallbackAlmanacData(
     const lunarInfo = getLunarPlantingInfo(d);
 
     daily.push({
-      date: d.toISOString().split('T')[0],
+      date: localDateStr(d),
       dayName: i === 0 ? 'Today' : d.toLocaleDateString('en-US', { weekday: 'short' }),
       formattedDate: d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
       tempMaxF: dMax,

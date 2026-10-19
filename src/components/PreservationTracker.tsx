@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { PantryItem, GardenLocation } from '../types/garden';
 import { SAFE_CANNING_GUIDES, getAltitudeAdjustedCanningTime, getAltitudeAdjustedPressurePsi, FREEZING_BLANCH_GUIDES, FERMENTATION_GUIDES, CURING_GUIDES } from '../data/preservationData';
 import { ShieldCheck, AlertTriangle, Scale, Thermometer, Clock, Plus, BookOpen, ExternalLink, Mountain } from 'lucide-react';
+import { localDateStr } from '../services/dates';
 
 interface PreservationTrackerProps {
   location: GardenLocation;
@@ -47,8 +48,8 @@ export const PreservationTracker: React.FC<PreservationTrackerProps> = ({
       preservationType: batchMethod,
       quantity: batchQty,
       unit: batchUnit,
-      datePrepared: today.toISOString().split('T')[0],
-      bestByDate: bestBy.toISOString().split('T')[0],
+      datePrepared: localDateStr(today),
+      bestByDate: localDateStr(bestBy),
       storageLocation: batchLocation,
       notes: batchNotes,
       testedSourceReference: 'USDA Complete Guide / NCHFP Procedure',
@@ -78,7 +79,7 @@ export const PreservationTracker: React.FC<PreservationTrackerProps> = ({
           <Mountain className="w-4 h-4 text-emerald-700 dark:text-[#34d399] shrink-0" />
           <span className="text-[#3c5244] dark:text-[#cad9ce] font-medium">Your Elevation:</span>
           <div className="flex items-center gap-1 font-mono font-bold text-[#183e25] dark:text-[#34d399]">
-            <input
+            <input aria-label="Your elevation in feet"
               type="number"
               value={elevation}
               onChange={e => setElevation(parseInt(e.target.value) || 0)}
@@ -227,7 +228,7 @@ export const PreservationTracker: React.FC<PreservationTrackerProps> = ({
                 <label className="block font-semibold text-stone-700 mb-1">
                   Vegetable Weight (grams)
                 </label>
-                <input
+                <input aria-label="Vegetable Weight (grams)"
                   type="number"
                   min="100"
                   max="10000"
@@ -245,7 +246,7 @@ export const PreservationTracker: React.FC<PreservationTrackerProps> = ({
                 <label className="block font-semibold text-stone-700 mb-1">
                   Target Salinity: {targetSalinityPct}%
                 </label>
-                <input
+                <input aria-label="Target salinity (%)"
                   type="range"
                   min="1.8"
                   max="4.0"
@@ -385,7 +386,7 @@ export const PreservationTracker: React.FC<PreservationTrackerProps> = ({
             <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
               <div className="sm:col-span-2">
                 <label className="block font-semibold text-stone-700 mb-1">Batch Description</label>
-                <input
+                <input aria-label="Batch Description"
                   type="text"
                   value={batchCrop}
                   onChange={e => setBatchCrop(e.target.value)}
@@ -397,7 +398,7 @@ export const PreservationTracker: React.FC<PreservationTrackerProps> = ({
 
               <div>
                 <label className="block font-semibold text-stone-700 mb-1">Preservation Method</label>
-                <select
+                <select aria-label="Preservation Method"
                   value={batchMethod}
                   onChange={e => setBatchMethod(e.target.value as any)}
                   className="w-full p-2 border border-stone-300 rounded-xl"
@@ -434,7 +435,7 @@ export const PreservationTracker: React.FC<PreservationTrackerProps> = ({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="block font-semibold text-stone-700 mb-1">Storage Location</label>
-                <select
+                <select aria-label="Storage Location"
                   value={batchLocation}
                   onChange={e => setBatchLocation(e.target.value as any)}
                   className="w-full p-2 border border-stone-300 rounded-xl"
@@ -449,7 +450,7 @@ export const PreservationTracker: React.FC<PreservationTrackerProps> = ({
 
               <div>
                 <label className="block font-semibold text-stone-700 mb-1">Recipe / Batch Notes</label>
-                <input
+                <input aria-label="Recipe / Batch Notes"
                   type="text"
                   value={batchNotes}
                   onChange={e => setBatchNotes(e.target.value)}

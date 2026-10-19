@@ -1,5 +1,6 @@
 import { GardenLocation, UserPreferences, GardenSpace, GardenTask, PantryItem, JournalEntry, SoilTestRecord, HydroWaterRecord, ExpenseRecord, SeedPacket } from '../types/garden';
 import { lookupLocation } from '../data/usClimates';
+import { localDateStr } from './dates';
 
 const STORAGE_KEYS = {
   LOCATION: 'florahearth_location_v1',
@@ -305,6 +306,27 @@ function safeGetItem(key: string): string | null {
   }
 }
 
+/**
+ * True once the user has saved anything on this device (setup, a bed, a task,
+ * a journal entry...). Getters fall back to the sample garden until then, so
+ * this is how we tell "real data" apart from the demo set.
+ */
+export function hasUserSavedData(): boolean {
+  if (isSetupComplete()) return true;
+  return Object.entries(STORAGE_KEYS).some(
+    ([name, key]) => name !== 'SETUP_DONE' && safeGetItem(key) !== null
+  );
+}
+
+/**
+ * Sample fallback for collections added after launch (seeds, hydro readings).
+ * Someone upgrading with an existing garden should start with an empty list,
+ * not see demo packets mixed into their real inventory.
+ */
+function sampleFallbackForNewKey<T>(samples: T[]): T[] {
+  return hasUserSavedData() ? [] : samples;
+}
+
 export function getSavedLocation(): GardenLocation {
   try {
     const raw = safeGetItem(STORAGE_KEYS.LOCATION);
@@ -402,7 +424,7 @@ export function getSavedTasks(): GardenTask[] {
           id: t.id || `task-${idx}`,
           title: t.title || 'Garden Task',
           type: t.type || 'maintenance',
-          dueDate: t.dueDate || new Date().toISOString().split('T')[0],
+          dueDate: t.dueDate || localDateStr(),
           completed: Boolean(t.completed),
         }));
       }
@@ -503,7 +525,7 @@ export function getSavedHydroTests(): HydroWaterRecord[] {
   } catch (e) {
     console.warn('Failed to parse hydro tests', e);
   }
-  return INITIAL_SAMPLE_HYDRO;
+  return sampleFallbackForNewKey(INITIAL_SAMPLE_HYDRO);
 }
 
 export function saveHydroTests(records: HydroWaterRecord[]): void {
@@ -520,7 +542,7 @@ export function getSavedSeeds(): SeedPacket[] {
   } catch (e) {
     console.warn('Failed to parse seeds', e);
   }
-  return INITIAL_SAMPLE_SEEDS;
+  return sampleFallbackForNewKey(INITIAL_SAMPLE_SEEDS);
 }
 
 export function saveSeeds(seeds: SeedPacket[]): void {
@@ -545,9 +567,42 @@ export function exportAllDataJson(): string {
   return JSON.stringify(bundle, null, 2);
 }
 
+const BUNDLE_COLLECTION_KEYS = ['spaces', 'tasks', 'pantry', 'journal', 'expenses', 'soilTests', 'hydroTests', 'seeds'] as const;
+
+/**
+ * Check that a parsed object looks like a FloraHearth backup before anything
+ * is written. Returns an error message, or null when it is valid.
+ */
+export function validateBackupBundle(bundle: unknown): string | null {
+  if (!bundle || typeof bundle !== 'object' || Array.isArray(bundle)) {
+    return 'The file is not a FloraHearth backup.';
+  }
+  const b = bundle as Record<string, unknown>;
+  const hasKnownKey = ['location', 'preferences', ...BUNDLE_COLLECTION_KEYS].some(k => k in b);
+  if (!hasKnownKey) return 'The file does not contain any FloraHearth garden data.';
+  for (const k of BUNDLE_COLLECTION_KEYS) {
+    if (k in b && !Array.isArray(b[k])) return `The backup's "${k}" section is damaged.`;
+  }
+  if ('location' in b && (typeof b.location !== 'object' || b.location === null)) {
+    return 'The backup\'s location section is damaged.';
+  }
+  return null;
+}
+
+/** The exportedAt timestamp of a backup string, or null if it has none. */
+export function getBundleExportedAt(jsonString: string): string | null {
+  try {
+    const b = JSON.parse(jsonString);
+    return typeof b?.exportedAt === 'string' ? b.exportedAt : null;
+  } catch {
+    return null;
+  }
+}
+
 export function importAllDataJson(jsonString: string): boolean {
   try {
     const bundle = JSON.parse(jsonString);
+    if (validateBackupBundle(bundle) !== null) return false;
     if (bundle.location) saveLocation(bundle.location);
     if (bundle.preferences) savePreferences(bundle.preferences);
     if (bundle.spaces) saveSpaces(bundle.spaces);
@@ -556,8 +611,11 @@ export function importAllDataJson(jsonString: string): boolean {
     if (bundle.journal) saveJournal(bundle.journal);
     if (bundle.expenses) saveExpenses(bundle.expenses);
     if (bundle.soilTests) saveSoilTests(bundle.soilTests);
-    if (bundle.hydroTests) saveHydroTests(bundle.hydroTests);
-    if (bundle.seeds) saveSeeds(bundle.seeds);
+    // Backups from before v2.0 have no seeds/hydro: start those empty rather
+    // than leaving the demo samples in place.
+    saveHydroTests(Array.isArray(bundle.hydroTests) ? bundle.hydroTests : []);
+    saveSeeds(Array.isArray(bundle.seeds) ? bundle.seeds : []);
+    setSetupComplete(true);
     return true;
   } catch (e) {
     console.error('Import failed', e);

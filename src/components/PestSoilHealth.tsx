@@ -3,6 +3,7 @@ import { SoilTestRecord } from '../types/garden';
 import { IPM_GUIDES, COMPOST_METHODS } from '../data/ipmSoilData';
 import { ECOLOGICAL_INSECTS } from '../data/companionData';
 import { Bug, Sparkles, ShieldAlert, TestTube2, AlertCircle, Plus, CheckCircle, Scale, Thermometer, Edit2, Trash2, X } from 'lucide-react';
+import { localDateStr } from '../services/dates';
 
 interface PestSoilHealthProps {
   soilTests: SoilTestRecord[];
@@ -55,7 +56,7 @@ export const PestSoilHealth: React.FC<PestSoilHealthProps> = ({
 
     const newRecord: SoilTestRecord = {
       id: `soil-${Date.now()}`,
-      date: new Date().toISOString().split('T')[0],
+      date: localDateStr(),
       locationName: testBedName,
       ph: testPh,
       nitrogen: testN,
@@ -239,7 +240,7 @@ export const PestSoilHealth: React.FC<PestSoilHealthProps> = ({
 
               <div>
                 <label className="block font-semibold text-stone-700 mb-1">Location / Bed Name</label>
-                <input
+                <input aria-label="Location / Bed Name"
                   type="text"
                   value={testBedName}
                   onChange={e => setTestBedName(e.target.value)}
@@ -253,7 +254,7 @@ export const PestSoilHealth: React.FC<PestSoilHealthProps> = ({
                   <label className="block font-semibold text-stone-700 mb-1">
                     Soil pH: <span className="font-mono text-emerald-800 font-bold">{testPh}</span>
                   </label>
-                  <input
+                  <input aria-label="Soil pH"
                     type="range"
                     min="5.0"
                     max="8.5"
@@ -271,7 +272,7 @@ export const PestSoilHealth: React.FC<PestSoilHealthProps> = ({
 
                 <div>
                   <label className="block font-semibold text-stone-700 mb-1">Organic Matter %</label>
-                  <input
+                  <input aria-label="Organic Matter %"
                     type="number"
                     min="0"
                     max="20"
@@ -287,7 +288,7 @@ export const PestSoilHealth: React.FC<PestSoilHealthProps> = ({
               <div className="grid grid-cols-3 gap-2">
                 <div>
                   <label className="block font-semibold text-stone-700 mb-1">Nitrogen (N)</label>
-                  <select
+                  <select aria-label="Nitrogen (N)"
                     value={testN}
                     onChange={e => setTestN(e.target.value as any)}
                     className="w-full p-1.5 border border-stone-300 rounded-xl"
@@ -300,7 +301,7 @@ export const PestSoilHealth: React.FC<PestSoilHealthProps> = ({
                 </div>
                 <div>
                   <label className="block font-semibold text-stone-700 mb-1">Phosphorus (P)</label>
-                  <select
+                  <select aria-label="Phosphorus (P)"
                     value={testP}
                     onChange={e => setTestP(e.target.value as any)}
                     className="w-full p-1.5 border border-stone-300 rounded-xl"
@@ -313,7 +314,7 @@ export const PestSoilHealth: React.FC<PestSoilHealthProps> = ({
                 </div>
                 <div>
                   <label className="block font-semibold text-stone-700 mb-1">Potassium (K)</label>
-                  <select
+                  <select aria-label="Potassium (K)"
                     value={testK}
                     onChange={e => setTestK(e.target.value as any)}
                     className="w-full p-1.5 border border-stone-300 rounded-xl"
@@ -328,7 +329,7 @@ export const PestSoilHealth: React.FC<PestSoilHealthProps> = ({
 
               <div>
                 <label className="block font-semibold text-stone-700 mb-1">Lab Notes</label>
-                <input
+                <input aria-label="Lab Notes"
                   type="text"
                   value={testNotes}
                   onChange={e => setTestNotes(e.target.value)}
@@ -436,7 +437,7 @@ export const PestSoilHealth: React.FC<PestSoilHealthProps> = ({
             >
               <div>
                 <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Bed / Location Name</label>
-                <input
+                <input aria-label="Bed / Location Name"
                   type="text"
                   required
                   value={editingSoilTest.locationName}
@@ -450,7 +451,7 @@ export const PestSoilHealth: React.FC<PestSoilHealthProps> = ({
                   <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">
                     Soil pH: <span className="font-mono font-bold text-emerald-800">{editingSoilTest.ph}</span>
                   </label>
-                  <input
+                  <input aria-label="Soil pH"
                     type="range"
                     min="5.0"
                     max="8.5"
@@ -462,7 +463,7 @@ export const PestSoilHealth: React.FC<PestSoilHealthProps> = ({
                 </div>
                 <div>
                   <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Organic Matter %</label>
-                  <input
+                  <input aria-label="Organic Matter %"
                     type="number"
                     step="0.1"
                     min="0"
@@ -477,7 +478,7 @@ export const PestSoilHealth: React.FC<PestSoilHealthProps> = ({
               <div className="grid grid-cols-3 gap-2">
                 <div>
                   <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Nitrogen (N)</label>
-                  <select
+                  <select aria-label="Nitrogen (N)"
                     value={editingSoilTest.nitrogen}
                     onChange={e => setEditingSoilTest({ ...editingSoilTest, nitrogen: e.target.value as any })}
                     className="w-full p-1.5 border border-stone-300 dark:border-[#223d2e] dark:bg-[#182c20] rounded-xl text-xs"
@@ -490,7 +491,7 @@ export const PestSoilHealth: React.FC<PestSoilHealthProps> = ({
                 </div>
                 <div>
                   <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Phosphorus (P)</label>
-                  <select
+                  <select aria-label="Phosphorus (P)"
                     value={editingSoilTest.phosphorus}
                     onChange={e => setEditingSoilTest({ ...editingSoilTest, phosphorus: e.target.value as any })}
                     className="w-full p-1.5 border border-stone-300 dark:border-[#223d2e] dark:bg-[#182c20] rounded-xl text-xs"
@@ -503,7 +504,7 @@ export const PestSoilHealth: React.FC<PestSoilHealthProps> = ({
                 </div>
                 <div>
                   <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Potassium (K)</label>
-                  <select
+                  <select aria-label="Potassium (K)"
                     value={editingSoilTest.potassium}
                     onChange={e => setEditingSoilTest({ ...editingSoilTest, potassium: e.target.value as any })}
                     className="w-full p-1.5 border border-stone-300 dark:border-[#223d2e] dark:bg-[#182c20] rounded-xl text-xs"
@@ -518,7 +519,7 @@ export const PestSoilHealth: React.FC<PestSoilHealthProps> = ({
 
               <div>
                 <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Notes / Lab Advice</label>
-                <textarea
+                <textarea aria-label="Notes / Lab Advice"
                   rows={2}
                   value={editingSoilTest.notes}
                   onChange={e => setEditingSoilTest({ ...editingSoilTest, notes: e.target.value })}
@@ -564,7 +565,7 @@ export const PestSoilHealth: React.FC<PestSoilHealthProps> = ({
                 <label className="block font-semibold text-amber-900 mb-1">
                   Brown Carbon Volume (Dry Leaves, Straw, Cardboard): {brownParts} parts
                 </label>
-                <input
+                <input aria-label="Brown Carbon Volume (Dry Leaves, Straw, Cardboard) (parts)"
                   type="range"
                   min="1"
                   max="6"
@@ -578,7 +579,7 @@ export const PestSoilHealth: React.FC<PestSoilHealthProps> = ({
                 <label className="block font-semibold text-emerald-900 mb-1">
                   Green Nitrogen Volume (Kitchen Scraps, Grass, Coffee): {greenParts} parts
                 </label>
-                <input
+                <input aria-label="Green Nitrogen Volume (Kitchen Scraps, Grass, Coffee) (parts)"
                   type="range"
                   min="1"
                   max="4"

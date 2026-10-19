@@ -1,5 +1,5 @@
 // FloraHearth Service Worker - Version Controlled Cache
-const APP_VERSION = 'v2.5.0';
+const APP_VERSION = 'v2.6.0';
 const CACHE_NAME = `florahearth-static-${APP_VERSION}`;
 const DATA_CACHE_NAME = `florahearth-data-${APP_VERSION}`;
 
@@ -94,6 +94,11 @@ self.addEventListener('fetch', (event) => {
     );
     return;
   }
+
+  // Other sites (weather API, the user's sync Worker) -> don't intercept.
+  // Caching those would keep copies of personal backups in Cache Storage,
+  // and the weather service keeps its own short-lived cache.
+  if (url.origin !== self.location.origin) return;
 
   // Application script & style chunks -> Network first with cache fallback
   event.respondWith(

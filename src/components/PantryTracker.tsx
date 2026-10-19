@@ -16,6 +16,7 @@ import {
   Calendar,
   X
 } from 'lucide-react';
+import { localDateStr, daysUntil } from '../services/dates';
 
 interface PantryTrackerProps {
   pantryItems: PantryItem[];
@@ -45,11 +46,11 @@ export const PantryTracker: React.FC<PantryTrackerProps> = ({
   const [formPreservationType, setFormPreservationType] = useState<PantryItem['preservationType']>('water-bath-canned');
   const [formQuantity, setFormQuantity] = useState<number>(1);
   const [formUnit, setFormUnit] = useState('quart jars');
-  const [formDatePrepared, setFormDatePrepared] = useState(new Date().toISOString().split('T')[0]);
+  const [formDatePrepared, setFormDatePrepared] = useState(localDateStr());
   const [formBestByDate, setFormBestByDate] = useState(() => {
     const d = new Date();
     d.setFullYear(d.getFullYear() + 1);
-    return d.toISOString().split('T')[0];
+    return localDateStr(d);
   });
   const [formLocation, setFormLocation] = useState<PantryItem['storageLocation']>('Pantry Shelf');
   const [formNotes, setFormNotes] = useState('');
@@ -60,10 +61,10 @@ export const PantryTracker: React.FC<PantryTrackerProps> = ({
     setFormPreservationType('water-bath-canned');
     setFormQuantity(4);
     setFormUnit('quart jars');
-    setFormDatePrepared(new Date().toISOString().split('T')[0]);
+    setFormDatePrepared(localDateStr());
     const nextYear = new Date();
     nextYear.setFullYear(nextYear.getFullYear() + 1);
-    setFormBestByDate(nextYear.toISOString().split('T')[0]);
+    setFormBestByDate(localDateStr(nextYear));
     setFormLocation('Pantry Shelf');
     setFormNotes('');
     setIsEditModalOpen(true);
@@ -121,12 +122,7 @@ export const PantryTracker: React.FC<PantryTrackerProps> = ({
   };
 
   // Expiration calculations
-  const today = new Date();
-  const getDaysUntil = (dateStr: string) => {
-    const target = new Date(dateStr);
-    const diffTime = target.getTime() - today.getTime();
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  };
+  const getDaysUntil = (dateStr: string) => daysUntil(dateStr);
 
   const itemsWithExpiry = pantryItems.map(item => ({
     ...item,
@@ -553,7 +549,7 @@ export const PantryTracker: React.FC<PantryTrackerProps> = ({
 
             <div className="flex items-center gap-2 bg-[#f4f7f4] dark:bg-[#182c20] border border-[#d6e4da] dark:border-[#223d2e] p-2 rounded-xl text-xs">
               <span className="font-semibold text-stone-700 dark:text-stone-300">Household:</span>
-              <input
+              <input aria-label="Household size (people)"
                 type="number"
                 min="1"
                 max="10"
@@ -682,7 +678,7 @@ export const PantryTracker: React.FC<PantryTrackerProps> = ({
             <form onSubmit={handleSaveItem} className="space-y-3">
               <div>
                 <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Item / Batch Name</label>
-                <input
+                <input aria-label="Item / Batch Name"
                   type="text"
                   required
                   value={formCropName}
@@ -695,7 +691,7 @@ export const PantryTracker: React.FC<PantryTrackerProps> = ({
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Preservation Method</label>
-                  <select
+                  <select aria-label="Preservation Method"
                     value={formPreservationType}
                     onChange={e => setFormPreservationType(e.target.value as any)}
                     className="w-full px-3 py-1.5 border border-stone-300 dark:border-[#223d2e] dark:bg-[#182c20] rounded-xl text-xs"
@@ -712,7 +708,7 @@ export const PantryTracker: React.FC<PantryTrackerProps> = ({
 
                 <div>
                   <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Storage Location</label>
-                  <select
+                  <select aria-label="Storage Location"
                     value={formLocation}
                     onChange={e => setFormLocation(e.target.value as any)}
                     className="w-full px-3 py-1.5 border border-stone-300 dark:border-[#223d2e] dark:bg-[#182c20] rounded-xl text-xs"
@@ -729,7 +725,7 @@ export const PantryTracker: React.FC<PantryTrackerProps> = ({
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Quantity</label>
-                  <input
+                  <input aria-label="Quantity"
                     type="number"
                     min="1"
                     required
@@ -741,7 +737,7 @@ export const PantryTracker: React.FC<PantryTrackerProps> = ({
 
                 <div>
                   <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Unit</label>
-                  <input
+                  <input aria-label="Unit"
                     type="text"
                     value={formUnit}
                     onChange={e => setFormUnit(e.target.value)}
@@ -754,7 +750,7 @@ export const PantryTracker: React.FC<PantryTrackerProps> = ({
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Date Prepared</label>
-                  <input
+                  <input aria-label="Date Prepared"
                     type="date"
                     required
                     value={formDatePrepared}
@@ -765,7 +761,7 @@ export const PantryTracker: React.FC<PantryTrackerProps> = ({
 
                 <div>
                   <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Best By Date</label>
-                  <input
+                  <input aria-label="Best By Date"
                     type="date"
                     required
                     value={formBestByDate}
@@ -777,7 +773,7 @@ export const PantryTracker: React.FC<PantryTrackerProps> = ({
 
               <div>
                 <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Notes / Tested Recipe</label>
-                <textarea
+                <textarea aria-label="Notes / Tested Recipe"
                   rows={2}
                   value={formNotes}
                   onChange={e => setFormNotes(e.target.value)}

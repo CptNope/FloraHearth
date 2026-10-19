@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { GardenLocation, GardenSpace, GardenTask } from '../types/garden';
-import { getCropById } from '../data/cropsData';
+import { getTenderCropsByBed } from '../services/frostTender';
 import {
   WeatherAlmanacData,
   WeatherLoreItem,
@@ -34,6 +34,7 @@ import {
   ArrowRight,
   ShieldCheck,
 } from 'lucide-react';
+import { localDateStr } from '../services/dates';
 
 interface WeatherAlmanacProps {
   location: GardenLocation;
@@ -66,29 +67,12 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
   const [gpsLoading, setGpsLoading] = useState<boolean>(false);
   const [frostTaskFeedback, setFrostTaskFeedback] = useState<string | null>(null);
 
-  // Identify frost-tender crops planted in user's garden beds
-  const frostTenderFamilies = ['Solanaceae', 'Cucurbitaceae', 'Lamiaceae'];
-  const frostTenderCropsInBeds: { spaceId: string; bedName: string; crops: string[] }[] = [];
-
-  (spaces || []).forEach(sp => {
-    const cropsInBed: string[] = [];
-    (sp.cells || []).forEach(c => {
-      if (c.cropId) {
-        const crop = getCropById(c.cropId);
-        if (crop && (frostTenderFamilies.includes(crop.family) || ['bush-beans', 'pole-beans', 'basil', 'cucumber', 'squash', 'tomato', 'sweet-pepper'].includes(crop.id))) {
-          const cleanName = crop.name.split('(')[0].trim();
-          if (!cropsInBed.includes(cleanName)) cropsInBed.push(cleanName);
-        }
-      }
-    });
-    if (cropsInBed.length > 0) {
-      frostTenderCropsInBeds.push({ spaceId: sp.id, bedName: sp.name, crops: cropsInBed });
-    }
-  });
+  // Frost-tender crops planted in outdoor beds (derived from crop timing data)
+  const frostTenderCropsInBeds = getTenderCropsByBed(spaces || []);
 
   const handleAddFrostProtectionTask = (bedName: string, cropsList: string[]) => {
     if (!onUpdateTasks) return;
-    const todayStr = new Date().toISOString().split('T')[0];
+    const todayStr = localDateStr();
     const taskTitle = `Cover ${cropsList.join(' & ')} in ${bedName}`;
 
     if ((tasks || []).some(t => t.title.includes(bedName) && t.title.toLowerCase().includes('cover') && t.dueDate === todayStr)) {
@@ -253,9 +237,9 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
             <div className="flex items-center gap-2 text-xs font-mono text-emerald-700 dark:text-emerald-400">
               <MapPin className="w-3.5 h-3.5 shrink-0" />
               <span>{data?.locationName || `${location.city}, ${location.state}`}</span>
-              <span className="text-stone-300 dark:text-stone-600">·</span>
+              <span className="text-stone-300 dark:text-stone-600" aria-hidden="true">·</span>
               <span className="font-bold">Zone {location.usdaZone}</span>
-              <span className="text-stone-300 dark:text-stone-600">·</span>
+              <span className="text-stone-300 dark:text-stone-600" aria-hidden="true">·</span>
               <span>Elev. {Math.round((data?.elevationMeters || 100) * 3.28)} ft</span>
             </div>
 
@@ -284,7 +268,7 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
                 type="submit"
                 disabled={refreshing}
                 title="Search weather for location"
-                className="p-2 bg-emerald-800 text-white hover:bg-emerald-900 dark:bg-emerald-600 dark:hover:bg-emerald-500 rounded-xl transition-colors shrink-0"
+                className="p-2 bg-emerald-800 text-white hover:bg-emerald-900 dark:bg-emerald-700 dark:hover:bg-emerald-800 rounded-xl transition-colors shrink-0"
               >
                 <Search className="w-3.5 h-3.5" />
               </button>
@@ -636,8 +620,8 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
                   {indices.frostWarning.actionAdvice}
                 </p>
 
-                {/* Weather -> Task Automation: Bed-specific frost cover buttons */}
-                {frostTenderCropsInBeds.length > 0 ? (
+                {/* Weather -> Task Automation: only on a real frost or freeze-watch night */}
+                {indices.frostWarning.level !== 'none' && !data?.isMockOrFallback && (frostTenderCropsInBeds.length > 0 ? (
                   <div className="pt-2 border-t border-rose-200/50 dark:border-rose-900/40 space-y-2">
                     <span className="text-[11px] font-bold text-rose-950 dark:text-rose-200 flex items-center gap-1.5">
                       <ShieldAlert className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />
@@ -673,7 +657,7 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
                       <span>Add &ldquo;Cover Garden Beds Before Freeze&rdquo; Task</span>
                     </button>
                   </div>
-                )}
+                ))}
 
                 {/* Feedback message */}
                 {frostTaskFeedback && (
@@ -772,7 +756,7 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
             </span>
           </div>
 
-          <div className="overflow-x-auto pb-2 scrollbar-thin">
+          <div className="overflow-x-auto pb-2 scrollbar-thin" tabIndex={0} role="region" aria-label="Hourly forecast (scrolls sideways)">
             <div className="flex items-center gap-2.5 min-w-[760px]">
               {hourly.slice(0, 16).map((h, idx) => (
                 <div
@@ -793,7 +777,7 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
                       💧 {h.popPct}%
                     </span>
                   ) : (
-                    <span className="text-[10px] text-stone-400 dark:text-stone-500 block font-mono">
+                    <span className="text-[10px] text-stone-400 dark:text-stone-400 block font-mono">
                       Soil {Math.round(h.soilTempF)}°
                     </span>
                   )}
@@ -910,7 +894,7 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
               onClick={() => setBestDayFilter('all')}
               className={`px-3 py-1.5 text-xs font-semibold rounded-xl transition-colors ${
                 bestDayFilter === 'all'
-                  ? 'bg-white text-emerald-950 dark:bg-emerald-600 dark:text-white shadow-xs'
+                  ? 'bg-white text-emerald-950 dark:bg-emerald-700 dark:text-white shadow-xs'
                   : 'text-stone-600 dark:text-stone-300 hover:text-stone-900'
               }`}
             >
@@ -921,7 +905,7 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
               onClick={() => setBestDayFilter('above-ground')}
               className={`px-3 py-1.5 text-xs font-semibold rounded-xl transition-colors ${
                 bestDayFilter === 'above-ground'
-                  ? 'bg-white text-emerald-950 dark:bg-emerald-600 dark:text-white shadow-xs'
+                  ? 'bg-white text-emerald-950 dark:bg-emerald-700 dark:text-white shadow-xs'
                   : 'text-stone-600 dark:text-stone-300 hover:text-stone-900'
               }`}
             >
@@ -932,7 +916,7 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
               onClick={() => setBestDayFilter('root-crops')}
               className={`px-3 py-1.5 text-xs font-semibold rounded-xl transition-colors ${
                 bestDayFilter === 'root-crops'
-                  ? 'bg-white text-emerald-950 dark:bg-emerald-600 dark:text-white shadow-xs'
+                  ? 'bg-white text-emerald-950 dark:bg-emerald-700 dark:text-white shadow-xs'
                   : 'text-stone-600 dark:text-stone-300 hover:text-stone-900'
               }`}
             >
@@ -943,7 +927,7 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
               onClick={() => setBestDayFilter('weeding')}
               className={`px-3 py-1.5 text-xs font-semibold rounded-xl transition-colors ${
                 bestDayFilter === 'weeding'
-                  ? 'bg-white text-emerald-950 dark:bg-emerald-600 dark:text-white shadow-xs'
+                  ? 'bg-white text-emerald-950 dark:bg-emerald-700 dark:text-white shadow-xs'
                   : 'text-stone-600 dark:text-stone-300 hover:text-stone-900'
               }`}
             >
@@ -954,7 +938,7 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
               onClick={() => setBestDayFilter('harvest')}
               className={`px-3 py-1.5 text-xs font-semibold rounded-xl transition-colors ${
                 bestDayFilter === 'harvest'
-                  ? 'bg-white text-emerald-950 dark:bg-emerald-600 dark:text-white shadow-xs'
+                  ? 'bg-white text-emerald-950 dark:bg-emerald-700 dark:text-white shadow-xs'
                   : 'text-stone-600 dark:text-stone-300 hover:text-stone-900'
               }`}
             >
@@ -1042,7 +1026,7 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
                     onClick={() => setActiveLoreCategory(cat)}
                     className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold whitespace-nowrap transition-colors ${
                       activeLoreCategory === cat
-                        ? 'bg-emerald-800 text-white dark:bg-emerald-600'
+                        ? 'bg-emerald-800 text-white dark:bg-emerald-700'
                         : 'bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-200'
                     }`}
                   >
@@ -1054,7 +1038,7 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
           </div>
 
           {/* Lore cards list */}
-          <div className="space-y-3 max-h-[360px] overflow-y-auto pr-1">
+          <div className="space-y-3 max-h-[360px] overflow-y-auto pr-1" tabIndex={0} role="region" aria-label="Weather lore list">
             {filteredLore.map((item) => (
               <div
                 key={item.id}
