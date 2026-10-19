@@ -95,6 +95,11 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  // Other sites (weather API, the user's sync Worker) -> don't intercept.
+  // Caching those would keep copies of personal backups in Cache Storage,
+  // and the weather service keeps its own short-lived cache.
+  if (url.origin !== self.location.origin) return;
+
   // Application script & style chunks -> Network first with cache fallback
   event.respondWith(
     fetch(req)

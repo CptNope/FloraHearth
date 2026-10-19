@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { JournalEntry, ExpenseRecord, PantryItem } from '../types/garden';
 import { CROPS_DATA, getCropById } from '../data/cropsData';
-import { exportAllDataJson, importAllDataJson } from '../services/storage';
+import { exportAllDataJson, importAllDataJson, hasUserSavedData, validateBackupBundle, getBundleExportedAt } from '../services/storage';
 import { saveJournalPhoto, getJournalPhoto, deleteJournalPhoto } from '../services/imageStorage';
+import { PANTRY_DEFAULTS, CropPreservationMethod, getQuickPreserveMethods, getCanningMethods } from '../services/preservationMapping';
+import { localDateStr, addDays } from '../services/dates';
 import {
   BookOpen,
   DollarSign,
@@ -278,6 +280,11 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
     const reader = new FileReader();
     reader.onload = event => {
       const content = event.target?.result as string;
+      e.target.value = ''; // allow choosing the same file again
+      if (hasUserSavedData() && !confirm(`Replace ALL garden data on this device with "${file.name}"?`)) {
+        setCfSyncStatus('Restore cancelled. Nothing on this device was changed.');
+        return;
+      }
       const success = importAllDataJson(content);
       if (success) {
         setCfSyncStatus('JSON backup successfully restored into FloraHearth!');
@@ -289,32 +296,68 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
     reader.readAsText(file);
   };
 
+  // Remote sync safety:
+  // - never push the built-in sample garden over a real backup,
+  // - check the remote copy's timestamp before overwriting it,
+  // - confirm before a pull replaces everything on this device.
+  const LAST_SYNC_KEY = 'florahearth_cf_last_synced_export';
+
+  const authHeaders = (): Record<string, string> =>
+    cfWorkerToken ? { Authorization: `Bearer ${cfWorkerToken}` } : {};
+
+  const fetchRemoteBackup = async (): Promise<{ text: string; exportedAt: string | null } | null> => {
+    const res = await fetch(cfWorkerUrl, { method: 'GET', headers: authHeaders(), cache: 'no-store' });
+    if (res.status === 404) return null; // nothing stored yet
+    if (!res.ok) throw new Error(`Worker returned ${res.status}`);
+    const text = await res.text();
+    if (!text.trim()) return null;
+    return { text, exportedAt: getBundleExportedAt(text) };
+  };
+
+  const formatStamp = (iso: string | null) => (iso ? new Date(iso).toLocaleString() : 'an unknown time');
+
   // Push to Cloudflare Worker + D1
   const handlePushToCloudflare = async () => {
     if (!cfWorkerUrl.trim()) {
       alert('Please enter your Cloudflare Worker URL.');
       return;
     }
+    if (!hasUserSavedData()) {
+      setCfSyncStatus('Nothing to push yet: this device is still showing the sample garden. Pull your backup first, or add your own garden data.');
+      return;
+    }
     setIsSyncing(true);
-    setCfSyncStatus('Pushing encrypted JSON payload to Cloudflare Worker + D1...');
+    setCfSyncStatus('Checking the copy stored in your Worker...');
     try {
       localStorage.setItem('florahearth_cf_worker_url', cfWorkerUrl);
       localStorage.setItem('florahearth_cf_worker_token', cfWorkerToken);
 
+      const remote = await fetchRemoteBackup();
+      const lastSynced = localStorage.getItem(LAST_SYNC_KEY);
+      if (remote && remote.exportedAt && remote.exportedAt !== lastSynced) {
+        const ok = confirm(
+          `The copy in your Worker was saved from another device at ${formatStamp(remote.exportedAt)}, after this device last synced.\n\nPushing will replace it with this device's data. Continue?`
+        );
+        if (!ok) {
+          setCfSyncStatus('Push cancelled. Pull first to get the newer copy.');
+          return;
+        }
+      }
+
+      setCfSyncStatus('Sending your garden data to your Worker...');
       const jsonStr = exportAllDataJson();
       const res = await fetch(cfWorkerUrl, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(cfWorkerToken ? { Authorization: `Bearer ${cfWorkerToken}` } : {}),
-        },
+        headers: { 'Content-Type': 'application/json', ...authHeaders() },
         body: jsonStr,
       });
 
       if (res.ok) {
-        setCfSyncStatus(`Synced successfully with Cloudflare Worker at ${new Date().toLocaleTimeString()}!`);
+        const stamp = getBundleExportedAt(jsonStr);
+        if (stamp) localStorage.setItem(LAST_SYNC_KEY, stamp);
+        setCfSyncStatus(`Pushed to your Worker at ${new Date().toLocaleTimeString()}.`);
       } else {
-        setCfSyncStatus(`Cloudflare Worker responded with status ${res.status}: ${res.statusText}`);
+        setCfSyncStatus(`Your Worker responded with status ${res.status}: ${res.statusText}`);
       }
     } catch (err: any) {
       setCfSyncStatus(`Sync error: ${err.message || 'Unable to reach worker URL'}`);
@@ -330,26 +373,41 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
       return;
     }
     setIsSyncing(true);
-    setCfSyncStatus('Pulling backup from Cloudflare Worker...');
+    setCfSyncStatus('Pulling backup from your Worker...');
     try {
-      const res = await fetch(cfWorkerUrl, {
-        method: 'GET',
-        headers: {
-          ...(cfWorkerToken ? { Authorization: `Bearer ${cfWorkerToken}` } : {}),
-        },
-      });
+      localStorage.setItem('florahearth_cf_worker_url', cfWorkerUrl);
+      localStorage.setItem('florahearth_cf_worker_token', cfWorkerToken);
 
-      if (res.ok) {
-        const text = await res.text();
-        const success = importAllDataJson(text);
-        if (success) {
-          setCfSyncStatus('Backup pulled and restored into FloraHearth!');
-          onDataImportSuccess();
-        } else {
-          setCfSyncStatus('Worker returned non-matching database schema.');
+      const remote = await fetchRemoteBackup();
+      if (!remote) {
+        setCfSyncStatus('Your Worker has no backup stored yet. Push from the device that has your garden data.');
+        return;
+      }
+
+      let parsed: unknown;
+      try { parsed = JSON.parse(remote.text); } catch { parsed = null; }
+      const problem = validateBackupBundle(parsed);
+      if (problem) {
+        setCfSyncStatus(`Pull stopped: ${problem} Nothing on this device was changed.`);
+        return;
+      }
+
+      if (hasUserSavedData()) {
+        const ok = confirm(
+          `Replace ALL garden data on this device with the backup saved at ${formatStamp(remote.exportedAt)}?\n\nAnything on this device that is not in that backup will be lost. Use "Download JSON backup" first if you are unsure.`
+        );
+        if (!ok) {
+          setCfSyncStatus('Pull cancelled. Nothing on this device was changed.');
+          return;
         }
+      }
+
+      if (importAllDataJson(remote.text)) {
+        if (remote.exportedAt) localStorage.setItem(LAST_SYNC_KEY, remote.exportedAt);
+        setCfSyncStatus('Backup pulled and restored.');
+        onDataImportSuccess();
       } else {
-        setCfSyncStatus(`Error: Worker returned ${res.status}`);
+        setCfSyncStatus('Pull stopped: the backup could not be read. Nothing on this device was changed.');
       }
     } catch (err: any) {
       setCfSyncStatus(`Sync error: ${err.message || 'Network error'}`);
@@ -358,25 +416,26 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
     }
   };
 
-  // Create pantry item from harvest quick prompt
-  const handleQuickPreserveHarvest = () => {
+  // Create pantry item from harvest quick prompt.
+  // Only non-canning methods are offered here; canning goes through the
+  // Safe Preservation tab, which carries the tested, altitude-adjusted process.
+  const handleQuickPreserveHarvest = (method: CropPreservationMethod) => {
     if (!preservePromptHarvest || !onAddPantryItem) return;
-    const crop = preservePromptHarvest.cropId ? getCropById(preservePromptHarvest.cropId) : null;
-    const presType = crop?.preservationMethods[0] || 'water-bath-canned';
-
-    const nextYear = new Date();
-    nextYear.setFullYear(nextYear.getFullYear() + 1);
+    const d = PANTRY_DEFAULTS[method];
+    const today = new Date();
+    const bestBy = new Date(today);
+    bestBy.setMonth(bestBy.getMonth() + d.shelfLifeMonths);
 
     const pantryPayload: PantryItem = {
       id: `pantry-${Date.now()}`,
       cropName: preservePromptHarvest.cropName,
-      preservationType: presType === 'freezing' ? 'frozen' : 'water-bath-canned',
-      quantity: Math.max(1, Math.round(preservePromptHarvest.yieldLbs / 2.5)),
-      unit: presType === 'freezing' ? '1-lb freezer bags' : 'quart jars',
-      datePrepared: new Date().toISOString().split('T')[0],
-      bestByDate: nextYear.toISOString().split('T')[0],
-      storageLocation: presType === 'freezing' ? 'Freezer' : 'Pantry Shelf',
-      notes: `Preserved from ${preservePromptHarvest.yieldLbs} lbs garden harvest.`,
+      preservationType: d.preservationType,
+      quantity: Math.max(1, Math.round(preservePromptHarvest.yieldLbs / d.lbsPerUnit)),
+      unit: d.unit,
+      datePrepared: localDateStr(today),
+      bestByDate: localDateStr(bestBy),
+      storageLocation: d.storageLocation,
+      notes: `From ${preservePromptHarvest.yieldLbs} lbs garden harvest.`,
     };
 
     onAddPantryItem(pantryPayload);
@@ -448,28 +507,59 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
               <strong className="text-amber-950 dark:text-amber-200 font-bold block text-sm">
                 Preserve This {preservePromptHarvest.yieldLbs} lbs {preservePromptHarvest.cropName} Harvest?
               </strong>
-              <span className="text-amber-900/90 dark:text-amber-300/90">
-                Instantly generate a canned, frozen, or dehydrated batch and send it directly to your pantry inventory.
+              <span className="text-amber-950 dark:text-amber-100">
+                {(() => {
+                  const crop = preservePromptHarvest.cropId ? getCropById(preservePromptHarvest.cropId) : null;
+                  const canning = getCanningMethods(crop);
+                  if (canning.includes('pressure-canning')) {
+                    return 'Log a frozen, dried or stored batch now. This is a low-acid crop: canning it requires a pressure canner, never a water bath.';
+                  }
+                  if (canning.length > 0) {
+                    return 'Log a frozen, dried or stored batch now, or follow a tested canning procedure first.';
+                  }
+                  return 'Log a preserved batch straight to your pantry inventory.';
+                })()}
               </span>
             </div>
           </div>
 
-          <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto">
+          <div className="flex flex-wrap items-center gap-2 shrink-0 self-end sm:self-auto">
             <button
               type="button"
               onClick={() => setPreservePromptHarvest(null)}
-              className="px-3 py-1.5 text-stone-600 dark:text-stone-300 hover:bg-stone-200/60 rounded-xl font-medium"
+              className="px-3 py-1.5 text-stone-700 dark:text-stone-200 hover:bg-amber-100 dark:hover:bg-amber-900/50 rounded-xl font-medium"
             >
               Skip
             </button>
-            <button
-              type="button"
-              onClick={handleQuickPreserveHarvest}
-              className="flex items-center gap-1.5 px-4 py-1.5 bg-[#234730] text-white font-semibold rounded-xl hover:bg-[#183422] transition-colors shadow-xs"
-            >
-              <span>Add to Pantry</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
+            {(() => {
+              const crop = preservePromptHarvest.cropId ? getCropById(preservePromptHarvest.cropId) : null;
+              const quick = getQuickPreserveMethods(crop);
+              const canning = getCanningMethods(crop);
+              return (
+                <>
+                  {quick.map(method => (
+                    <button
+                      key={method}
+                      type="button"
+                      onClick={() => handleQuickPreserveHarvest(method)}
+                      className="flex items-center gap-1.5 px-3 py-1.5 bg-[#234730] text-white font-semibold rounded-xl hover:bg-[#183422] transition-colors shadow-xs"
+                    >
+                      <span>{PANTRY_DEFAULTS[method].label}</span>
+                    </button>
+                  ))}
+                  {canning.length > 0 && onNavigateToTab && (
+                    <button
+                      type="button"
+                      onClick={() => { setPreservePromptHarvest(null); onNavigateToTab('preservation'); }}
+                      className="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-[#132219] border border-[#234730] dark:border-emerald-500 text-[#183422] dark:text-emerald-200 font-semibold rounded-xl hover:bg-emerald-50 dark:hover:bg-emerald-950 transition-colors"
+                    >
+                      <span>{canning.includes('pressure-canning') ? 'Pressure-canning guide' : 'Canning guide'}</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </>
+              );
+            })()}
           </div>
         </div>
       )}
@@ -926,7 +1016,7 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
                   Cloudflare Worker + D1 Remote Sync (Optional)
                 </h3>
                 <p className="text-stone-600 dark:text-stone-300 mt-0.5">
-                  Sync your garden data across multiple devices using your personal Cloudflare Worker. The worker stores your season backup in Cloudflare D1 (SQL).
+                  Sync your garden data across devices through your own Cloudflare Worker, which stores one backup in Cloudflare D1. A ready-to-deploy Worker is in the repo under <code>worker/</code>. Data travels as plain JSON over HTTPS, so keep the sync token secret. Journal photos stay on each device and are not synced.
                 </p>
               </div>
             </div>
