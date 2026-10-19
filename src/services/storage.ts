@@ -1,4 +1,4 @@
-import { GardenLocation, UserPreferences, GardenSpace, GardenTask, PantryItem, JournalEntry, SoilTestRecord, HydroWaterRecord, ExpenseRecord } from '../types/garden';
+import { GardenLocation, UserPreferences, GardenSpace, GardenTask, PantryItem, JournalEntry, SoilTestRecord, HydroWaterRecord, ExpenseRecord, SeedPacket } from '../types/garden';
 import { lookupLocation } from '../data/usClimates';
 
 const STORAGE_KEYS = {
@@ -11,6 +11,7 @@ const STORAGE_KEYS = {
   SOIL_TESTS: 'florahearth_soil_v1',
   HYDRO_TESTS: 'florahearth_hydro_v1',
   EXPENSES: 'florahearth_expenses_v1',
+  SEEDS: 'florahearth_seeds_v1',
   SETUP_DONE: 'florahearth_setup_done_v1',
 };
 
@@ -51,7 +52,17 @@ export const INITIAL_SAMPLE_SPACES: GardenSpace[] = [
       { x: 2, y: 1, cropId: 'lettuce', varietyName: 'Buttercrunch', count: 4 },
       { x: 3, y: 1, cropId: 'radish', varietyName: 'Cherry Belle', count: 16 },
     ],
-    notes: '4x8 cedar raised bed installed with drip emitter tubing on timer.'
+    notes: '4x8 cedar raised bed installed with drip emitter tubing on timer.',
+    seasonHistory: [
+      {
+        season: 'Summer 2025',
+        year: 2025,
+        crops: [
+          { cropId: 'tomato', cropName: 'Cherokee Purple', family: 'Solanaceae' },
+          { cropId: 'sweet-pepper', cropName: 'California Wonder', family: 'Solanaceae' }
+        ]
+      }
+    ]
   },
   {
     id: 'bed-2',
@@ -191,11 +202,24 @@ export const INITIAL_SAMPLE_JOURNAL: JournalEntry[] = [
   {
     id: 'journal-2',
     date: '2026-09-15',
-    title: 'Late Summer Tomato & Pepper Harvest Tally',
+    title: 'Late Summer Tomato Harvest Tally',
     category: 'harvest',
-    content: 'Massive harvest day! Picked 28 lbs of Roma paste tomatoes, 6 lbs of Sun Gold cherry tomatoes, and 14 bell peppers. Canned 7 quarts of marinara sauce following USDA acidification guidelines.',
+    content: 'Massive harvest day! Picked 28 lbs of Roma paste tomatoes and 6 lbs of Sun Gold cherry tomatoes. Canned 7 quarts of marinara sauce following USDA acidification guidelines.',
+    cropId: 'tomato',
+    cropName: 'Roma & Sun Gold Tomatoes',
     yieldLbs: 34,
     tags: ['harvest', 'canning', 'tomatoes']
+  },
+  {
+    id: 'journal-3',
+    date: '2026-09-22',
+    title: 'Provider Bush Green Bean Flush',
+    category: 'harvest',
+    content: 'Crisp green bean picking before dinner. Blanched and vacuum sealed 8 quart bags for the freezer pantry.',
+    cropId: 'bush-beans',
+    cropName: 'Provider Bush Beans',
+    yieldLbs: 12,
+    tags: ['harvest', 'freezing', 'beans']
   }
 ];
 
@@ -219,6 +243,43 @@ export const INITIAL_SAMPLE_SOIL: SoilTestRecord[] = [
     notes: 'Cooperative Extension Lab test. pH is in prime range for nightshades and brassicas.',
     recommendedAction: 'Top dress with kelp meal or sulfate of potash to bring potassium into optimal balance without raising pH.'
   }
+];
+
+export const INITIAL_SAMPLE_HYDRO: HydroWaterRecord[] = [
+  {
+    id: 'hydro-1',
+    date: '2026-10-15',
+    systemType: 'kratky',
+    ph: 6.2,
+    ecPpm: 850,
+    waterTempF: 68,
+    ammoniaPpm: 0,
+    nitritePpm: 0,
+    nitratePpm: 35,
+    notes: 'Lettuce and basil Kratky buckets. Vibrant root development, clear nutrient solution.'
+  },
+  {
+    id: 'hydro-2',
+    date: '2026-10-18',
+    systemType: 'dwc',
+    ph: 5.9,
+    ecPpm: 1250,
+    waterTempF: 70,
+    ammoniaPpm: 0,
+    nitritePpm: 0,
+    nitratePpm: 50,
+    notes: 'DWC tomato bucket with air stone bubbling. Transitioned to flowering formula.'
+  }
+];
+
+export const INITIAL_SAMPLE_SEEDS: SeedPacket[] = [
+  { id: 'seed-1', cropId: 'tomato', varietyName: 'Cherokee Purple', brand: 'Baker Creek Heirloom', yearBought: 2025, quantityStatus: 'full', germinationRatePct: 95 },
+  { id: 'seed-2', cropId: 'tomato', varietyName: 'Sun Gold F1', brand: 'Johnny’s Selected Seeds', yearBought: 2024, quantityStatus: 'half', germinationRatePct: 90 },
+  { id: 'seed-3', cropId: 'basil', varietyName: 'Genovese', brand: 'High Mowing Organic', yearBought: 2025, quantityStatus: 'full', germinationRatePct: 92 },
+  { id: 'seed-4', cropId: 'bush-beans', varietyName: 'Provider', brand: 'Botanical Interests', yearBought: 2025, quantityStatus: 'half', germinationRatePct: 88 },
+  { id: 'seed-5', cropId: 'onion', varietyName: 'Yellow Sweet Spanish', brand: 'Southern Exposure', yearBought: 2024, quantityStatus: 'few-left', germinationRatePct: 65, notes: 'Onion seeds lose viability fast past 1 year. Recommend damp paper towel test.' },
+  { id: 'seed-6', cropId: 'kale', varietyName: 'Lacinato Dinosaur', brand: 'Seed Savers Exchange', yearBought: 2023, quantityStatus: 'half', germinationRatePct: 85 },
+  { id: 'seed-7', cropId: 'parsnip', varietyName: 'Hollow Crown', brand: 'Territorial Seed', yearBought: 2024, quantityStatus: 'half', germinationRatePct: 45, notes: 'Parsnip seed drops dramatically in germination past year 1.' }
 ];
 
 // Helper functions for reading and writing to localStorage safely
@@ -432,6 +493,40 @@ export function saveSoilTests(records: SoilTestRecord[]): void {
   safeSetItem(STORAGE_KEYS.SOIL_TESTS, JSON.stringify(records));
 }
 
+export function getSavedHydroTests(): HydroWaterRecord[] {
+  try {
+    const raw = safeGetItem(STORAGE_KEYS.HYDRO_TESTS);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) return parsed;
+    }
+  } catch (e) {
+    console.warn('Failed to parse hydro tests', e);
+  }
+  return INITIAL_SAMPLE_HYDRO;
+}
+
+export function saveHydroTests(records: HydroWaterRecord[]): void {
+  safeSetItem(STORAGE_KEYS.HYDRO_TESTS, JSON.stringify(records));
+}
+
+export function getSavedSeeds(): SeedPacket[] {
+  try {
+    const raw = safeGetItem(STORAGE_KEYS.SEEDS);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) return parsed;
+    }
+  } catch (e) {
+    console.warn('Failed to parse seeds', e);
+  }
+  return INITIAL_SAMPLE_SEEDS;
+}
+
+export function saveSeeds(seeds: SeedPacket[]): void {
+  safeSetItem(STORAGE_KEYS.SEEDS, JSON.stringify(seeds));
+}
+
 export function exportAllDataJson(): string {
   const bundle = {
     location: getSavedLocation(),
@@ -442,8 +537,10 @@ export function exportAllDataJson(): string {
     journal: getSavedJournal(),
     expenses: getSavedExpenses(),
     soilTests: getSavedSoilTests(),
+    hydroTests: getSavedHydroTests(),
+    seeds: getSavedSeeds(),
     exportedAt: new Date().toISOString(),
-    version: '1.0'
+    version: '2.0'
   };
   return JSON.stringify(bundle, null, 2);
 }
@@ -459,6 +556,8 @@ export function importAllDataJson(jsonString: string): boolean {
     if (bundle.journal) saveJournal(bundle.journal);
     if (bundle.expenses) saveExpenses(bundle.expenses);
     if (bundle.soilTests) saveSoilTests(bundle.soilTests);
+    if (bundle.hydroTests) saveHydroTests(bundle.hydroTests);
+    if (bundle.seeds) saveSeeds(bundle.seeds);
     return true;
   } catch (e) {
     console.error('Import failed', e);

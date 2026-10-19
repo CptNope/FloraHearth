@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { GardenLocation } from '../types/garden';
+import { GardenLocation, GardenSpace, GardenTask } from '../types/garden';
+import { getCropById } from '../data/cropsData';
 import {
   WeatherAlmanacData,
   WeatherLoreItem,
@@ -29,18 +30,29 @@ import {
   Search,
   Crosshair,
   SlidersHorizontal,
+  Bell,
+  ArrowRight,
+  ShieldCheck,
 } from 'lucide-react';
 
 interface WeatherAlmanacProps {
   location: GardenLocation;
   onUpdateLocation?: (newLocation: GardenLocation) => void;
   onOpenSetup?: () => void;
+  spaces?: GardenSpace[];
+  tasks?: GardenTask[];
+  onUpdateTasks?: (newTasks: GardenTask[]) => void;
+  onNavigate?: (tab: string) => void;
 }
 
 export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
   location,
   onUpdateLocation,
   onOpenSetup,
+  spaces = [],
+  tasks = [],
+  onUpdateTasks,
+  onNavigate,
 }) => {
   const [data, setData] = useState<WeatherAlmanacData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -52,6 +64,50 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
   const [activeLoreCategory, setActiveLoreCategory] = useState<string>('All');
   const [bestDayFilter, setBestDayFilter] = useState<string>('all');
   const [gpsLoading, setGpsLoading] = useState<boolean>(false);
+  const [frostTaskFeedback, setFrostTaskFeedback] = useState<string | null>(null);
+
+  // Identify frost-tender crops planted in user's garden beds
+  const frostTenderFamilies = ['Solanaceae', 'Cucurbitaceae', 'Lamiaceae'];
+  const frostTenderCropsInBeds: { spaceId: string; bedName: string; crops: string[] }[] = [];
+
+  (spaces || []).forEach(sp => {
+    const cropsInBed: string[] = [];
+    (sp.cells || []).forEach(c => {
+      if (c.cropId) {
+        const crop = getCropById(c.cropId);
+        if (crop && (frostTenderFamilies.includes(crop.family) || ['bush-beans', 'pole-beans', 'basil', 'cucumber', 'squash', 'tomato', 'sweet-pepper'].includes(crop.id))) {
+          const cleanName = crop.name.split('(')[0].trim();
+          if (!cropsInBed.includes(cleanName)) cropsInBed.push(cleanName);
+        }
+      }
+    });
+    if (cropsInBed.length > 0) {
+      frostTenderCropsInBeds.push({ spaceId: sp.id, bedName: sp.name, crops: cropsInBed });
+    }
+  });
+
+  const handleAddFrostProtectionTask = (bedName: string, cropsList: string[]) => {
+    if (!onUpdateTasks) return;
+    const todayStr = new Date().toISOString().split('T')[0];
+    const taskTitle = `Cover ${cropsList.join(' & ')} in ${bedName}`;
+
+    if ((tasks || []).some(t => t.title.includes(bedName) && t.title.toLowerCase().includes('cover') && t.dueDate === todayStr)) {
+      setFrostTaskFeedback(`Freeze cover task for ${bedName} is already on your calendar today.`);
+      return;
+    }
+
+    const newTask: GardenTask = {
+      id: `task-frost-${Date.now()}`,
+      title: `Frost Shield: ${taskTitle} before nightfall`,
+      type: 'maintenance',
+      dueDate: todayStr,
+      completed: false,
+      notes: `Forecast low of ${Math.round(data?.indices?.frostWarning?.tonightMinTemp || 32)}°F. Cover beds with floating row fabric, burlap, or frost blankets to trap radiant ground heat.`
+    };
+
+    onUpdateTasks([newTask, ...(tasks || [])]);
+    setFrostTaskFeedback(`✓ Added cover task for ${cropsList.join(', ')} in ${bedName} to your calendar!`);
+  };
 
   // Load weather and almanac data
   const loadData = async (force = false, customLoc?: GardenLocation) => {
@@ -572,13 +628,69 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
                 {indices.frostWarning.details}
               </p>
 
-              <div className="pt-2 border-t border-stone-100 dark:border-white/5 space-y-1">
+              <div className="pt-2 border-t border-stone-100 dark:border-white/5 space-y-2">
                 <span className="text-[10px] font-mono uppercase tracking-wider text-rose-700 dark:text-rose-400 block font-bold">
                   Recommended Action:
                 </span>
                 <p className="text-xs text-stone-700 dark:text-stone-200 font-medium">
                   {indices.frostWarning.actionAdvice}
                 </p>
+
+                {/* Weather -> Task Automation: Bed-specific frost cover buttons */}
+                {frostTenderCropsInBeds.length > 0 ? (
+                  <div className="pt-2 border-t border-rose-200/50 dark:border-rose-900/40 space-y-2">
+                    <span className="text-[11px] font-bold text-rose-950 dark:text-rose-200 flex items-center gap-1.5">
+                      <ShieldAlert className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />
+                      Tender Crops Planted in Your Beds:
+                    </span>
+                    <div className="flex flex-col gap-1.5">
+                      {frostTenderCropsInBeds.map(b => (
+                        <div key={b.spaceId} className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2 bg-white/80 dark:bg-black/20 rounded-xl border border-rose-200 dark:border-rose-800/40 text-xs">
+                          <div>
+                            <strong className="text-stone-900 dark:text-white font-semibold">{b.bedName}:</strong>{' '}
+                            <span className="text-stone-600 dark:text-stone-300">{b.crops.join(', ')}</span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => handleAddFrostProtectionTask(b.bedName, b.crops)}
+                            className="inline-flex items-center justify-center gap-1.5 px-3 py-1 bg-rose-700 hover:bg-rose-800 text-white rounded-lg font-semibold text-[11px] transition-colors shrink-0 shadow-xs"
+                          >
+                            <Bell className="w-3 h-3" />
+                            <span>Add Cover Task for Tonight</span>
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="pt-2">
+                    <button
+                      type="button"
+                      onClick={() => handleAddFrostProtectionTask('Outdoor Garden Beds', ['Frost-Tender Plants'])}
+                      className="inline-flex items-center gap-1.5 px-3 py-1 bg-rose-700 hover:bg-rose-800 text-white rounded-lg font-semibold text-[11px] transition-colors shadow-xs"
+                    >
+                      <Bell className="w-3 h-3" />
+                      <span>Add &ldquo;Cover Garden Beds Before Freeze&rdquo; Task</span>
+                    </button>
+                  </div>
+                )}
+
+                {/* Feedback message */}
+                {frostTaskFeedback && (
+                  <div className="p-2 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-800 rounded-xl text-xs text-emerald-900 dark:text-emerald-200 flex items-center justify-between gap-2">
+                    <span className="font-semibold">{frostTaskFeedback}</span>
+                    {onNavigate && (
+                      <button
+                        type="button"
+                        onClick={() => onNavigate('calendar')}
+                        className="text-[11px] text-emerald-800 dark:text-emerald-300 underline font-bold flex items-center gap-1 shrink-0"
+                      >
+                        <span>View Calendar</span>
+                        <ArrowRight className="w-3 h-3" />
+                      </button>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
 

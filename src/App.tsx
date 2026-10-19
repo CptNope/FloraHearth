@@ -4,7 +4,18 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { GardenLocation, UserPreferences, GardenSpace, GardenTask, PantryItem, JournalEntry, ExpenseRecord, SoilTestRecord } from './types/garden';
+import {
+  GardenLocation,
+  UserPreferences,
+  GardenSpace,
+  GardenTask,
+  PantryItem,
+  JournalEntry,
+  ExpenseRecord,
+  SoilTestRecord,
+  HydroWaterRecord,
+  SeedPacket,
+} from './types/garden';
 import {
   getSavedLocation, saveLocation,
   getSavedPreferences, savePreferences,
@@ -14,10 +25,13 @@ import {
   getSavedJournal, saveJournal,
   getSavedExpenses, saveExpenses,
   getSavedSoilTests, saveSoilTests,
+  getSavedHydroTests, saveHydroTests,
+  getSavedSeeds, saveSeeds,
   isSetupComplete, setSetupComplete
 } from './services/storage';
 
 import { getInitialTheme, applyTheme, AppTheme, APP_VERSION, executeHardCacheReset } from './services/pwaVersionService';
+import { checkAndTriggerDueReminders } from './services/notificationService';
 import { Navigation } from './components/Navigation';
 import { Dashboard } from './components/Dashboard';
 import { GardenPlanner } from './components/GardenPlanner';
@@ -46,6 +60,8 @@ export default function App() {
   const [journalEntries, setJournalEntries] = useState<JournalEntry[]>(getSavedJournal);
   const [expenses, setExpenses] = useState<ExpenseRecord[]>(getSavedExpenses);
   const [soilTests, setSoilTests] = useState<SoilTestRecord[]>(getSavedSoilTests);
+  const [hydroRecords, setHydroRecords] = useState<HydroWaterRecord[]>(getSavedHydroTests);
+  const [seeds, setSeeds] = useState<SeedPacket[]>(getSavedSeeds);
 
   // Garden setup is NOT forced on initial load; sample garden is ready immediately
   const [isSetupOpen, setIsSetupOpen] = useState<boolean>(false);
@@ -65,6 +81,11 @@ export default function App() {
     window.addEventListener('florahearth-sw-update-available', onUpdate);
     return () => window.removeEventListener('florahearth-sw-update-available', onUpdate);
   }, [theme]);
+
+  // Check and trigger local PWA reminders for tasks due today
+  useEffect(() => {
+    checkAndTriggerDueReminders(tasks);
+  }, [tasks]);
 
   const handleToggleTheme = () => {
     const nextTheme: AppTheme = theme === 'dark' ? 'light' : 'dark';
@@ -104,28 +125,130 @@ export default function App() {
     saveTasks(newTasks);
   };
 
+  // Pantry handlers: Add, Edit, Delete, Use 1 Jar
   const handleAddPantryItem = (item: PantryItem) => {
     const updated = [item, ...pantryItems];
     setPantryItems(updated);
     savePantry(updated);
   };
 
+  const handleUpdatePantryItem = (updatedItem: PantryItem) => {
+    const updated = pantryItems.map(p => p.id === updatedItem.id ? updatedItem : p);
+    setPantryItems(updated);
+    savePantry(updated);
+  };
+
+  const handleDeletePantryItem = (id: string) => {
+    const updated = pantryItems.filter(p => p.id !== id);
+    setPantryItems(updated);
+    savePantry(updated);
+  };
+
+  const handleUseOneJar = (id: string) => {
+    const item = pantryItems.find(p => p.id === id);
+    if (!item) return;
+    if (item.quantity <= 1) {
+      if (window.confirm(`You're using the last ${item.unit} of "${item.cropName}". Remove it from your pantry inventory?`)) {
+        handleDeletePantryItem(id);
+      }
+    } else {
+      handleUpdatePantryItem({ ...item, quantity: item.quantity - 1 });
+    }
+  };
+
+  // Journal handlers: Add, Edit, Delete
   const handleAddJournalEntry = (entry: JournalEntry) => {
     const updated = [entry, ...journalEntries];
     setJournalEntries(updated);
     saveJournal(updated);
   };
 
+  const handleUpdateJournalEntry = (updatedEntry: JournalEntry) => {
+    const updated = journalEntries.map(j => j.id === updatedEntry.id ? updatedEntry : j);
+    setJournalEntries(updated);
+    saveJournal(updated);
+  };
+
+  const handleDeleteJournalEntry = (id: string) => {
+    const updated = journalEntries.filter(j => j.id !== id);
+    setJournalEntries(updated);
+    saveJournal(updated);
+  };
+
+  // Expense handlers: Add, Edit, Delete
   const handleAddExpense = (exp: ExpenseRecord) => {
     const updated = [exp, ...expenses];
     setExpenses(updated);
     saveExpenses(updated);
   };
 
+  const handleUpdateExpense = (updatedExp: ExpenseRecord) => {
+    const updated = expenses.map(e => e.id === updatedExp.id ? updatedExp : e);
+    setExpenses(updated);
+    saveExpenses(updated);
+  };
+
+  const handleDeleteExpense = (id: string) => {
+    const updated = expenses.filter(e => e.id !== id);
+    setExpenses(updated);
+    saveExpenses(updated);
+  };
+
+  // Soil test handlers: Add, Edit, Delete
   const handleAddSoilTest = (test: SoilTestRecord) => {
     const updated = [test, ...soilTests];
     setSoilTests(updated);
     saveSoilTests(updated);
+  };
+
+  const handleUpdateSoilTest = (updatedTest: SoilTestRecord) => {
+    const updated = soilTests.map(s => s.id === updatedTest.id ? updatedTest : s);
+    setSoilTests(updated);
+    saveSoilTests(updated);
+  };
+
+  const handleDeleteSoilTest = (id: string) => {
+    const updated = soilTests.filter(s => s.id !== id);
+    setSoilTests(updated);
+    saveSoilTests(updated);
+  };
+
+  // Hydroponic record handlers: Add, Edit, Delete
+  const handleAddHydroRecord = (rec: HydroWaterRecord) => {
+    const updated = [rec, ...hydroRecords];
+    setHydroRecords(updated);
+    saveHydroTests(updated);
+  };
+
+  const handleUpdateHydroRecord = (updatedRec: HydroWaterRecord) => {
+    const updated = hydroRecords.map(h => h.id === updatedRec.id ? updatedRec : h);
+    setHydroRecords(updated);
+    saveHydroTests(updated);
+  };
+
+  const handleDeleteHydroRecord = (id: string) => {
+    const updated = hydroRecords.filter(h => h.id !== id);
+    setHydroRecords(updated);
+    saveHydroTests(updated);
+  };
+
+  // Seed inventory handlers: Add, Edit, Delete
+  const handleAddSeed = (seed: SeedPacket) => {
+    const updated = [seed, ...seeds];
+    setSeeds(updated);
+    saveSeeds(updated);
+  };
+
+  const handleUpdateSeed = (updatedSeed: SeedPacket) => {
+    const updated = seeds.map(s => s.id === updatedSeed.id ? updatedSeed : s);
+    setSeeds(updated);
+    saveSeeds(updated);
+  };
+
+  const handleDeleteSeed = (id: string) => {
+    const updated = seeds.filter(s => s.id !== id);
+    setSeeds(updated);
+    saveSeeds(updated);
   };
 
   const handleReloadAllState = () => {
@@ -137,6 +260,8 @@ export default function App() {
     setJournalEntries(getSavedJournal());
     setExpenses(getSavedExpenses());
     setSoilTests(getSavedSoilTests());
+    setHydroRecords(getSavedHydroTests());
+    setSeeds(getSavedSeeds());
   };
 
   return (
@@ -207,6 +332,10 @@ export default function App() {
               saveLocation(newLoc);
             }}
             onOpenSetup={() => setIsSetupOpen(true)}
+            spaces={spaces}
+            tasks={tasks}
+            onUpdateTasks={handleUpdateTasks}
+            onNavigate={setActiveTab}
           />
         )}
 
@@ -214,12 +343,21 @@ export default function App() {
           <GardenPlanner
             spaces={spaces}
             onUpdateSpaces={handleUpdateSpaces}
+            location={location}
+            tasks={tasks}
+            onUpdateTasks={handleUpdateTasks}
+            onNavigateToTab={setActiveTab}
           />
         )}
 
         {activeTab === 'crops' && (
           <CropLibrary
             onSelectForPlanner={() => setActiveTab('planner')}
+            seeds={seeds}
+            onAddSeed={handleAddSeed}
+            onUpdateSeed={handleUpdateSeed}
+            onDeleteSeed={handleDeleteSeed}
+            location={location}
           />
         )}
 
@@ -247,6 +385,10 @@ export default function App() {
           <PantryTracker
             pantryItems={pantryItems}
             preferences={preferences}
+            onAddPantryItem={handleAddPantryItem}
+            onUpdatePantryItem={handleUpdatePantryItem}
+            onDeletePantryItem={handleDeletePantryItem}
+            onUseOneJar={handleUseOneJar}
           />
         )}
 
@@ -254,20 +396,33 @@ export default function App() {
           <PestSoilHealth
             soilTests={soilTests}
             onAddSoilTest={handleAddSoilTest}
+            onUpdateSoilTest={handleUpdateSoilTest}
+            onDeleteSoilTest={handleDeleteSoilTest}
           />
         )}
 
         {activeTab === 'hydro' && (
-          <HydroIndoorGuide />
+          <HydroIndoorGuide
+            hydroRecords={hydroRecords}
+            onAddHydroRecord={handleAddHydroRecord}
+            onUpdateHydroRecord={handleUpdateHydroRecord}
+            onDeleteHydroRecord={handleDeleteHydroRecord}
+          />
         )}
 
         {activeTab === 'journal' && (
           <JournalSavings
             journalEntries={journalEntries}
             onAddJournalEntry={handleAddJournalEntry}
+            onUpdateJournalEntry={handleUpdateJournalEntry}
+            onDeleteJournalEntry={handleDeleteJournalEntry}
             expenses={expenses}
             onAddExpense={handleAddExpense}
+            onUpdateExpense={handleUpdateExpense}
+            onDeleteExpense={handleDeleteExpense}
             onDataImportSuccess={handleReloadAllState}
+            onAddPantryItem={handleAddPantryItem}
+            onNavigateToTab={setActiveTab}
           />
         )}
       </main>

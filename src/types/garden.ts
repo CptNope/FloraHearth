@@ -39,6 +39,12 @@ export interface GridCell {
   count?: number; // e.g. for SFG
 }
 
+export interface BedSeasonRecord {
+  season: string; // e.g. "Spring 2025", "Fall 2025"
+  year: number;
+  crops: { cropId: string; cropName: string; family: PlantFamily }[];
+}
+
 export interface GardenSpace {
   id: string;
   name: string;
@@ -52,6 +58,7 @@ export interface GardenSpace {
   gridRows: number; // length in feet
   cells: GridCell[];
   notes?: string;
+  seasonHistory?: BedSeasonRecord[];
 }
 
 export type PlantFamily =
@@ -155,9 +162,23 @@ export interface JournalEntry {
   title: string;
   category: 'note' | 'planting' | 'harvest' | 'pest' | 'soil-test' | 'compost';
   content: string;
+  cropId?: string;
+  cropName?: string;
   yieldLbs?: number;
   cost?: number;
   tags?: string[];
+  photoId?: string;
+}
+
+export interface SeedPacket {
+  id: string;
+  cropId: string;
+  varietyName: string;
+  brand?: string;
+  yearBought: number;
+  quantityStatus: 'full' | 'half' | 'few-left' | 'empty';
+  germinationRatePct?: number;
+  notes?: string;
 }
 
 export interface SoilTestRecord {

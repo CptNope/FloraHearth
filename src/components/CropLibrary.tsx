@@ -1,19 +1,70 @@
 import React, { useState, useEffect } from 'react';
-import { Crop } from '../types/garden';
-import { CROPS_DATA } from '../data/cropsData';
-import { Search, Filter, ShieldAlert, Sparkles, Scale, X, Droplets, Sun, Ruler, Clock, Heart, AlertTriangle } from 'lucide-react';
+import { Crop, SeedPacket, GardenLocation } from '../types/garden';
+import { CROPS_DATA, getCropById } from '../data/cropsData';
+import {
+  Search,
+  Filter,
+  ShieldAlert,
+  Sparkles,
+  Scale,
+  X,
+  Droplets,
+  Sun,
+  Ruler,
+  Clock,
+  Heart,
+  AlertTriangle,
+  Plus,
+  Edit2,
+  Trash2,
+  Package,
+  Calendar,
+  CheckCircle,
+  HelpCircle,
+  BookOpen
+} from 'lucide-react';
 
 interface CropLibraryProps {
   onSelectForPlanner?: (crop: Crop) => void;
+  seeds?: SeedPacket[];
+  onAddSeed?: (seed: SeedPacket) => void;
+  onUpdateSeed?: (seed: SeedPacket) => void;
+  onDeleteSeed?: (id: string) => void;
+  location?: GardenLocation;
 }
 
-export const CropLibrary: React.FC<CropLibraryProps> = ({ onSelectForPlanner }) => {
+export const CropLibrary: React.FC<CropLibraryProps> = ({
+  onSelectForPlanner,
+  seeds = [],
+  onAddSeed,
+  onUpdateSeed,
+  onDeleteSeed,
+  location,
+}) => {
+  const [activeTab, setActiveTab] = useState<'encyclopedia' | 'seeds'>('encyclopedia');
+
+  // Encyclopedia states
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('all');
   const [onlyContainerSafe, setOnlyContainerSafe] = useState(false);
   const [activeCropDetail, setActiveCropDetail] = useState<Crop | null>(null);
   const [compareList, setCompareList] = useState<Crop[]>([]);
+
+  // Seed Stash states
+  const [seedSearch, setSeedSearch] = useState('');
+  const [filterPlantNowOnly, setFilterPlantNowOnly] = useState(false);
+  const [isSeedModalOpen, setIsSeedModalOpen] = useState(false);
+  const [editingSeed, setEditingSeed] = useState<SeedPacket | null>(null);
+
+  // Form states for seed modal
+  const [formCropId, setFormCropId] = useState('tomato');
+  const [formVariety, setFormVariety] = useState('Cherokee Purple');
+  const [formBrand, setFormBrand] = useState('Baker Creek Heirloom');
+  const [formYear, setFormYear] = useState(new Date().getFullYear());
+  const [formStatus, setFormStatus] = useState<SeedPacket['quantityStatus']>('full');
+  const [formGermPct, setFormGermPct] = useState<number>(90);
+  const [formNotes, setFormNotes] = useState('');
 
   useEffect(() => {
     if (!activeCropDetail) return;
@@ -49,161 +100,379 @@ export const CropLibrary: React.FC<CropLibraryProps> = ({ onSelectForPlanner }) 
     }
   };
 
+  // Seed Viability Calculation
+  const currentYear = new Date().getFullYear();
+  const getSeedViability = (cropId: string, yearBought: number) => {
+    const crop = getCropById(cropId);
+    const age = Math.max(0, currentYear - yearBought);
+
+    // University Extension average seed storage lifespan
+    let maxViableYears = 3;
+    let fastLossFamily = false;
+
+    if (crop?.family === 'Alliaceae') {
+      maxViableYears = 1; // Onions, leeks lose vigor fast!
+      fastLossFamily = true;
+    } else if (crop?.id === 'parsnip') {
+      maxViableYears = 1; // Parsnip seed notoriously expires after 1 season
+      fastLossFamily = true;
+    } else if (crop?.family === 'Solanaceae' || crop?.family === 'Cucurbitaceae' || crop?.family === 'Brassicaceae') {
+      maxViableYears = 4; // Tomatoes, brassicas, squash keep 4-5 years
+    } else if (crop?.id === 'sweet-corn' || crop?.id === 'spinach') {
+      maxViableYears = 2;
+    }
+
+    if (age <= 1 && !fastLossFamily) {
+      return { status: 'excellent', text: 'Fresh (High Germination)', badgeClass: 'bg-emerald-50 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-200' };
+    }
+    if (age <= maxViableYears) {
+      return { status: 'good', text: `${age} yr old (Good Germination)`, badgeClass: 'bg-blue-50 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300 border-blue-200' };
+    }
+    return {
+      status: 'warning',
+      text: `⚠️ ${age} yrs old (Low Viability: Damp paper towel test recommended!)`,
+      badgeClass: 'bg-rose-50 text-rose-800 dark:bg-rose-950/60 dark:text-rose-300 border-rose-300 font-semibold',
+      needsWarning: true,
+    };
+  };
+
+  // Check if a crop can be planted now (current season)
+  const isPlantableNow = (cropId: string) => {
+    const crop = getCropById(cropId);
+    if (!crop || !location) return false;
+    // Current month (1-12)
+    const currentMonth = new Date().getMonth() + 1;
+    // Fall planting in autumn (months 8-10) or spring planting in months 2-6
+    if (crop.plantingTiming.fallPlantingWeeksBeforeFirstFrost && (currentMonth >= 8 && currentMonth <= 10)) {
+      return true;
+    }
+    if (location.isMildWinter && crop.plantingTiming.overwinteringSafe && (currentMonth >= 9 || currentMonth <= 3)) {
+      return true;
+    }
+    if (currentMonth >= 2 && currentMonth <= 6) {
+      return true;
+    }
+    return false;
+  };
+
+  const openAddSeedModal = () => {
+    setEditingSeed(null);
+    setFormCropId('tomato');
+    setFormVariety('Cherokee Purple');
+    setFormBrand('Baker Creek');
+    setFormYear(new Date().getFullYear());
+    setFormStatus('full');
+    setFormGermPct(90);
+    setFormNotes('');
+    setIsSeedModalOpen(true);
+  };
+
+  const openEditSeedModal = (seed: SeedPacket) => {
+    setEditingSeed(seed);
+    setFormCropId(seed.cropId);
+    setFormVariety(seed.varietyName);
+    setFormBrand(seed.brand || '');
+    setFormYear(seed.yearBought);
+    setFormStatus(seed.quantityStatus);
+    setFormGermPct(seed.germinationRatePct || 85);
+    setFormNotes(seed.notes || '');
+    setIsSeedModalOpen(true);
+  };
+
+  const handleSaveSeed = (e: React.FormEvent) => {
+    e.preventDefault();
+    const payload: SeedPacket = {
+      id: editingSeed ? editingSeed.id : `seed-${Date.now()}`,
+      cropId: formCropId,
+      varietyName: formVariety.trim(),
+      brand: formBrand.trim(),
+      yearBought: Number(formYear),
+      quantityStatus: formStatus,
+      germinationRatePct: Number(formGermPct),
+      notes: formNotes.trim(),
+    };
+
+    if (editingSeed && onUpdateSeed) {
+      onUpdateSeed(payload);
+    } else if (onAddSeed) {
+      onAddSeed(payload);
+    }
+    setIsSeedModalOpen(false);
+  };
+
+  // Filter seeds
+  const displayedSeeds = seeds.filter(seed => {
+    const crop = getCropById(seed.cropId);
+    const matchesSearch =
+      seed.varietyName.toLowerCase().includes(seedSearch.toLowerCase()) ||
+      (crop && crop.name.toLowerCase().includes(seedSearch.toLowerCase())) ||
+      (seed.brand && seed.brand.toLowerCase().includes(seedSearch.toLowerCase()));
+
+    if (!matchesSearch) return false;
+    if (filterPlantNowOnly && !isPlantableNow(seed.cropId)) return false;
+    return true;
+  });
+
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-stone-200">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-stone-200 dark:border-[#223d2e]">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-[#183a24] font-serif-botanical">
-            Horticultural Crop Library &amp; Growing Guides
+          <h2 className="text-2xl font-bold tracking-tight text-[#183a24] dark:text-[#e4efe7] font-serif-botanical">
+            Horticultural Crop Library &amp; Seed Stash
           </h2>
-          <p className="text-xs text-stone-600 mt-1">
-            Authoritative growing data, variety specifics, realistic yield benchmarks, and child &amp; pet hazard safety.
+          <p className="text-xs text-stone-600 dark:text-stone-300 mt-1">
+            Browse 70+ vegetable and herb guides, audit packet germination viability, and discover what you can plant right now with seeds you already own.
           </p>
         </div>
 
-        {compareList.length > 0 && (
-          <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-xl text-xs">
-            <Scale className="w-4 h-4 text-emerald-800" />
-            <span className="font-semibold text-emerald-950">
-              Comparing {compareList.length}/3 crops
-            </span>
-            <button
-              type="button"
-              onClick={() => setCompareList([])}
-              className="text-stone-400 hover:text-stone-700 ml-1"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
-          </div>
-        )}
+        <div role="tablist" aria-label="Crop library and seed inventory tabs" className="flex bg-stone-100 dark:bg-[#111c15] p-1 rounded-xl text-xs font-semibold gap-1">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === 'encyclopedia'}
+            onClick={() => setActiveTab('encyclopedia')}
+            className={`px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 ${
+              activeTab === 'encyclopedia' ? 'bg-white dark:bg-[#183e25] text-stone-900 dark:text-white shadow-2xs font-bold' : 'text-stone-600 dark:text-stone-300'
+            }`}
+          >
+            <BookOpen className="w-3.5 h-3.5 text-emerald-700 dark:text-emerald-400" />
+            <span>Crop Guides (70+)</span>
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === 'seeds'}
+            onClick={() => setActiveTab('seeds')}
+            className={`px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 ${
+              activeTab === 'seeds' ? 'bg-white dark:bg-[#183e25] text-stone-900 dark:text-white shadow-2xs font-bold' : 'text-stone-600 dark:text-stone-300'
+            }`}
+          >
+            <Package className="w-3.5 h-3.5 text-emerald-700 dark:text-emerald-400" />
+            <span>Seed Inventory ({seeds.length})</span>
+          </button>
+        </div>
       </div>
 
-      {/* Search and Filters Bar */}
-      <div className="bg-white border border-stone-200 rounded-2xl p-4 shadow-xs space-y-3">
-        <div className="flex flex-col sm:flex-row gap-3">
-          <div className="relative flex-1">
-            <Search className="w-4 h-4 text-stone-400 absolute left-3 top-3" aria-hidden="true" />
-            <input
-              type="text"
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              placeholder="Search crops, cultivars, or families (e.g. Cherokee Purple, Solanaceae, Lacinato)..."
-              aria-label="Search crops, cultivars, or botanical families"
-              className="w-full pl-9 pr-3 py-2 text-xs bg-stone-50 border border-stone-200 rounded-xl focus:outline-hidden focus:border-emerald-600 focus:bg-white"
-            />
-          </div>
+      {/* TAB 2: Seed Inventory & Viability */}
+      {activeTab === 'seeds' && (
+        <div className="space-y-6">
+          {/* Controls Bar */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex flex-wrap items-center gap-2 flex-1">
+              <div className="relative min-w-[220px]">
+                <Search className="w-4 h-4 text-stone-400 absolute left-3 top-2.5" />
+                <input
+                  type="text"
+                  value={seedSearch}
+                  onChange={e => setSeedSearch(e.target.value)}
+                  placeholder="Search seed varieties or brands..."
+                  className="w-full pl-9 pr-3 py-1.5 text-xs border border-stone-300 dark:border-[#223d2e] dark:bg-[#182c20] rounded-xl text-stone-800 dark:text-white"
+                />
+              </div>
 
-          {/* Category Tabs */}
-          <div role="tablist" aria-label="Crop categories" className="flex items-center gap-1 overflow-x-auto p-1 bg-[#edf2ee] dark:bg-[#111c15] border border-[#d6e2d8] dark:border-[rgba(255,255,255,0.08)] rounded-xl">
-            {[
-              { id: 'all', label: 'All Crops' },
-              { id: 'vegetable', label: 'Vegetables' },
-              { id: 'herb', label: 'Culinary Herbs' },
-              { id: 'medicinal-herb', label: '🌿 Medicinal Herbs' },
-              { id: 'fruit', label: 'Fruits' },
-              { id: 'flower', label: 'Beneficial Flowers' },
-            ].map(cat => (
+              {/* Plant Now Filter */}
               <button
-                key={cat.id}
                 type="button"
-                role="tab"
-                aria-selected={selectedCategory === cat.id}
-                onClick={() => setSelectedCategory(cat.id)}
-                className={`px-3 py-1.5 text-xs font-semibold rounded-lg whitespace-nowrap transition-colors ${
-                  selectedCategory === cat.id
-                    ? 'bg-[#183e25] text-white dark:bg-[#10b981] dark:text-[#06150d] font-bold shadow-2xs'
-                    : 'text-[#3c5244] dark:text-[#b6cfc0] hover:text-[#122017] dark:hover:text-white'
+                onClick={() => setFilterPlantNowOnly(!filterPlantNowOnly)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all ${
+                  filterPlantNowOnly
+                    ? 'bg-emerald-700 text-white border-emerald-700 shadow-xs'
+                    : 'bg-white dark:bg-[#132219] text-stone-700 dark:text-stone-300 border-stone-300 dark:border-[#223d2e] hover:bg-stone-50'
                 }`}
               >
-                {cat.label}
+                <Calendar className="w-3.5 h-3.5" />
+                <span>What Can I Plant This Week?</span>
               </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Secondary filters */}
-        <div className="flex flex-wrap items-center gap-3 pt-1 text-xs text-stone-600">
-          <div className="flex items-center gap-1.5">
-            <label htmlFor="crop-difficulty-filter" className="text-[11px] font-medium text-stone-500">Difficulty:</label>
-            <select
-              id="crop-difficulty-filter"
-              value={selectedDifficulty}
-              onChange={e => setSelectedDifficulty(e.target.value)}
-              aria-label="Filter crops by growing difficulty level"
-              className="text-xs py-1 px-2 border border-stone-200 rounded-lg bg-stone-50"
-            >
-              <option value="all">Any Difficulty</option>
-              <option value="Beginner Friendly">Beginner Friendly</option>
-              <option value="Moderate">Moderate</option>
-              <option value="Advanced">Advanced</option>
-            </select>
-          </div>
-
-          <label className="flex items-center gap-1.5 cursor-pointer select-none">
-            <input
-              type="checkbox"
-              checked={onlyContainerSafe}
-              onChange={e => setOnlyContainerSafe(e.target.checked)}
-              aria-label="Filter only container and patio suitable crops"
-              className="rounded-xs text-emerald-700 accent-emerald-700"
-            />
-            <span className="text-xs">Container &amp; Patio Suitable</span>
-          </label>
-
-          <span className="ml-auto text-[11px] text-stone-400">
-            Showing {filteredCrops.length} of {CROPS_DATA.length} crops
-          </span>
-        </div>
-      </div>
-
-      {/* Side-by-Side Comparison Drawer (if activated) */}
-      {compareList.length > 0 && (
-        <div className="bg-[#f4f7f4] border-2 border-emerald-600/30 rounded-2xl p-4 sm:p-6 shadow-sm space-y-4">
-          <div className="flex items-center justify-between border-b border-[#d4e2d6] pb-3">
-            <div className="flex items-center gap-2">
-              <Scale className="w-5 h-5 text-emerald-800" />
-              <h3 className="font-bold text-sm text-[#183a24] font-serif-botanical">Side-by-Side Crop Comparison</h3>
             </div>
+
             <button
               type="button"
-              onClick={() => setCompareList([])}
-              className="text-xs text-stone-500 hover:text-stone-900 underline"
+              onClick={openAddSeedModal}
+              className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold bg-[#234730] text-white rounded-xl hover:bg-[#183422] transition-colors shadow-xs shrink-0"
             >
-              Clear comparison
+              <Plus className="w-4 h-4" />
+              <span>Add Seed Packet</span>
             </button>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {compareList.map(c => (
-              <div key={c.id} className="bg-white p-4 rounded-xl border border-stone-200 shadow-2xs space-y-2.5 text-xs">
-                <div className="flex items-center justify-between">
-                  <span className="text-2xl">{c.iconEmoji}</span>
-                  <button
-                    type="button"
-                    onClick={() => setCompareList(compareList.filter(item => item.id !== c.id))}
-                    className="text-stone-400 hover:text-stone-700"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-                <h4 className="font-bold text-sm text-stone-900">{c.name}</h4>
-                <div className="text-[11px] text-stone-500 italic">{c.scientificName} · {c.family}</div>
+          {/* Seed Packets Grid */}
+          {displayedSeeds.length === 0 ? (
+            <div className="bg-white dark:bg-[#132219] border border-stone-200 dark:border-[#223d2e] rounded-2xl p-8 text-center text-stone-500 text-xs space-y-2">
+              <Package className="w-8 h-8 mx-auto text-stone-400" />
+              <p>No seed packets found matching your filter.</p>
+              {filterPlantNowOnly && (
+                <button
+                  type="button"
+                  onClick={() => setFilterPlantNowOnly(false)}
+                  className="text-xs text-emerald-800 dark:text-emerald-400 underline font-semibold"
+                >
+                  Clear &ldquo;Plant this week&rdquo; filter
+                </button>
+              )}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {displayedSeeds.map(seed => {
+                const crop = getCropById(seed.cropId);
+                const viability = getSeedViability(seed.cropId, seed.yearBought);
+                const plantNow = isPlantableNow(seed.cropId);
 
-                <div className="border-t border-stone-100 pt-2 space-y-1.5 text-[11px]">
-                  <div><strong>Maturity:</strong> {c.daysToMaturityRange[0]}-{c.daysToMaturityRange[1]} days</div>
-                  <div><strong>SFG Density:</strong> {c.sfgPerSquare} / sq ft</div>
-                  <div><strong>Soil pH:</strong> {c.soilPhMin} - {c.soilPhMax}</div>
-                  <div><strong>Water Need:</strong> {c.waterNeeds}</div>
-                  <div><strong>Yield:</strong> {c.realisticYield}</div>
-                  <div><strong>Retail Value:</strong> ~${c.retailGroceryValuePerLb.toFixed(2)}/lb</div>
-                  <div><strong>Container Safe:</strong> {c.containerSuitable ? `Yes (${c.containerMinGallons} gal)` : 'No'}</div>
-                  <div className="pt-1">
-                    <strong>Hazard:</strong>{' '}
-                    <span className={c.childPetHazard.hasHazard ? 'text-amber-700 font-semibold' : 'text-emerald-700'}>
-                      {c.childPetHazard.hasHazard ? c.childPetHazard.details : 'Completely safe for children and pets'}
+                return (
+                  <div
+                    key={seed.id}
+                    className="bg-white dark:bg-[#132219] border border-stone-200 dark:border-[#223d2e] rounded-2xl p-4 shadow-xs space-y-3 text-xs"
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-2xl shrink-0">{crop?.iconEmoji || '🌱'}</span>
+                        <div>
+                          <h4 className="font-bold text-stone-900 dark:text-white text-sm leading-tight">
+                            {seed.varietyName}
+                          </h4>
+                          <span className="text-[11px] text-stone-500 dark:text-stone-400">
+                            {crop?.name.split('(')[0]} · {seed.brand || 'Heirloom / Saved'}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-1 shrink-0">
+                        <button
+                          type="button"
+                          onClick={() => openEditSeedModal(seed)}
+                          aria-label={`Edit ${seed.varietyName}`}
+                          className="p-1 text-stone-400 hover:text-emerald-700 dark:hover:text-emerald-400 rounded-md transition-colors"
+                        >
+                          <Edit2 className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (confirm(`Remove "${seed.varietyName}" from seed stash?`)) {
+                              onDeleteSeed?.(seed.id);
+                            }
+                          }}
+                          aria-label={`Delete ${seed.varietyName}`}
+                          className="p-1 text-stone-400 hover:text-rose-600 rounded-md transition-colors"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Plant Now Badge */}
+                    {plantNow && (
+                      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-900 dark:text-emerald-300 font-semibold text-[11px]">
+                        <CheckCircle className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                        <span>In Season: Plant Now This Week!</span>
+                      </div>
+                    )}
+
+                    {/* Viability Warning Box */}
+                    <div className={`p-2 rounded-xl border text-[11px] font-mono ${viability.badgeClass}`}>
+                      {viability.text}
+                    </div>
+
+                    <div className="flex items-center justify-between text-[11px] text-stone-500 dark:text-stone-400 pt-1 border-t border-stone-100 dark:border-[#223d2e]">
+                      <span>Bought: <strong>{seed.yearBought}</strong></span>
+                      <span className="capitalize">Remaining: <strong>{seed.quantityStatus.replace('-', ' ')}</strong></span>
+                      {seed.germinationRatePct && <span>Germ: <strong>{seed.germinationRatePct}%</strong></span>}
+                    </div>
+
+                    {seed.notes && (
+                      <p className="text-[11px] text-stone-500 dark:text-stone-400 italic">
+                        {seed.notes}
+                      </p>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* TAB 1: Encyclopedia */}
+      {activeTab === 'encyclopedia' && (
+        <div className="space-y-6">
+          {/* Controls: Search & Category Filters */}
+          <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
+            <div className="relative flex-1">
+              <Search className="w-4 h-4 text-stone-400 absolute left-3 top-3" aria-hidden="true" />
+              <input
+                type="text"
+                placeholder="Search crops, botanical family (e.g. Solanaceae), or scientific name..."
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                aria-label="Search crops by common name, scientific name, or family"
+                className="w-full pl-9 pr-4 py-2 text-xs bg-white dark:bg-[#132219] border border-stone-300 dark:border-[#223d2e] rounded-xl text-stone-900 dark:text-white"
+              />
+            </div>
+
+            <div className="flex items-center gap-2">
+              <select
+                value={selectedCategory}
+                onChange={e => setSelectedCategory(e.target.value)}
+                aria-label="Filter crops by category"
+                className="text-xs p-2 bg-white dark:bg-[#132219] border border-stone-300 dark:border-[#223d2e] rounded-xl text-stone-800 dark:text-stone-200"
+              >
+                <option value="all">All Categories</option>
+                <option value="vegetable">Vegetables</option>
+                <option value="herb">Culinary Herbs</option>
+                <option value="medicinal-herb">Medicinal Apothecary Herbs</option>
+                <option value="fruit">Fruits &amp; Berries</option>
+                <option value="flower">Beneficial Flowers</option>
+              </select>
+
+              <select
+                value={selectedDifficulty}
+                onChange={e => setSelectedDifficulty(e.target.value)}
+                aria-label="Filter crops by difficulty"
+                className="text-xs p-2 bg-white dark:bg-[#132219] border border-stone-300 dark:border-[#223d2e] rounded-xl text-stone-800 dark:text-stone-200"
+              >
+                <option value="all">All Difficulties</option>
+                <option value="Beginner Friendly">Beginner Friendly</option>
+                <option value="Moderate">Moderate</option>
+                <option value="Advanced">Advanced</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Crops Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {filteredCrops.map(crop => (
+              <div
+                key={crop.id}
+                onClick={() => setActiveCropDetail(crop)}
+                className="bg-white dark:bg-[#132219] border border-stone-200 dark:border-[#223d2e] rounded-2xl p-4 shadow-xs hover:border-emerald-600 transition-all cursor-pointer space-y-3 flex flex-col justify-between"
+              >
+                <div className="space-y-2">
+                  <div className="flex items-start justify-between">
+                    <span className="text-3xl" role="img" aria-label={crop.name}>{crop.iconEmoji}</span>
+                    <span className="px-2 py-0.5 rounded-md text-[10px] font-mono bg-stone-100 dark:bg-[#182c20] text-stone-600 dark:text-stone-300">
+                      {crop.family}
                     </span>
                   </div>
+
+                  <div>
+                    <h3 className="font-bold text-sm text-[#183a24] dark:text-white leading-tight font-serif-botanical">
+                      {crop.name}
+                    </h3>
+                    <p className="text-[11px] text-stone-400 italic">{crop.scientificName}</p>
+                  </div>
+
+                  <p className="text-[11px] text-stone-600 dark:text-stone-300 line-clamp-2">
+                    {crop.harvestGuidance}
+                  </p>
+                </div>
+
+                <div className="pt-2 border-t border-stone-100 dark:border-[#223d2e] flex items-center justify-between text-[11px] font-mono">
+                  <span className="text-emerald-800 dark:text-emerald-400 font-semibold">
+                    ${crop.retailGroceryValuePerLb.toFixed(2)}/lb
+                  </span>
+                  <span className="text-stone-500 dark:text-stone-400">
+                    {crop.daysToMaturityRange[0]}-{crop.daysToMaturityRange[1]} days
+                  </span>
                 </div>
               </div>
             ))}
@@ -211,270 +480,189 @@ export const CropLibrary: React.FC<CropLibraryProps> = ({ onSelectForPlanner }) 
         </div>
       )}
 
-      {/* Crop Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filteredCrops.map(crop => {
-          const isComparing = compareList.some(c => c.id === crop.id);
-
-          return (
-            <div
-              key={crop.id}
-              role="button"
-              tabIndex={0}
-              onClick={() => setActiveCropDetail(crop)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  setActiveCropDetail(crop);
-                }
-              }}
-              aria-label={`View complete growing guide for ${crop.name}, ${crop.difficulty}`}
-              className="bg-white border border-stone-200 rounded-2xl p-4 shadow-2xs hover:shadow-sm hover:border-emerald-500/50 transition-all cursor-pointer flex flex-col justify-between group focus:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-500"
-            >
-              <div>
-                {/* Header row */}
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex items-center gap-2.5">
-                    <span className="text-3xl p-1.5 bg-[#f5f8f5] rounded-xl group-hover:scale-105 transition-transform" aria-hidden="true">
-                      {crop.iconEmoji}
-                    </span>
-                    <div>
-                      <h3 className="font-bold text-sm text-[#183a24] group-hover:text-emerald-900 transition-colors">
-                        {crop.name}
-                      </h3>
-                      <p className="text-[11px] text-stone-500 italic">
-                        {crop.family} · {crop.scientificName}
-                      </p>
-                    </div>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={(e) => toggleCompare(crop, e)}
-                    aria-label={isComparing ? `Remove ${crop.name} from side-by-side comparison` : `Add ${crop.name} to side-by-side comparison`}
-                    className={`p-1.5 rounded-lg text-xs transition-colors ${
-                      isComparing
-                        ? 'bg-emerald-700 text-white'
-                        : 'text-stone-400 hover:text-stone-700 hover:bg-stone-100'
-                    }`}
-                    title={isComparing ? 'Remove from compare' : 'Add to compare'}
-                  >
-                    <Scale className="w-3.5 h-3.5" aria-hidden="true" />
-                  </button>
-                </div>
-
-                {/* Core Metrics Grid */}
-                <div className="grid grid-cols-3 gap-2 text-center text-xs my-3 bg-[#faf9f5] p-2.5 rounded-xl border border-stone-200/50">
-                  <div>
-                    <span className="text-[10px] text-stone-400 block font-medium">Days</span>
-                    <span className="font-bold text-stone-800">
-                      {crop.daysToMaturityRange[0]}-{crop.daysToMaturityRange[1]}d
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-[10px] text-stone-400 block font-medium">SFG</span>
-                    <span className="font-bold text-emerald-800">
-                      {crop.sfgPerSquare}/sq ft
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-[10px] text-stone-400 block font-medium">Value</span>
-                    <span className="font-bold text-stone-800">
-                      ${crop.retailGroceryValuePerLb.toFixed(2)}/lb
-                    </span>
-                  </div>
-                </div>
-
-                {/* Varieties sample */}
-                <div className="text-[11px] text-stone-600 line-clamp-2 mb-2">
-                  <strong>Cultivars:</strong> {crop.varieties.map(v => v.name.split('(')[0].trim()).join(', ')}
-                </div>
-
-                {crop.category === 'medicinal-herb' && (
-                  <div className="text-[11px] text-teal-800 bg-teal-50 border border-teal-200/70 px-2 py-1 rounded-lg mb-2 flex items-center gap-1.5 font-medium">
-                    <span>🌿</span>
-                    <span className="truncate">Medicinal: {crop.medicinalUses?.slice(0, 45)}...</span>
-                  </div>
-                )}
-
-                {/* Child/Pet Toxicity warning badge */}
-                {crop.childPetHazard.hasHazard && (
-                  <div className="flex items-center gap-1.5 text-[11px] text-amber-800 bg-amber-50/70 border border-amber-200/60 px-2 py-1 rounded-lg mb-2">
-                    <ShieldAlert className="w-3.5 h-3.5 text-amber-700 shrink-0" />
-                    <span className="truncate">Toxicity Caution: Foliage/leaves</span>
-                  </div>
-                )}
-              </div>
-
-              {/* Card Footer */}
-              <div className="pt-2 border-t border-stone-100 flex items-center justify-between text-[11px] text-stone-500">
-                <span className="font-medium text-stone-700">{crop.difficulty}</span>
-                <span className="text-emerald-800 font-semibold group-hover:underline">
-                  View Full Guide →
-                </span>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Detailed Crop Modal */}
-      {activeCropDetail && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 overflow-y-auto"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="crop-modal-detail-heading"
-        >
-          <div className="bg-[#fcfcf9] dark:bg-[#0e1912] border border-stone-300 dark:border-[#223d2e] rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl flex flex-col my-8 max-h-[90vh]">
-            {/* Modal Header */}
-            <div className="bg-[#1c3a27] text-white px-6 py-5 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <span className="text-3xl p-2 bg-white/10 rounded-xl" aria-hidden="true">
-                  {activeCropDetail.iconEmoji}
-                </span>
-                <div>
-                  <h3 id="crop-modal-detail-heading" className="text-xl font-bold tracking-tight font-serif-botanical text-white">
-                    {activeCropDetail.name}
-                  </h3>
-                  <p className="text-xs text-emerald-200/90 italic">
-                    {activeCropDetail.scientificName} · Family: {activeCropDetail.family}
-                  </p>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={() => setActiveCropDetail(null)}
-                aria-label={`Close ${activeCropDetail.name} details modal`}
-                className="p-1.5 text-white/70 hover:text-white rounded-lg hover:bg-white/10 transition-colors focus:ring-2 focus:ring-white"
-              >
-                <X className="w-5 h-5" aria-hidden="true" />
+      {/* Add / Edit Seed Modal */}
+      {isSeedModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+          <div className="bg-white dark:bg-[#112117] border border-stone-200 dark:border-[#223d2e] rounded-2xl w-full max-w-md p-6 text-xs space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-stone-200 dark:border-[#223d2e] pb-3">
+              <h3 className="font-bold text-sm text-[#183a24] dark:text-white font-serif-botanical">
+                {editingSeed ? 'Edit Seed Packet' : 'Add Seed Packet to Stash'}
+              </h3>
+              <button type="button" onClick={() => setIsSeedModalOpen(false)}>
+                <X className="w-4 h-4 text-stone-400" />
               </button>
             </div>
 
-            {/* Modal Content */}
-            <div className="p-6 overflow-y-auto space-y-5 text-xs text-stone-800 dark:text-[#d3e3d8]">
-              {/* Variety breakdown */}
+            <form onSubmit={handleSaveSeed} className="space-y-3">
               <div>
-                <h4 className="font-bold text-stone-900 dark:text-[#ecfdf5] text-sm mb-2">Proven Cultivars &amp; Varieties</h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  {activeCropDetail.varieties.map(v => (
-                    <div key={v.name} className="p-2.5 bg-white dark:bg-[#13241a] border border-stone-200 dark:border-[#223d2e] rounded-xl">
-                      <div className="flex items-center justify-between font-semibold text-stone-900 dark:text-[#ecfdf5]">
-                        <span>{v.name}</span>
-                        <span className="text-[10px] font-mono text-emerald-700 dark:text-emerald-400 font-bold">{v.daysToMaturity}d</span>
-                      </div>
-                      <p className="text-[11px] text-stone-600 dark:text-[#a0b4a7] mt-1">{v.notes}</p>
-                    </div>
+                <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Crop Type</label>
+                <select
+                  value={formCropId}
+                  onChange={e => setFormCropId(e.target.value)}
+                  className="w-full px-3 py-1.5 border border-stone-300 dark:border-[#223d2e] dark:bg-[#182c20] rounded-xl text-xs font-medium"
+                >
+                  {CROPS_DATA.map(c => (
+                    <option key={c.id} value={c.id}>
+                      {c.iconEmoji} {c.name.split('(')[0]} ({c.family})
+                    </option>
                   ))}
-                </div>
+                </select>
               </div>
 
-              {/* Growing Requirements Specs */}
               <div>
-                <h4 className="font-bold text-stone-900 dark:text-[#ecfdf5] text-sm mb-2">Planting &amp; Soil Specifications</h4>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 bg-[#f6f8f6] dark:bg-[#14231b] p-3 rounded-xl border border-stone-200 dark:border-[#223d2e]">
-                  <div>
-                    <span className="text-stone-600 dark:text-stone-400 block font-semibold text-[11px]">Planting Depth</span>
-                    <span className="font-semibold text-stone-900 dark:text-white">{activeCropDetail.plantingDepthInches}</span>
-                  </div>
-                  <div>
-                    <span className="text-stone-600 dark:text-stone-400 block font-semibold text-[11px]">Spacing</span>
-                    <span className="font-semibold text-stone-900 dark:text-white">{activeCropDetail.spacingInches}&quot; plant / {activeCropDetail.rowSpacingInches}&quot; row</span>
-                  </div>
-                  <div>
-                    <span className="text-stone-600 dark:text-stone-400 block font-semibold text-[11px]">SFG Density</span>
-                    <span className="font-semibold text-emerald-800 dark:text-emerald-300">{activeCropDetail.sfgPerSquare} per sq ft</span>
-                  </div>
-                  <div>
-                    <span className="text-stone-600 dark:text-stone-400 block font-semibold text-[11px]">Sunlight</span>
-                    <span className="font-semibold text-stone-900 dark:text-white capitalize">{activeCropDetail.sunlight.replace('-', ' ')}</span>
-                  </div>
-                  <div>
-                    <span className="text-stone-600 dark:text-stone-400 block font-semibold text-[11px]">Soil pH Range</span>
-                    <span className="font-semibold text-stone-900 dark:text-white">{activeCropDetail.soilPhMin} - {activeCropDetail.soilPhMax}</span>
-                  </div>
-                  <div>
-                    <span className="text-stone-600 dark:text-stone-400 block font-semibold text-[11px]">Watering Needs</span>
-                    <span className="font-semibold text-stone-900 dark:text-white capitalize">{activeCropDetail.waterNeeds}</span>
-                  </div>
-                </div>
-                <p className="text-[11px] text-stone-700 dark:text-[#b4c7bb] mt-2">
-                  <strong className="text-stone-900 dark:text-white">Soil &amp; Fertility:</strong> {activeCropDetail.soilPreferences}
-                </p>
+                <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Variety Name</label>
+                <input
+                  type="text"
+                  required
+                  value={formVariety}
+                  onChange={e => setFormVariety(e.target.value)}
+                  placeholder="e.g. Cherokee Purple, Nantes, Sun Gold F1"
+                  className="w-full px-3 py-1.5 border border-stone-300 dark:border-[#223d2e] dark:bg-[#182c20] rounded-xl text-xs"
+                />
               </div>
 
-              {/* Yields & Harvest Guidance */}
-              <div className="bg-white dark:bg-[#13241a] p-3.5 rounded-xl border border-stone-200 dark:border-[#223d2e] space-y-1.5">
-                <h4 className="font-bold text-stone-900 dark:text-[#ecfdf5]">Harvest &amp; Realistic Yields</h4>
-                <p className="text-stone-800 dark:text-[#d3e3d8]"><strong className="text-stone-900 dark:text-white">Realistic Yield:</strong> {activeCropDetail.realisticYield}</p>
-                <p className="text-stone-700 dark:text-[#b4c7bb] leading-relaxed">{activeCropDetail.harvestGuidance}</p>
-                {activeCropDetail.curingGuidance && (
-                  <p className="text-stone-700 dark:text-[#b4c7bb] pt-1 border-t border-stone-100 dark:border-[#223d2e]">
-                    <strong className="text-stone-900 dark:text-white">Curing Protocol:</strong> {activeCropDetail.curingGuidance}
-                  </p>
-                )}
-              </div>
-
-              {/* Medicinal & Apothecary Guidance (if available) */}
-              {activeCropDetail.medicinalUses && (
-                <div className="bg-[#f0f7f4] dark:bg-[#12281e] border border-[#cbe1d6] dark:border-[#1d4633] p-4 rounded-xl space-y-2">
-                  <div className="flex items-center gap-2 text-emerald-900 dark:text-emerald-300 font-bold text-xs">
-                    <span className="text-base" aria-hidden="true">🌿</span>
-                    <span>Herbal Apothecary &amp; Traditional Uses</span>
-                  </div>
-                  <p className="text-stone-800 dark:text-[#d0e1d5] text-[11px] leading-relaxed">
-                    <strong className="text-stone-900 dark:text-white">Therapeutic Actions:</strong> {activeCropDetail.medicinalUses}
-                  </p>
-                  {activeCropDetail.medicinalPreparation && (
-                    <p className="text-stone-700 dark:text-[#b0c4b6] text-[11px] pt-1 border-t border-[#cbe1d6]/80 dark:border-[#1d4633] leading-relaxed">
-                      <strong className="text-stone-900 dark:text-white">Traditional Preparation:</strong> {activeCropDetail.medicinalPreparation}
-                    </p>
-                  )}
-                </div>
-              )}
-
-              {/* Companions & Antagonists */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="bg-emerald-50/70 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 p-3 rounded-xl space-y-1">
-                  <span className="font-bold text-emerald-900 dark:text-emerald-300 block">Helpful Companions</span>
-                  <p className="text-emerald-950 dark:text-emerald-200 font-medium">{activeCropDetail.companions.join(', ')}</p>
-                  <p className="text-[11px] text-emerald-900/90 dark:text-emerald-300/90 pt-1">{activeCropDetail.companionNotes}</p>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Seed House / Brand</label>
+                  <input
+                    type="text"
+                    value={formBrand}
+                    onChange={e => setFormBrand(e.target.value)}
+                    placeholder="e.g. Baker Creek, Johnny’s"
+                    className="w-full px-3 py-1.5 border border-stone-300 dark:border-[#223d2e] dark:bg-[#182c20] rounded-xl text-xs"
+                  />
                 </div>
 
-                <div className="bg-rose-50/70 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/60 p-3 rounded-xl space-y-1">
-                  <span className="font-bold text-rose-900 dark:text-rose-300 block">Antagonists / Incompatible</span>
-                  <p className="text-rose-950 dark:text-rose-200 font-medium">
-                    {activeCropDetail.antagonists.length > 0 ? activeCropDetail.antagonists.join(', ') : 'None documented'}
-                  </p>
+                <div>
+                  <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Year Bought</label>
+                  <input
+                    type="number"
+                    min="2015"
+                    max={currentYear + 1}
+                    required
+                    value={formYear}
+                    onChange={e => setFormYear(parseInt(e.target.value) || currentYear)}
+                    className="w-full px-3 py-1.5 border border-stone-300 dark:border-[#223d2e] dark:bg-[#182c20] rounded-xl font-mono text-xs"
+                  />
                 </div>
               </div>
 
-              {/* Child & Pet Safety Notice */}
-              <div className={`p-3 rounded-xl border ${
-                activeCropDetail.childPetHazard.hasHazard
-                  ? 'bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-800/60 text-amber-950 dark:text-amber-200'
-                  : 'bg-stone-50 dark:bg-[#14231b] border-stone-200 dark:border-[#223d2e] text-stone-800 dark:text-stone-200'
-              }`}>
-                <div className="flex items-center gap-1.5 font-bold mb-1">
-                  <ShieldAlert className="w-4 h-4 text-amber-700 dark:text-amber-400" aria-hidden="true" />
-                  Child &amp; Pet Safety Profile: {activeCropDetail.childPetHazard.severity.toUpperCase()}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Packet Status</label>
+                  <select
+                    value={formStatus}
+                    onChange={e => setFormStatus(e.target.value as any)}
+                    className="w-full px-3 py-1.5 border border-stone-300 dark:border-[#223d2e] dark:bg-[#182c20] rounded-xl text-xs"
+                  >
+                    <option value="full">Full Packet</option>
+                    <option value="half">Half Left</option>
+                    <option value="few-left">Few Seeds Left</option>
+                    <option value="empty">Empty (Need Reorder)</option>
+                  </select>
                 </div>
-                <p className="text-[11px] leading-relaxed">{activeCropDetail.childPetHazard.details}</p>
+
+                <div>
+                  <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Germination %</label>
+                  <input
+                    type="number"
+                    min="10"
+                    max="100"
+                    value={formGermPct}
+                    onChange={e => setFormGermPct(parseInt(e.target.value) || 85)}
+                    className="w-full px-3 py-1.5 border border-stone-300 dark:border-[#223d2e] dark:bg-[#182c20] rounded-xl font-mono text-xs"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Notes</label>
+                <textarea
+                  rows={2}
+                  value={formNotes}
+                  onChange={e => setFormNotes(e.target.value)}
+                  placeholder="e.g. Sown indoors in 72-cell tray, rapid germination."
+                  className="w-full px-3 py-1.5 border border-stone-300 dark:border-[#223d2e] dark:bg-[#182c20] rounded-xl text-xs"
+                />
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2 border-t border-stone-200 dark:border-[#223d2e]">
+                <button
+                  type="button"
+                  onClick={() => setIsSeedModalOpen(false)}
+                  className="px-3 py-1.5 text-stone-600 dark:text-stone-300"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-1.5 bg-[#234730] text-white font-semibold rounded-xl"
+                >
+                  Save Packet
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Active Crop Detail Modal */}
+      {activeCropDetail && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+          <div className="bg-white dark:bg-[#112117] border border-stone-200 dark:border-[#223d2e] rounded-2xl w-full max-w-lg p-6 text-xs space-y-4 max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="flex items-center justify-between border-b border-stone-200 dark:border-[#223d2e] pb-3">
+              <div className="flex items-center gap-2">
+                <span className="text-3xl">{activeCropDetail.iconEmoji}</span>
+                <div>
+                  <h3 className="font-bold text-base text-[#183a24] dark:text-white font-serif-botanical">
+                    {activeCropDetail.name}
+                  </h3>
+                  <span className="text-stone-400 italic text-[11px]">{activeCropDetail.scientificName} ({activeCropDetail.family})</span>
+                </div>
+              </div>
+              <button type="button" onClick={() => setActiveCropDetail(null)}>
+                <X className="w-5 h-5 text-stone-400" />
+              </button>
+            </div>
+
+            <p className="text-stone-700 dark:text-stone-300 leading-relaxed">
+              {activeCropDetail.harvestGuidance}
+            </p>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 bg-stone-50 dark:bg-[#182c20] p-3 rounded-xl border border-stone-200 dark:border-[#223d2e] font-mono text-[11px]">
+              <div>
+                <span className="text-stone-400 block text-[10px]">SFG Density</span>
+                <strong>{activeCropDetail.sfgPerSquare} / sq ft</strong>
+              </div>
+              <div>
+                <span className="text-stone-400 block text-[10px]">Depth</span>
+                <strong>{activeCropDetail.plantingDepthInches}</strong>
+              </div>
+              <div>
+                <span className="text-stone-400 block text-[10px]">Days to Harvest</span>
+                <strong>{activeCropDetail.daysToMaturityRange[0]}-{activeCropDetail.daysToMaturityRange[1]}d</strong>
               </div>
             </div>
 
-            {/* Modal Footer */}
-            <div className="bg-stone-50 dark:bg-[#0a140e] border-t border-stone-200 dark:border-[#223d2e] px-6 py-3 flex items-center justify-between">
-              <span className="text-stone-600 dark:text-stone-400 font-mono text-[11px]">
-                DLI target: {activeCropDetail.dliRecommendedMol}
-              </span>
+            <div className="space-y-1">
+              <strong className="text-stone-800 dark:text-stone-200">Helpful Companions:</strong>
+              <p className="text-emerald-800 dark:text-emerald-300">{activeCropDetail.companions.join(', ')}</p>
+            </div>
+
+            <div className="space-y-1">
+              <strong className="text-stone-800 dark:text-stone-200">Antagonists:</strong>
+              <p className="text-rose-700 dark:text-rose-300">
+                {activeCropDetail.antagonists.length > 0 ? activeCropDetail.antagonists.join(', ') : 'None documented'}
+              </p>
+            </div>
+
+            <div className="flex justify-end pt-2 border-t border-stone-200 dark:border-[#223d2e]">
               <button
                 type="button"
                 onClick={() => setActiveCropDetail(null)}
-                className="px-4 py-1.5 bg-[#234730] dark:bg-[#10b981] text-white dark:text-[#06150b] font-semibold rounded-xl hover:bg-[#1a3624] dark:hover:bg-[#34d399] transition-colors"
+                className="px-4 py-1.5 bg-[#234730] text-white font-semibold rounded-xl"
               >
-                Done
+                Close
               </button>
             </div>
           </div>

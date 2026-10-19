@@ -2,16 +2,20 @@ import React, { useState } from 'react';
 import { SoilTestRecord } from '../types/garden';
 import { IPM_GUIDES, COMPOST_METHODS } from '../data/ipmSoilData';
 import { ECOLOGICAL_INSECTS } from '../data/companionData';
-import { Bug, Sparkles, ShieldAlert, TestTube2, AlertCircle, Plus, CheckCircle, Scale, Thermometer } from 'lucide-react';
+import { Bug, Sparkles, ShieldAlert, TestTube2, AlertCircle, Plus, CheckCircle, Scale, Thermometer, Edit2, Trash2, X } from 'lucide-react';
 
 interface PestSoilHealthProps {
   soilTests: SoilTestRecord[];
   onAddSoilTest: (test: SoilTestRecord) => void;
+  onUpdateSoilTest?: (test: SoilTestRecord) => void;
+  onDeleteSoilTest?: (id: string) => void;
 }
 
 export const PestSoilHealth: React.FC<PestSoilHealthProps> = ({
   soilTests,
   onAddSoilTest,
+  onUpdateSoilTest,
+  onDeleteSoilTest,
 }) => {
   const [activeTab, setActiveTab] = useState<'ipm' | 'soil' | 'compost' | 'beneficials'>('ipm');
 
@@ -23,6 +27,10 @@ export const PestSoilHealth: React.FC<PestSoilHealthProps> = ({
   const [testK, setTestK] = useState<SoilTestRecord['potassium']>('optimal');
   const [testOm, setTestOm] = useState<number>(5.5);
   const [testNotes, setTestNotes] = useState('');
+
+  // Edit soil test state
+  const [editingSoilTest, setEditingSoilTest] = useState<SoilTestRecord | null>(null);
+  const [isEditSoilOpen, setIsEditSoilOpen] = useState(false);
 
   // Compost calculator state (Browns vs Greens Volume)
   const [brownParts, setBrownParts] = useState<number>(3); // e.g. 3 parts dry leaves
@@ -346,9 +354,34 @@ export const PestSoilHealth: React.FC<PestSoilHealthProps> = ({
                       <h4 className="font-bold text-sm text-[#183a24]">{test.locationName}</h4>
                       <span className="text-[11px] text-stone-500 font-mono">Date: {test.date}</span>
                     </div>
-                    <span className="px-3 py-1 bg-stone-100 font-mono font-bold text-stone-800 rounded-lg text-xs">
-                      pH {test.ph}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="px-3 py-1 bg-stone-100 font-mono font-bold text-stone-800 rounded-lg text-xs">
+                        pH {test.ph}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditingSoilTest(test);
+                          setIsEditSoilOpen(true);
+                        }}
+                        aria-label={`Edit soil test for ${test.locationName}`}
+                        className="p-1 text-stone-400 hover:text-emerald-700 rounded-md"
+                      >
+                        <Edit2 className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (confirm(`Delete soil test for "${test.locationName}"?`)) {
+                            onDeleteSoilTest?.(test.id);
+                          }
+                        }}
+                        aria-label={`Delete soil test for ${test.locationName}`}
+                        className="p-1 text-stone-400 hover:text-rose-600 rounded-md"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                   </div>
 
                   <div className="grid grid-cols-4 gap-2 bg-[#faf9f5] p-2.5 rounded-xl border border-stone-200 text-center font-mono">
@@ -378,6 +411,137 @@ export const PestSoilHealth: React.FC<PestSoilHealthProps> = ({
                 </div>
               ))}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Soil Test Modal */}
+      {isEditSoilOpen && editingSoilTest && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+          <div className="bg-white dark:bg-[#112117] border border-stone-200 dark:border-[#223d2e] rounded-2xl w-full max-w-md p-6 text-xs space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-stone-200 dark:border-[#223d2e] pb-3">
+              <h3 className="font-bold text-sm text-[#183a24] dark:text-white font-serif-botanical">Edit Soil Test Record</h3>
+              <button type="button" onClick={() => setIsEditSoilOpen(false)}>
+                <X className="w-4 h-4 text-stone-400" />
+              </button>
+            </div>
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                onUpdateSoilTest?.(editingSoilTest);
+                setIsEditSoilOpen(false);
+              }}
+              className="space-y-3"
+            >
+              <div>
+                <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Bed / Location Name</label>
+                <input
+                  type="text"
+                  required
+                  value={editingSoilTest.locationName}
+                  onChange={e => setEditingSoilTest({ ...editingSoilTest, locationName: e.target.value })}
+                  className="w-full px-3 py-1.5 border border-stone-300 dark:border-[#223d2e] dark:bg-[#182c20] rounded-xl text-xs"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">
+                    Soil pH: <span className="font-mono font-bold text-emerald-800">{editingSoilTest.ph}</span>
+                  </label>
+                  <input
+                    type="range"
+                    min="5.0"
+                    max="8.5"
+                    step="0.1"
+                    value={editingSoilTest.ph}
+                    onChange={e => setEditingSoilTest({ ...editingSoilTest, ph: parseFloat(e.target.value) })}
+                    className="w-full accent-emerald-700"
+                  />
+                </div>
+                <div>
+                  <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Organic Matter %</label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    max="20"
+                    value={editingSoilTest.organicMatterPct || 5}
+                    onChange={e => setEditingSoilTest({ ...editingSoilTest, organicMatterPct: parseFloat(e.target.value) || 0 })}
+                    className="w-full px-3 py-1.5 border border-stone-300 dark:border-[#223d2e] dark:bg-[#182c20] rounded-xl font-mono text-xs"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-2">
+                <div>
+                  <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Nitrogen (N)</label>
+                  <select
+                    value={editingSoilTest.nitrogen}
+                    onChange={e => setEditingSoilTest({ ...editingSoilTest, nitrogen: e.target.value as any })}
+                    className="w-full p-1.5 border border-stone-300 dark:border-[#223d2e] dark:bg-[#182c20] rounded-xl text-xs"
+                  >
+                    <option value="deficient">Deficient</option>
+                    <option value="low">Low</option>
+                    <option value="optimal">Optimal</option>
+                    <option value="excessive">Excessive</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Phosphorus (P)</label>
+                  <select
+                    value={editingSoilTest.phosphorus}
+                    onChange={e => setEditingSoilTest({ ...editingSoilTest, phosphorus: e.target.value as any })}
+                    className="w-full p-1.5 border border-stone-300 dark:border-[#223d2e] dark:bg-[#182c20] rounded-xl text-xs"
+                  >
+                    <option value="deficient">Deficient</option>
+                    <option value="low">Low</option>
+                    <option value="optimal">Optimal</option>
+                    <option value="excessive">Excessive</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Potassium (K)</label>
+                  <select
+                    value={editingSoilTest.potassium}
+                    onChange={e => setEditingSoilTest({ ...editingSoilTest, potassium: e.target.value as any })}
+                    className="w-full p-1.5 border border-stone-300 dark:border-[#223d2e] dark:bg-[#182c20] rounded-xl text-xs"
+                  >
+                    <option value="deficient">Deficient</option>
+                    <option value="low">Low</option>
+                    <option value="optimal">Optimal</option>
+                    <option value="excessive">Excessive</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Notes / Lab Advice</label>
+                <textarea
+                  rows={2}
+                  value={editingSoilTest.notes}
+                  onChange={e => setEditingSoilTest({ ...editingSoilTest, notes: e.target.value })}
+                  className="w-full px-3 py-1.5 border border-stone-300 dark:border-[#223d2e] dark:bg-[#182c20] rounded-xl text-xs"
+                />
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2 border-t border-stone-200 dark:border-[#223d2e]">
+                <button
+                  type="button"
+                  onClick={() => setIsEditSoilOpen(false)}
+                  className="px-3 py-1.5 text-stone-600 dark:text-stone-300 rounded-xl"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-1.5 bg-[#234730] text-white font-semibold rounded-xl"
+                >
+                  Save Changes
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

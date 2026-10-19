@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { GardenLocation, GardenTask } from '../types/garden';
 import { CROPS_DATA } from '../data/cropsData';
-import { Calendar, CheckCircle2, Circle, Clock, Printer, Plus, Sparkles, Filter, AlertCircle, Moon } from 'lucide-react';
+import { Calendar, CheckCircle2, Circle, Clock, Printer, Plus, Sparkles, Filter, AlertCircle, Moon, Bell, BellRing } from 'lucide-react';
 import { getLunarPlantingInfo } from '../services/weatherAlmanacService';
+import { requestNotificationPermission, getNotificationStatus, sendLocalNotification } from '../services/notificationService';
 
 interface CalendarTasksProps {
   location: GardenLocation;
@@ -18,6 +19,10 @@ export const CalendarTasks: React.FC<CalendarTasksProps> = ({
   const [filterType, setFilterType] = useState<string>('all');
   const [viewMode, setViewMode] = useState<'timeline' | 'tasks'>('timeline');
   const [isAddingTask, setIsAddingTask] = useState(false);
+  const [reminderStatus, setReminderStatus] = useState<string>(() => {
+    const s = getNotificationStatus();
+    return s.permission === 'granted' ? 'active' : 'idle';
+  });
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [newTaskDueDate, setNewTaskDueDate] = useState('');
   const [newTaskType, setNewTaskType] = useState<GardenTask['type']>('maintenance');
@@ -198,6 +203,39 @@ export const CalendarTasks: React.FC<CalendarTasksProps> = ({
               Action Checklist ({tasks.filter(t => !t.completed).length})
             </button>
           </div>
+
+          <button
+            type="button"
+            onClick={async () => {
+              const status = getNotificationStatus();
+              if (status.permission !== 'granted') {
+                const granted = await requestNotificationPermission();
+                if (granted) {
+                  setReminderStatus('active');
+                  sendLocalNotification('FloraHearth Garden Reminders Active', 'You will receive reminders for planting, harvesting, and freeze warnings!');
+                } else {
+                  alert('Notification permissions were not granted in your browser. Check browser settings to allow garden reminders.');
+                }
+              } else {
+                sendLocalNotification('FloraHearth Reminder Test', 'Garden reminders are active for tasks due today and frost nights!');
+                setReminderStatus('active');
+              }
+            }}
+            aria-label="Enable browser reminders for garden tasks and frost nights"
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl border transition-colors shadow-2xs ${
+              reminderStatus === 'active'
+                ? 'bg-emerald-50 dark:bg-emerald-950/60 border-emerald-300 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300'
+                : 'bg-white dark:bg-[#131e17] border-stone-300 dark:border-[rgba(255,255,255,0.12)] text-stone-700 dark:text-[#cad9ce] hover:bg-stone-50'
+            }`}
+            title="Enable browser notifications for tasks due today & frost"
+          >
+            {reminderStatus === 'active' ? (
+              <BellRing className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+            ) : (
+              <Bell className="w-3.5 h-3.5 text-stone-500" />
+            )}
+            <span>{reminderStatus === 'active' ? 'Reminders On' : 'Enable Reminders'}</span>
+          </button>
 
           <button
             type="button"

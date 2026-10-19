@@ -1,18 +1,41 @@
 import React, { useState } from 'react';
-import { GardenSpace, GridCell, Crop, PlantFamily, GrowingMethod, SunlightLevel } from '../types/garden';
+import { GardenSpace, GridCell, Crop, PlantFamily, GrowingMethod, SunlightLevel, GardenLocation, GardenTask, BedSeasonRecord } from '../types/garden';
 import { CROPS_DATA, getCropById } from '../data/cropsData';
 import { COMPANION_PAIRS } from '../data/companionData';
-import { Plus, Trash2, Printer, AlertTriangle, Sparkles, Check, Info, ShieldAlert, Layers } from 'lucide-react';
+import {
+  Plus,
+  Trash2,
+  Printer,
+  AlertTriangle,
+  Sparkles,
+  Check,
+  Info,
+  ShieldAlert,
+  Layers,
+  Calendar,
+  History,
+  ArrowRight,
+  RotateCcw,
+  X
+} from 'lucide-react';
 
 interface GardenPlannerProps {
   spaces: GardenSpace[];
   onUpdateSpaces: (newSpaces: GardenSpace[]) => void;
   activeSpaceId?: string;
+  location?: GardenLocation;
+  tasks?: GardenTask[];
+  onUpdateTasks?: (newTasks: GardenTask[]) => void;
+  onNavigateToTab?: (tabId: string) => void;
 }
 
 export const GardenPlanner: React.FC<GardenPlannerProps> = ({
   spaces,
   onUpdateSpaces,
+  location,
+  tasks,
+  onUpdateTasks,
+  onNavigateToTab,
 }) => {
   const [selectedSpaceId, setSelectedSpaceId] = useState<string>(spaces[0]?.id || 'bed-1');
   const [selectedCropToPlace, setSelectedCropToPlace] = useState<Crop | null>(CROPS_DATA[0]);
@@ -22,6 +45,12 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
   const [newSpaceType, setNewSpaceType] = useState<GrowingMethod>('raised-bed');
   const [newCols, setNewCols] = useState(4);
   const [newRows, setNewRows] = useState(4);
+
+  // Season history & sync feedback state
+  const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false);
+  const [archiveSeasonName, setArchiveSeasonName] = useState(`Spring ${new Date().getFullYear() - 1}`);
+  const [isHistoryDrawerOpen, setIsHistoryDrawerOpen] = useState(false);
+  const [syncFeedback, setSyncFeedback] = useState<string | null>(null);
 
   const currentSpace = spaces.find(s => s.id === selectedSpaceId) || spaces[0];
 
@@ -84,6 +113,7 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
       gridCols: Math.max(1, Math.min(12, newCols)),
       gridRows: Math.max(1, Math.min(12, newRows)),
       cells: [],
+      seasonHistory: [],
     };
     onUpdateSpaces([...spaces, newSpace]);
     setSelectedSpaceId(newSpace.id);
@@ -97,12 +127,152 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
     setSelectedSpaceId(filtered[0]?.id || '');
   };
 
-  // Conflict and companion analysis for the active space
+  // BED -> CALENDAR AUTOMATIC TASK GENERATION
+  const handleSyncBedTasksToCalendar = () => {
+    if (!currentSpace || !onUpdateTasks || !location) return;
+
+    const currentYear = new Date().getFullYear();
+    const [springMonth, springDay] = (location.lastSpringFrost || '04-15').split('-').map(Number);
+    const springFrostDate = new Date(currentYear, (springMonth || 4) - 1, springDay || 15);
+
+    const uniqueCropIds = Array.from(new Set(currentSpace.cells.map(c => c.cropId).filter(Boolean))) as string[];
+    const generatedTasks: GardenTask[] = [];
+
+    uniqueCropIds.forEach(cropId => {
+      const crop = getCropById(cropId);
+      if (!crop) return;
+
+      const cleanName = crop.name.split('(')[0].trim();
+
+      // 1. Seed start indoors
+      if (crop.plantingTiming.indoorStartWeeksBeforeLastFrost) {
+        const weeks = Array.isArray(crop.plantingTiming.indoorStartWeeksBeforeLastFrost)
+          ? crop.plantingTiming.indoorStartWeeksBeforeLastFrost[0]
+          : crop.plantingTiming.indoorStartWeeksBeforeLastFrost;
+        const dueDate = new Date(springFrostDate);
+        dueDate.setDate(dueDate.getDate() - (weeks * 7));
+
+        generatedTasks.push({
+          id: `task-bed-${crop.id}-seed-${currentSpace.id}`,
+          title: `Seed start indoors: ${cleanName} for ${currentSpace.name}`,
+          type: 'seed-start',
+          cropId: crop.id,
+          cropName: cleanName,
+          dueDate: dueDate.toISOString().split('T')[0],
+          completed: false,
+          notes: `Start indoors under grow lights ${weeks} weeks before final spring frost (${location.lastSpringFrost}).`
+        });
+      }
+
+      // 2. Transplant seedlings or direct sow
+      if (crop.plantingTiming.transplantWeeksAfterLastFrost) {
+        const weeks = Array.isArray(crop.plantingTiming.transplantWeeksAfterLastFrost)
+          ? crop.plantingTiming.transplantWeeksAfterLastFrost[0]
+          : crop.plantingTiming.transplantWeeksAfterLastFrost;
+        const dueDate = new Date(springFrostDate);
+        dueDate.setDate(dueDate.getDate() + (weeks * 7));
+
+        generatedTasks.push({
+          id: `task-bed-${crop.id}-transplant-${currentSpace.id}`,
+          title: `Transplant ${cleanName} into ${currentSpace.name}`,
+          type: 'transplant',
+          cropId: crop.id,
+          cropName: cleanName,
+          dueDate: dueDate.toISOString().split('T')[0],
+          completed: false,
+          notes: `Harden off 7-10 days before outdoor planting. Plant at ${crop.sfgPerSquare}/sq ft.`
+        });
+      } else if (crop.plantingTiming.directSowWeeksBeforeLastFrost || crop.plantingTiming.directSowWeeksAfterLastFrost) {
+        const weeksBefore = crop.plantingTiming.directSowWeeksBeforeLastFrost;
+        const weeksAfter = crop.plantingTiming.directSowWeeksAfterLastFrost;
+        const dueDate = new Date(springFrostDate);
+        if (weeksBefore) {
+          const w = Array.isArray(weeksBefore) ? weeksBefore[0] : weeksBefore;
+          dueDate.setDate(dueDate.getDate() - (w * 7));
+        } else if (weeksAfter) {
+          const w = Array.isArray(weeksAfter) ? weeksAfter[0] : weeksAfter;
+          dueDate.setDate(dueDate.getDate() + (w * 7));
+        }
+
+        generatedTasks.push({
+          id: `task-bed-${crop.id}-sow-${currentSpace.id}`,
+          title: `Direct sow ${cleanName} into ${currentSpace.name}`,
+          type: 'direct-sow',
+          cropId: crop.id,
+          cropName: cleanName,
+          dueDate: dueDate.toISOString().split('T')[0],
+          completed: false,
+          notes: `Sow ${crop.plantingDepthInches} deep directly into ${currentSpace.name}.`
+        });
+      }
+
+      // 3. Harvest flush
+      const avgMaturity = Math.round((crop.daysToMaturityRange[0] + crop.daysToMaturityRange[1]) / 2);
+      const harvestDate = new Date(springFrostDate);
+      harvestDate.setDate(harvestDate.getDate() + avgMaturity);
+
+      generatedTasks.push({
+        id: `task-bed-${crop.id}-harvest-${currentSpace.id}`,
+        title: `Harvest ${cleanName} from ${currentSpace.name}`,
+        type: 'harvest',
+        cropId: crop.id,
+        cropName: cleanName,
+        dueDate: harvestDate.toISOString().split('T')[0],
+        completed: false,
+        notes: `Estimated maturity (${avgMaturity} days). ${crop.harvestGuidance}`
+      });
+    });
+
+    // Check duplicates against existing tasks
+    const existingTitles = new Set((tasks || []).map(t => t.title));
+    const toAdd = generatedTasks.filter(t => !existingTitles.has(t.title));
+
+    if (toAdd.length > 0) {
+      onUpdateTasks([...(tasks || []), ...toAdd]);
+      setSyncFeedback(`✓ Added ${toAdd.length} synchronized tasks for ${currentSpace.name} to your calendar!`);
+    } else {
+      setSyncFeedback(`All planting and harvest tasks for ${currentSpace.name} are already up to date on your calendar.`);
+    }
+  };
+
+  // ARCHIVE SEASON LAYOUT TO ROTATION HISTORY
+  const handleArchiveCurrentSeason = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!currentSpace) return;
+
+    const uniqueCropIds = Array.from(new Set(currentSpace.cells.map(c => c.cropId).filter(Boolean))) as string[];
+    const pastCrops = uniqueCropIds.map(id => {
+      const c = getCropById(id);
+      return {
+        cropId: id,
+        cropName: c?.name.split('(')[0].trim() || id,
+        family: (c?.family || 'Other') as PlantFamily,
+      };
+    });
+
+    const newHistoryRecord: BedSeasonRecord = {
+      season: archiveSeasonName.trim(),
+      year: new Date().getFullYear(),
+      crops: pastCrops,
+    };
+
+    const updatedSpace: GardenSpace = {
+      ...currentSpace,
+      seasonHistory: [...(currentSpace.seasonHistory || []), newHistoryRecord],
+    };
+
+    onUpdateSpaces(spaces.map(s => s.id === updatedSpace.id ? updatedSpace : s));
+    setIsArchiveModalOpen(false);
+    setSyncFeedback(`✓ Saved current layout to rotation history for "${archiveSeasonName}".`);
+  };
+
+  // Conflict, companion, and multi-season rotation analysis
   const analyzeLayoutIssues = () => {
-    if (!currentSpace) return { conflicts: [], companions: [], familySummary: {} as Record<string, number> };
+    if (!currentSpace) return { conflicts: [], companions: [], rotationWarnings: [], familySummary: {} as Record<string, number> };
 
     const conflicts: string[] = [];
     const companions: string[] = [];
+    const rotationWarnings: string[] = [];
     const familyCount: Record<string, number> = {};
 
     currentSpace.cells.forEach(cell => {
@@ -147,48 +317,124 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
       });
     });
 
-    return { conflicts, companions, familySummary: familyCount };
+    // Multi-Season Crop Rotation Checks
+    if (currentSpace.seasonHistory && currentSpace.seasonHistory.length > 0) {
+      const activeFamilies = Object.keys(familyCount) as PlantFamily[];
+
+      currentSpace.seasonHistory.forEach(pastRecord => {
+        pastRecord.crops.forEach(pastCrop => {
+          if (activeFamilies.includes(pastCrop.family)) {
+            if (pastCrop.family === 'Solanaceae') {
+              const warning = `Solanaceae (Nightshades) grew here in ${pastRecord.season}. 3-year minimum rotation recommended to prevent soil-borne Fusarium, Verticillium & root-knot nematodes.`;
+              if (!rotationWarnings.includes(warning)) rotationWarnings.push(warning);
+            } else if (pastCrop.family === 'Brassicaceae') {
+              const warning = `Brassicaceae (Brassicas) grew here in ${pastRecord.season}. 2-year rotation recommended to prevent clubroot and cabbage root maggots.`;
+              if (!rotationWarnings.includes(warning)) rotationWarnings.push(warning);
+            } else if (pastCrop.family === 'Alliaceae') {
+              const warning = `Alliaceae (Alliums) grew here in ${pastRecord.season}. 3-year rotation prevents persistent white rot fungal sclerotia.`;
+              if (!rotationWarnings.includes(warning)) rotationWarnings.push(warning);
+            } else if (pastCrop.family === 'Cucurbitaceae') {
+              const warning = `Cucurbitaceae (Cucurbits) grew here in ${pastRecord.season}. 2-year rotation recommended to avoid overwintering squash vine borer pupae and bacterial wilt.`;
+              if (!rotationWarnings.includes(warning)) rotationWarnings.push(warning);
+            }
+          }
+        });
+      });
+    }
+
+    return { conflicts, companions, rotationWarnings, familySummary: familyCount };
   };
 
-  const { conflicts, companions, familySummary } = analyzeLayoutIssues();
+  const { conflicts, companions, rotationWarnings, familySummary } = analyzeLayoutIssues();
 
   return (
     <div className="space-y-6">
       {/* Top Header & Space Switcher */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-stone-200">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-stone-200 dark:border-[#223d2e]">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-[#183a24] font-serif-botanical">
+          <h2 className="text-2xl font-bold tracking-tight text-[#183a24] dark:text-[#e4efe7] font-serif-botanical">
             Interactive Garden Bed Designer
           </h2>
-          <p className="text-xs text-stone-600 mt-1">
-            Square Foot Gardening (SFG) grid &amp; companion ecology planner with crop-family rotation checks.
+          <p className="text-xs text-stone-600 dark:text-stone-300 mt-1">
+            Square Foot Gardening (SFG) grid, multi-season crop rotation history &amp; automatic calendar synchronization.
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Bed -> Calendar Sync Button */}
+          {onUpdateTasks && location && (
+            <button
+              type="button"
+              onClick={handleSyncBedTasksToCalendar}
+              title="Automatically generate seed starting, transplant, and harvest tasks from crops planted in this bed"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800 text-emerald-900 dark:text-emerald-200 rounded-xl hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-colors shadow-2xs"
+            >
+              <Calendar className="w-3.5 h-3.5 text-emerald-700 dark:text-emerald-400" />
+              <span>Sync Bed to Calendar</span>
+            </button>
+          )}
+
+          {/* Archive Season Button */}
+          <button
+            type="button"
+            onClick={() => setIsArchiveModalOpen(true)}
+            title="Archive current bed layout to track multi-season crop rotation"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-stone-100 dark:bg-[#182c20] border border-stone-300 dark:border-[#223d2e] text-stone-700 dark:text-stone-300 rounded-xl hover:bg-stone-200/80 transition-colors shadow-2xs"
+          >
+            <RotateCcw className="w-3.5 h-3.5 text-stone-500" />
+            <span>Archive Season</span>
+          </button>
+
           {/* Printable Layout Trigger */}
           <button
             type="button"
             onClick={() => window.print()}
-            aria-label="Print garden bed layout and planting plan"
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-white border border-stone-300 text-stone-700 rounded-xl hover:bg-stone-50 transition-colors shadow-2xs"
-            title="Print garden bed layout"
+            aria-label="Print garden bed layout"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-white dark:bg-[#132219] border border-stone-300 dark:border-[#223d2e] text-stone-700 dark:text-stone-300 rounded-xl hover:bg-stone-50 transition-colors shadow-2xs"
           >
-            <Printer className="w-4 h-4 text-stone-600" aria-hidden="true" />
+            <Printer className="w-3.5 h-3.5 text-stone-500" />
             <span>Print Plan</span>
           </button>
 
           <button
             type="button"
             onClick={() => setIsCreatingSpace(true)}
-            aria-label="Add new garden bed or container space"
+            aria-label="Add new garden bed space"
             className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold bg-[#234730] text-white rounded-xl hover:bg-[#183422] transition-colors shadow-xs"
           >
-            <Plus className="w-4 h-4" aria-hidden="true" />
+            <Plus className="w-4 h-4" />
             <span>Add Garden Space</span>
           </button>
         </div>
       </div>
+
+      {/* Sync / Archive Feedback Alert */}
+      {syncFeedback && (
+        <div className="p-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800 rounded-2xl flex items-center justify-between text-xs text-emerald-950 dark:text-emerald-200">
+          <div className="flex items-center gap-2">
+            <Check className="w-4 h-4 text-emerald-700 dark:text-emerald-400 shrink-0" />
+            <span>{syncFeedback}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            {onNavigateToTab && syncFeedback.includes('calendar') && (
+              <button
+                type="button"
+                onClick={() => onNavigateToTab('calendar')}
+                className="font-bold underline text-emerald-800 dark:text-emerald-300"
+              >
+                View in Calendar →
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => setSyncFeedback(null)}
+              className="p-1 text-emerald-700 hover:text-emerald-950"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Space Selector Tabs */}
       <div role="tablist" aria-label="Garden bed spaces" className="flex items-center gap-2 overflow-x-auto pb-1">
@@ -205,108 +451,130 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
             className={`px-3 py-1.5 text-xs font-semibold rounded-xl shrink-0 transition-colors flex items-center gap-2 ${
               space.id === selectedSpaceId
                 ? 'bg-[#234730] text-white shadow-xs'
-                : 'bg-white border border-stone-200 text-stone-700 hover:bg-stone-50'
+                : 'bg-white dark:bg-[#132219] border border-stone-200 dark:border-[#223d2e] text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-[#182c20]'
             }`}
           >
             <span>{space.name}</span>
             <span className="text-[10px] opacity-75">
               ({space.gridCols}×{space.gridRows} ft)
             </span>
+            {space.seasonHistory && space.seasonHistory.length > 0 && (
+              <span className="w-2 h-2 rounded-full bg-amber-400" title={`${space.seasonHistory.length} archived seasons`} />
+            )}
           </button>
         ))}
       </div>
 
       {/* Main Designer Grid & Tools */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Left Side: Bed Layout Viewport */}
-        <div className="lg:col-span-8 space-y-4">
-          <div className="bg-white border border-stone-200 rounded-2xl p-4 sm:p-6 shadow-xs printable-area">
-            {/* Bed Meta Banner */}
-            <div className="flex items-center justify-between mb-4 border-b border-stone-100 pb-3">
-              <div>
-                <h3 className="font-bold text-sm text-[#183a24]">{currentSpace?.name}</h3>
-                <div className="flex items-center gap-2 text-[11px] text-stone-500 mt-0.5">
-                  <span>Type: {currentSpace?.type.replace('-', ' ')}</span>
-                  <span>·</span>
-                  <span>Dimensions: {currentSpace?.gridCols} × {currentSpace?.gridRows} sq ft</span>
-                  <span>·</span>
-                  <span>Water: {currentSpace?.waterAccess}</span>
-                </div>
-              </div>
+        {/* Left Side: Interactive Grid Map (8 cols) */}
+        <div className="lg:col-span-8 bg-white dark:bg-[#132219] border border-stone-200 dark:border-[#223d2e] rounded-3xl p-6 shadow-xs space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-stone-100 dark:border-[#223d2e] pb-3">
+            <div>
+              <h3 className="text-base font-bold text-[#183a24] dark:text-white font-serif-botanical">
+                {currentSpace.name} Grid ({currentSpace.gridCols} × {currentSpace.gridRows} ft)
+              </h3>
+              <p className="text-xs text-stone-500 dark:text-stone-400">
+                Click any square to plant selected crop. Click again to clear.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2">
+              {currentSpace.seasonHistory && currentSpace.seasonHistory.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setIsHistoryDrawerOpen(!isHistoryDrawerOpen)}
+                  className="px-2.5 py-1 text-xs font-mono font-medium rounded-lg bg-stone-100 dark:bg-[#182c20] text-stone-700 dark:text-stone-300 border border-stone-200 dark:border-[#223d2e] flex items-center gap-1.5"
+                >
+                  <History className="w-3.5 h-3.5 text-amber-600" />
+                  <span>Rotation History ({currentSpace.seasonHistory.length})</span>
+                </button>
+              )}
 
               {spaces.length > 1 && (
                 <button
                   type="button"
                   onClick={() => handleDeleteSpace(currentSpace.id)}
+                  aria-label="Delete this garden space"
                   className="text-stone-400 hover:text-rose-600 p-1.5 rounded-lg transition-colors"
-                  title="Delete this bed"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
               )}
             </div>
+          </div>
 
-            {/* Visual Compass Orientation Helper */}
-            <div className="text-[11px] text-stone-400 text-center font-mono mb-2">
-              ▲ NORTH (Place tall trellises &amp; tomatoes here to prevent shading low crops)
+          {/* Past Season Rotation History Drawer */}
+          {isHistoryDrawerOpen && currentSpace.seasonHistory && (
+            <div className="p-4 bg-stone-50 dark:bg-[#182c20] border border-stone-200 dark:border-[#223d2e] rounded-2xl space-y-2 text-xs">
+              <div className="flex items-center justify-between font-bold text-stone-800 dark:text-white">
+                <span className="flex items-center gap-1.5 font-serif-botanical">
+                  <History className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
+                  Past Crop Rotations in {currentSpace.name}
+                </span>
+                <button type="button" onClick={() => setIsHistoryDrawerOpen(false)} className="text-stone-400 hover:text-stone-700">
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              <div className="space-y-2 pt-1">
+                {currentSpace.seasonHistory.map((rec, idx) => (
+                  <div key={idx} className="p-2.5 bg-white dark:bg-[#111f16] rounded-xl border border-stone-200/70 dark:border-[#223d2e] flex items-center justify-between">
+                    <div>
+                      <strong className="text-stone-900 dark:text-white block">{rec.season}</strong>
+                      <span className="text-[11px] text-stone-500 dark:text-stone-400">
+                        {rec.crops.map(c => `${c.cropName} (${c.family})`).join(', ')}
+                      </span>
+                    </div>
+                    <span className="font-mono text-[10px] px-2 py-0.5 rounded bg-stone-100 dark:bg-[#182c20] text-stone-600 dark:text-stone-300">
+                      {rec.crops.length} crops
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
+          )}
 
-            {/* Grid Map */}
+          {/* Interactive CSS Grid */}
+          <div className="overflow-x-auto pb-2">
             <div
-              className="grid gap-2 select-none overflow-x-auto p-3 bg-[#ecf3ee] dark:bg-[#0c1610] border-2 border-[#c2d6c6] dark:border-[#1f3627] rounded-2xl shadow-inner transition-colors"
+              className="inline-grid gap-1.5 p-3 bg-stone-100 dark:bg-[#0c1610] rounded-2xl border border-stone-200 dark:border-[#223d2e] select-none"
               style={{
-                gridTemplateColumns: `repeat(${currentSpace?.gridCols || 4}, minmax(72px, 1fr))`,
+                gridTemplateColumns: `repeat(${currentSpace.gridCols}, minmax(4.5rem, 1fr))`,
               }}
             >
-              {Array.from({ length: currentSpace?.gridRows || 4 }).map((_, rIdx) =>
-                Array.from({ length: currentSpace?.gridCols || 4 }).map((_, cIdx) => {
-                  const cell = currentSpace?.cells.find(c => c.x === cIdx && c.y === rIdx);
+              {Array.from({ length: currentSpace.gridRows }).map((_, y) =>
+                Array.from({ length: currentSpace.gridCols }).map((_, x) => {
+                  const cell = currentSpace.cells.find(c => c.x === x && c.y === y);
                   const crop = cell?.cropId ? getCropById(cell.cropId) : null;
-                  const isCellActive = activeCellCoords?.x === cIdx && activeCellCoords?.y === rIdx;
+                  const isCellSelected = activeCellCoords?.x === x && activeCellCoords?.y === y;
 
                   return (
                     <button
-                      key={`${cIdx}-${rIdx}`}
+                      key={`${x}-${y}`}
                       type="button"
-                      onClick={() => handleCellClick(cIdx, rIdx)}
-                      aria-label={
-                        crop
-                          ? `Grid cell Column ${cIdx + 1}, Row ${rIdx + 1}: ${crop.name}, ${cell?.count || crop.sfgPerSquare} plants per square foot. Click to replace or clear.`
-                          : `Grid cell Column ${cIdx + 1}, Row ${rIdx + 1}: empty square. Click to plant ${selectedCropToPlace?.name || 'selected crop'}.`
-                      }
-                      className={`h-24 sm:h-28 rounded-xl p-1.5 flex flex-col items-center justify-between border-2 transition-all text-center relative focus:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-500 ${
-                        isCellActive
-                          ? 'ring-2 ring-emerald-500 border-emerald-500 bg-white dark:bg-[#1c3225] shadow-md'
+                      onClick={() => handleCellClick(x, y)}
+                      className={`h-20 rounded-xl border flex flex-col items-center justify-center p-1 relative transition-all ${
+                        isCellSelected
+                          ? 'border-emerald-600 ring-2 ring-emerald-600 bg-emerald-50 dark:bg-emerald-950/60'
                           : crop
-                          ? 'bg-white dark:bg-[#15241b] border-emerald-400/60 dark:border-emerald-500/40 shadow-xs hover:border-emerald-500 dark:hover:border-emerald-400'
-                          : 'bg-[#f4f8f5] dark:bg-[#101b14] border-dashed border-[#c2d6c6] dark:border-[rgba(255,255,255,0.12)] hover:bg-[#e7f0e9] dark:hover:bg-[#16241c] hover:border-emerald-400'
+                          ? 'border-emerald-300 dark:border-emerald-800 bg-[#f7faf7] dark:bg-[#122419] hover:border-emerald-500'
+                          : 'border-dashed border-stone-300 dark:border-stone-700 bg-white dark:bg-[#15251c] hover:bg-stone-50 hover:border-stone-400'
                       }`}
                     >
-                      {/* Grid Coordinate indicator */}
-                      <span className="text-[10px] font-mono text-[#56705d] dark:text-[#7e9987] self-start" aria-hidden="true">
-                        {cIdx + 1},{rIdx + 1}
-                      </span>
-
                       {crop ? (
                         <>
-                          <span className="text-2xl drop-shadow-xs" aria-hidden="true">{crop.iconEmoji}</span>
-                          <div className="w-full truncate">
-                            <p className="text-[11px] font-bold text-[#122017] dark:text-[#f3f7f4] truncate leading-tight">
-                              {crop.name.split('(')[0]}
-                            </p>
-                            <span className="text-[10px] text-emerald-700 dark:text-[#34d399] font-semibold block">
-                              {cell?.count || crop.sfgPerSquare} per sq ft
-                            </span>
-                          </div>
-
-                          {/* Family Badge Indicator */}
-                          <span className="text-[10px] px-1 bg-stone-100 dark:bg-[#18281f] text-stone-600 dark:text-[#7e9987] rounded-sm font-mono truncate max-w-full" aria-hidden="true">
-                            {crop.family}
+                          <span className="text-2xl leading-none">{crop.iconEmoji}</span>
+                          <span className="text-[10px] font-semibold text-stone-800 dark:text-stone-200 text-center leading-tight truncate w-full mt-1">
+                            {cell?.varietyName || crop.name.split('(')[0]}
+                          </span>
+                          <span className="text-[9px] text-emerald-800 dark:text-emerald-400 font-mono">
+                            ×{cell?.count || crop.sfgPerSquare}
                           </span>
                         </>
                       ) : (
-                        <span className="text-[11px] text-[#56705d] dark:text-[#7e9987] opacity-60 self-center my-auto font-medium" aria-hidden="true">
-                          + Plant
+                        <span className="text-[10px] text-stone-400 font-mono">
+                          {x + 1},{y + 1}
                         </span>
                       )}
                     </button>
@@ -314,60 +582,19 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
                 })
               )}
             </div>
-
-            {/* Grid Footnote */}
-            <div className="flex items-center justify-between text-[11px] text-stone-500 mt-3 pt-2 border-t border-stone-100">
-              <span className="flex items-center gap-1">
-                <Info className="w-3.5 h-3.5 text-stone-400" />
-                1 grid cell = 1 square foot (12&quot; × 12&quot;). Click any cell to place or toggle selected crop.
-              </span>
-              {activeCellCoords && (
-                <button
-                  type="button"
-                  onClick={() => handleClearCell(activeCellCoords.x, activeCellCoords.y)}
-                  className="text-rose-700 hover:text-rose-900 font-medium text-xs"
-                >
-                  Clear selected cell ({activeCellCoords.x + 1},{activeCellCoords.y + 1})
-                </button>
-              )}
-            </div>
-          </div>
-
-          {/* Plant Family Crop-Rotation Tracker */}
-          <div className="bg-white border border-stone-200 rounded-2xl p-4 shadow-xs">
-            <h4 className="font-semibold text-xs text-[#183a24] flex items-center gap-1.5 mb-2">
-              <Layers className="w-4 h-4 text-emerald-700" />
-              Bed Ecology &amp; Crop Rotation Monitor (Botanical Families)
-            </h4>
-            <p className="text-[11px] text-stone-600 mb-3">
-              To prevent soil-borne pathogens (like Fusarium wilt in Solanaceae or clubroot in Brassicaceae) and nutrient depletion, rotate botanical families to different beds every 3 seasons.
-            </p>
-
-            <div className="flex flex-wrap gap-2">
-              {Object.entries(familySummary).length > 0 ? (
-                Object.entries(familySummary).map(([family, count]) => (
-                  <div key={family} className="px-2.5 py-1 bg-stone-100 border border-stone-200 rounded-lg text-xs flex items-center gap-1.5">
-                    <span className="font-semibold text-stone-800">{family}</span>
-                    <span className="text-stone-500 font-mono">({count} sq ft)</span>
-                  </div>
-                ))
-              ) : (
-                <span className="text-xs text-stone-400 italic">No crops placed in this bed yet.</span>
-              )}
-            </div>
           </div>
         </div>
 
-        {/* Right Side: Crop Placement Palette & Ecology Inspector */}
+        {/* Right Side: Crop Palette & Multi-Season Rotation Warnings (4 cols) */}
         <div className="lg:col-span-4 space-y-4">
           {/* Crop Selector Palette */}
-          <div className="bg-white border border-stone-200 rounded-2xl p-4 shadow-xs space-y-3">
+          <div className="bg-white dark:bg-[#132219] border border-stone-200 dark:border-[#223d2e] rounded-2xl p-4 shadow-xs space-y-3">
             <div className="flex items-center justify-between">
-              <h4 className="font-bold text-xs text-[#183a24]">Select Crop to Place</h4>
-              <span className="text-[10px] text-stone-500">Square Foot Density</span>
+              <h4 className="font-bold text-xs text-[#183a24] dark:text-white">Select Crop to Place</h4>
+              <span className="text-[10px] text-stone-500 font-mono">SFG Density</span>
             </div>
 
-            <div className="grid grid-cols-2 gap-2 max-h-72 overflow-y-auto pr-1">
+            <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto pr-1">
               {CROPS_DATA.map(crop => {
                 const isSelected = selectedCropToPlace?.id === crop.id;
                 return (
@@ -377,14 +604,14 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
                     onClick={() => setSelectedCropToPlace(crop)}
                     className={`p-2 rounded-xl border text-left flex items-center gap-2 transition-all ${
                       isSelected
-                        ? 'border-emerald-600 bg-emerald-50 text-emerald-950 font-semibold ring-1 ring-emerald-600'
-                        : 'border-stone-200 bg-white text-stone-700 hover:border-stone-300'
+                        ? 'border-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-950 dark:text-white font-semibold ring-1 ring-emerald-600'
+                        : 'border-stone-200 dark:border-[#223d2e] bg-white dark:bg-[#15251c] text-stone-700 dark:text-stone-200 hover:border-stone-300'
                     }`}
                   >
                     <span className="text-xl shrink-0">{crop.iconEmoji}</span>
                     <div className="overflow-hidden">
                       <div className="text-xs truncate">{crop.name.split('(')[0]}</div>
-                      <div className="text-[10px] text-stone-500 truncate font-mono">
+                      <div className="text-[10px] text-stone-500 dark:text-stone-400 truncate font-mono">
                         {crop.sfgPerSquare} / sq ft
                       </div>
                     </div>
@@ -394,33 +621,48 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
             </div>
 
             {selectedCropToPlace && (
-              <div className="bg-[#f3f7f4] border border-[#d6e4da] p-3 rounded-xl text-xs space-y-1 mt-2">
-                <div className="flex items-center justify-between font-semibold text-emerald-950">
+              <div className="bg-[#f3f7f4] dark:bg-[#182c20] border border-[#d6e4da] dark:border-[#223d2e] p-3 rounded-xl text-xs space-y-1">
+                <div className="flex items-center justify-between font-semibold text-emerald-950 dark:text-emerald-300">
                   <span>{selectedCropToPlace.name}</span>
                   <span className="font-mono">{selectedCropToPlace.sfgPerSquare}/sq ft</span>
                 </div>
-                <p className="text-[11px] text-stone-600">{selectedCropToPlace.soilPreferences}</p>
-                <div className="text-[10px] text-stone-500 pt-1">
+                <p className="text-[11px] text-stone-600 dark:text-stone-300">{selectedCropToPlace.soilPreferences}</p>
+                <div className="text-[10px] text-stone-500 dark:text-stone-400 pt-1">
                   <strong>Companions:</strong> {selectedCropToPlace.companions.slice(0, 4).join(', ')}
                 </div>
               </div>
             )}
           </div>
 
-          {/* Conflict & Synergy Live Warnings */}
-          <div className="bg-white border border-stone-200 rounded-2xl p-4 shadow-xs space-y-3">
-            <h4 className="font-bold text-xs text-[#183a24] flex items-center gap-1.5">
-              <Sparkles className="w-4 h-4 text-emerald-700" />
-              Live Bed Ecology Analysis
+          {/* Conflict, Companion & Rotation Warnings */}
+          <div className="bg-white dark:bg-[#132219] border border-stone-200 dark:border-[#223d2e] rounded-2xl p-4 shadow-xs space-y-3">
+            <h4 className="font-bold text-xs text-[#183a24] dark:text-white flex items-center gap-1.5">
+              <Sparkles className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
+              Bed Ecology &amp; Multi-Season Rotation
             </h4>
 
+            {/* Multi-Season Rotation Alerts */}
+            {rotationWarnings.length > 0 && (
+              <div className="bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800/60 p-3 rounded-xl space-y-1.5">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-amber-900 dark:text-amber-200">
+                  <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+                  Crop Rotation Alert
+                </div>
+                <ul className="text-[11px] text-amber-950 dark:text-amber-300 space-y-1 pl-4 list-disc">
+                  {rotationWarnings.map((w, i) => (
+                    <li key={i}>{w}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
             {conflicts.length > 0 && (
-              <div className="bg-rose-50 border border-rose-200 p-3 rounded-xl space-y-1.5">
-                <div className="flex items-center gap-1.5 text-xs font-bold text-rose-800">
+              <div className="bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 p-3 rounded-xl space-y-1.5">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-rose-800 dark:text-rose-300">
                   <ShieldAlert className="w-4 h-4 text-rose-700 shrink-0" />
                   Adjacent Antagonists Detected
                 </div>
-                <ul className="text-[11px] text-rose-900 space-y-1 pl-4 list-disc">
+                <ul className="text-[11px] text-rose-900 dark:text-rose-200 space-y-1 pl-4 list-disc">
                   {conflicts.map((c, i) => (
                     <li key={i}>{c}</li>
                   ))}
@@ -429,12 +671,12 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
             )}
 
             {companions.length > 0 && (
-              <div className="bg-emerald-50 border border-emerald-200 p-3 rounded-xl space-y-1.5">
-                <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-800">
+              <div className="bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 p-3 rounded-xl space-y-1.5">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-800 dark:text-emerald-300">
                   <Check className="w-4 h-4 text-emerald-700 shrink-0" />
                   Beneficial Synergies Active
                 </div>
-                <ul className="text-[11px] text-emerald-900 space-y-1 pl-4 list-disc">
+                <ul className="text-[11px] text-emerald-900 dark:text-emerald-200 space-y-1 pl-4 list-disc">
                   {companions.map((c, i) => (
                     <li key={i}>{c}</li>
                   ))}
@@ -442,9 +684,9 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
               </div>
             )}
 
-            {conflicts.length === 0 && companions.length === 0 && (
+            {conflicts.length === 0 && companions.length === 0 && rotationWarnings.length === 0 && (
               <p className="text-xs text-stone-500 italic">
-                Place crops into adjacent squares to detect companion synergies and avoid antagonistic plantings.
+                No ecological conflicts or rotation violations detected in this bed layout.
               </p>
             )}
           </div>
@@ -453,26 +695,20 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
 
       {/* Modal for Creating New Space */}
       {isCreatingSpace && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="add-space-modal-title"
-        >
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
           <form
             onSubmit={handleCreateSpace}
-            className="bg-white border border-stone-200 rounded-2xl p-6 w-full max-w-md shadow-2xl space-y-4"
+            className="bg-white dark:bg-[#112117] border border-stone-200 dark:border-[#223d2e] rounded-2xl p-6 w-full max-w-md shadow-2xl space-y-4 text-xs"
           >
-            <h3 id="add-space-modal-title" className="text-base font-bold text-[#183a24] font-serif-botanical">Add Garden Bed or Container Space</h3>
+            <h3 className="text-base font-bold text-[#183a24] dark:text-white font-serif-botanical">Add Garden Bed or Container Space</h3>
 
             <div>
-              <label htmlFor="new-space-name-input" className="block text-xs font-semibold text-stone-700 mb-1">Space Name</label>
+              <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Space Name</label>
               <input
-                id="new-space-name-input"
                 type="text"
                 value={newSpaceName}
                 onChange={e => setNewSpaceName(e.target.value)}
-                className="w-full text-xs p-2.5 border border-stone-300 rounded-xl"
+                className="w-full px-3 py-2 border border-stone-300 dark:border-[#223d2e] dark:bg-[#182c20] rounded-xl text-xs"
                 placeholder="e.g. South Fence Raised Bed"
                 required
               />
@@ -480,38 +716,35 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label htmlFor="new-space-cols-input" className="block text-xs font-semibold text-stone-700 mb-1">Width (ft)</label>
+                <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Width (ft)</label>
                 <input
-                  id="new-space-cols-input"
                   type="number"
                   min="1"
                   max="12"
                   value={newCols}
                   onChange={e => setNewCols(parseInt(e.target.value) || 1)}
-                  className="w-full text-xs p-2 border border-stone-300 rounded-xl font-mono"
+                  className="w-full px-3 py-1.5 border border-stone-300 dark:border-[#223d2e] dark:bg-[#182c20] rounded-xl font-mono text-xs"
                 />
               </div>
               <div>
-                <label htmlFor="new-space-rows-input" className="block text-xs font-semibold text-stone-700 mb-1">Length (ft)</label>
+                <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Length (ft)</label>
                 <input
-                  id="new-space-rows-input"
                   type="number"
                   min="1"
                   max="12"
                   value={newRows}
                   onChange={e => setNewRows(parseInt(e.target.value) || 1)}
-                  className="w-full text-xs p-2 border border-stone-300 rounded-xl font-mono"
+                  className="w-full px-3 py-1.5 border border-stone-300 dark:border-[#223d2e] dark:bg-[#182c20] rounded-xl font-mono text-xs"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="new-space-type-select" className="block text-xs font-semibold text-stone-700 mb-1">Growing Method</label>
+              <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Growing Method</label>
               <select
-                id="new-space-type-select"
                 value={newSpaceType}
                 onChange={e => setNewSpaceType(e.target.value as GrowingMethod)}
-                className="w-full text-xs p-2 border border-stone-300 rounded-xl"
+                className="w-full px-3 py-1.5 border border-stone-300 dark:border-[#223d2e] dark:bg-[#182c20] rounded-xl text-xs"
               >
                 <option value="raised-bed">Raised Bed</option>
                 <option value="in-ground">In-Ground Garden</option>
@@ -522,19 +755,71 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
               </select>
             </div>
 
-            <div className="flex justify-end gap-2 pt-2">
+            <div className="flex justify-end gap-2 pt-2 border-t border-stone-200 dark:border-[#223d2e]">
               <button
                 type="button"
                 onClick={() => setIsCreatingSpace(false)}
-                className="px-3 py-1.5 text-xs text-stone-600 hover:bg-stone-100 rounded-xl"
+                className="px-3.5 py-1.5 text-stone-600 dark:text-stone-300 hover:bg-stone-100 rounded-xl"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="px-4 py-1.5 text-xs font-semibold bg-[#234730] text-white rounded-xl hover:bg-[#183422]"
+                className="px-4 py-1.5 font-semibold bg-[#234730] text-white rounded-xl hover:bg-[#183422]"
               >
                 Create Bed
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* Modal for Archiving Season Layout */}
+      {isArchiveModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+          <form
+            onSubmit={handleArchiveCurrentSeason}
+            className="bg-white dark:bg-[#112117] border border-stone-200 dark:border-[#223d2e] rounded-2xl p-6 w-full max-w-sm shadow-2xl space-y-4 text-xs"
+          >
+            <div className="flex items-center justify-between border-b border-stone-200 dark:border-[#223d2e] pb-2">
+              <h3 className="font-bold text-sm text-[#183a24] dark:text-white font-serif-botanical flex items-center gap-2">
+                <RotateCcw className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
+                Archive Season Layout
+              </h3>
+              <button type="button" onClick={() => setIsArchiveModalOpen(false)}>
+                <X className="w-4 h-4 text-stone-400" />
+              </button>
+            </div>
+
+            <p className="text-stone-600 dark:text-stone-300">
+              Snapshot crops in <strong>{currentSpace.name}</strong> to history to empower the 3-year nightshade, brassica, and allium crop rotation monitor.
+            </p>
+
+            <div>
+              <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Season Identifier</label>
+              <input
+                type="text"
+                required
+                value={archiveSeasonName}
+                onChange={e => setArchiveSeasonName(e.target.value)}
+                placeholder="e.g. Spring 2025, Fall 2024"
+                className="w-full px-3 py-2 border border-stone-300 dark:border-[#223d2e] dark:bg-[#182c20] rounded-xl text-xs font-mono"
+              />
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2 border-t border-stone-200 dark:border-[#223d2e]">
+              <button
+                type="button"
+                onClick={() => setIsArchiveModalOpen(false)}
+                className="px-3 py-1.5 text-stone-600 dark:text-stone-300"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-1.5 bg-[#234730] text-white font-semibold rounded-xl"
+              >
+                Save Snapshot
               </button>
             </div>
           </form>
