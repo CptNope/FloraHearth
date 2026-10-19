@@ -31,7 +31,9 @@ import {
 } from './services/storage';
 
 import { getInitialTheme, applyTheme, AppTheme, APP_VERSION, executeHardCacheReset } from './services/pwaVersionService';
-import { checkAndTriggerDueReminders } from './services/notificationService';
+import { checkAndTriggerDueReminders, checkAndTriggerFrostAlert, getNotificationStatus } from './services/notificationService';
+import { fetchWeatherAndAlmanac } from './services/weatherAlmanacService';
+import { getTenderCropsByBed } from './services/frostTender';
 import { Navigation } from './components/Navigation';
 import { Dashboard } from './components/Dashboard';
 import { GardenPlanner } from './components/GardenPlanner';
@@ -82,10 +84,28 @@ export default function App() {
     return () => window.removeEventListener('florahearth-sw-update-available', onUpdate);
   }, [theme]);
 
-  // Check and trigger local PWA reminders for tasks due today
+  // Local reminders for tasks due today (at most once per day)
   useEffect(() => {
-    checkAndTriggerDueReminders(tasks);
+    void checkAndTriggerDueReminders(tasks);
   }, [tasks]);
+
+  // Frost-night alert when tender crops are planted (at most once per day).
+  // Only runs when notifications are allowed; the weather service caches its
+  // forecast, so this does not add a request on every launch.
+  useEffect(() => {
+    if (getNotificationStatus().permission !== 'granted') return;
+    const tender = getTenderCropsByBed(spaces).flatMap(b => b.crops);
+    if (tender.length === 0) return;
+    let cancelled = false;
+    fetchWeatherAndAlmanac(location)
+      .then(data => {
+        if (cancelled) return;
+        const fw = data.indices.frostWarning;
+        void checkAndTriggerFrostAlert(fw.level, fw.tonightMinTemp, Array.from(new Set(tender)), !data.isMockOrFallback);
+      })
+      .catch(() => { /* offline: nothing to alert on */ });
+    return () => { cancelled = true; };
+  }, [location, spaces]);
 
   const handleToggleTheme = () => {
     const nextTheme: AppTheme = theme === 'dark' ? 'light' : 'dark';

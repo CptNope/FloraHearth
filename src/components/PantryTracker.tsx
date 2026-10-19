@@ -16,6 +16,7 @@ import {
   Calendar,
   X
 } from 'lucide-react';
+import { localDateStr, daysUntil } from '../services/dates';
 
 interface PantryTrackerProps {
   pantryItems: PantryItem[];
@@ -45,11 +46,11 @@ export const PantryTracker: React.FC<PantryTrackerProps> = ({
   const [formPreservationType, setFormPreservationType] = useState<PantryItem['preservationType']>('water-bath-canned');
   const [formQuantity, setFormQuantity] = useState<number>(1);
   const [formUnit, setFormUnit] = useState('quart jars');
-  const [formDatePrepared, setFormDatePrepared] = useState(new Date().toISOString().split('T')[0]);
+  const [formDatePrepared, setFormDatePrepared] = useState(localDateStr());
   const [formBestByDate, setFormBestByDate] = useState(() => {
     const d = new Date();
     d.setFullYear(d.getFullYear() + 1);
-    return d.toISOString().split('T')[0];
+    return localDateStr(d);
   });
   const [formLocation, setFormLocation] = useState<PantryItem['storageLocation']>('Pantry Shelf');
   const [formNotes, setFormNotes] = useState('');
@@ -60,10 +61,10 @@ export const PantryTracker: React.FC<PantryTrackerProps> = ({
     setFormPreservationType('water-bath-canned');
     setFormQuantity(4);
     setFormUnit('quart jars');
-    setFormDatePrepared(new Date().toISOString().split('T')[0]);
+    setFormDatePrepared(localDateStr());
     const nextYear = new Date();
     nextYear.setFullYear(nextYear.getFullYear() + 1);
-    setFormBestByDate(nextYear.toISOString().split('T')[0]);
+    setFormBestByDate(localDateStr(nextYear));
     setFormLocation('Pantry Shelf');
     setFormNotes('');
     setIsEditModalOpen(true);
@@ -121,12 +122,7 @@ export const PantryTracker: React.FC<PantryTrackerProps> = ({
   };
 
   // Expiration calculations
-  const today = new Date();
-  const getDaysUntil = (dateStr: string) => {
-    const target = new Date(dateStr);
-    const diffTime = target.getTime() - today.getTime();
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  };
+  const getDaysUntil = (dateStr: string) => daysUntil(dateStr);
 
   const itemsWithExpiry = pantryItems.map(item => ({
     ...item,

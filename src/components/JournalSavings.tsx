@@ -4,7 +4,7 @@ import { CROPS_DATA, getCropById } from '../data/cropsData';
 import { exportAllDataJson, importAllDataJson, hasUserSavedData, validateBackupBundle, getBundleExportedAt } from '../services/storage';
 import { saveJournalPhoto, getJournalPhoto, deleteJournalPhoto } from '../services/imageStorage';
 import { PANTRY_DEFAULTS, CropPreservationMethod, getQuickPreserveMethods, getCanningMethods } from '../services/preservationMapping';
-import { localDateStr, addDays } from '../services/dates';
+import { localDateStr } from '../services/dates';
 import {
   BookOpen,
   DollarSign,
@@ -181,7 +181,7 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
 
     const newEntry: JournalEntry = {
       id: `journal-${Date.now()}`,
-      date: new Date().toISOString().split('T')[0],
+      date: localDateStr(),
       title: entryTitle.trim(),
       category: entryCategory,
       content: entryContent.trim(),
@@ -239,7 +239,7 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
 
     const newExp: ExpenseRecord = {
       id: `exp-${Date.now()}`,
-      date: new Date().toISOString().split('T')[0],
+      date: localDateStr(),
       itemDescription: expDesc.trim(),
       category: expCategory,
       cost: expCost,
@@ -268,7 +268,7 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `florahearth-garden-backup-${new Date().toISOString().split('T')[0]}.json`;
+    a.download = `florahearth-garden-backup-${localDateStr()}.json`;
     a.click();
     URL.revokeObjectURL(url);
   };

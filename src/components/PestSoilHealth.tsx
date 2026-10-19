@@ -3,6 +3,7 @@ import { SoilTestRecord } from '../types/garden';
 import { IPM_GUIDES, COMPOST_METHODS } from '../data/ipmSoilData';
 import { ECOLOGICAL_INSECTS } from '../data/companionData';
 import { Bug, Sparkles, ShieldAlert, TestTube2, AlertCircle, Plus, CheckCircle, Scale, Thermometer, Edit2, Trash2, X } from 'lucide-react';
+import { localDateStr } from '../services/dates';
 
 interface PestSoilHealthProps {
   soilTests: SoilTestRecord[];
@@ -55,7 +56,7 @@ export const PestSoilHealth: React.FC<PestSoilHealthProps> = ({
 
     const newRecord: SoilTestRecord = {
       id: `soil-${Date.now()}`,
-      date: new Date().toISOString().split('T')[0],
+      date: localDateStr(),
       locationName: testBedName,
       ph: testPh,
       nitrogen: testN,

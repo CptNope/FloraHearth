@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { HydroWaterRecord } from '../types/garden';
 import { HYDROPONIC_SPECS } from '../data/ipmSoilData';
 import { Lightbulb, Waves, Fish, Thermometer, ShieldAlert, Plus, Edit2, Trash2, X, Check, Activity, AlertTriangle, TrendingUp } from 'lucide-react';
+import { localDateStr } from '../services/dates';
 
 interface HydroIndoorGuideProps {
   hydroRecords: HydroWaterRecord[];
@@ -30,7 +31,7 @@ export const HydroIndoorGuide: React.FC<HydroIndoorGuideProps> = ({
   const [editingRecord, setEditingRecord] = useState<HydroWaterRecord | null>(null);
 
   // Form fields
-  const [formDate, setFormDate] = useState(new Date().toISOString().split('T')[0]);
+  const [formDate, setFormDate] = useState(localDateStr());
   const [formSystem, setFormSystem] = useState<HydroWaterRecord['systemType']>('kratky');
   const [formPh, setFormPh] = useState<number>(6.0);
   const [formEc, setFormEc] = useState<number>(950);
@@ -42,7 +43,7 @@ export const HydroIndoorGuide: React.FC<HydroIndoorGuideProps> = ({
 
   const openAddModal = () => {
     setEditingRecord(null);
-    setFormDate(new Date().toISOString().split('T')[0]);
+    setFormDate(localDateStr());
     setFormSystem('kratky');
     setFormPh(6.0);
     setFormEc(950);

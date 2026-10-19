@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { PantryItem, GardenLocation } from '../types/garden';
 import { SAFE_CANNING_GUIDES, getAltitudeAdjustedCanningTime, getAltitudeAdjustedPressurePsi, FREEZING_BLANCH_GUIDES, FERMENTATION_GUIDES, CURING_GUIDES } from '../data/preservationData';
 import { ShieldCheck, AlertTriangle, Scale, Thermometer, Clock, Plus, BookOpen, ExternalLink, Mountain } from 'lucide-react';
+import { localDateStr } from '../services/dates';
 
 interface PreservationTrackerProps {
   location: GardenLocation;
@@ -47,8 +48,8 @@ export const PreservationTracker: React.FC<PreservationTrackerProps> = ({
       preservationType: batchMethod,
       quantity: batchQty,
       unit: batchUnit,
-      datePrepared: today.toISOString().split('T')[0],
-      bestByDate: bestBy.toISOString().split('T')[0],
+      datePrepared: localDateStr(today),
+      bestByDate: localDateStr(bestBy),
       storageLocation: batchLocation,
       notes: batchNotes,
       testedSourceReference: 'USDA Complete Guide / NCHFP Procedure',

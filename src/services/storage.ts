@@ -1,5 +1,6 @@
 import { GardenLocation, UserPreferences, GardenSpace, GardenTask, PantryItem, JournalEntry, SoilTestRecord, HydroWaterRecord, ExpenseRecord, SeedPacket } from '../types/garden';
 import { lookupLocation } from '../data/usClimates';
+import { localDateStr } from './dates';
 
 const STORAGE_KEYS = {
   LOCATION: 'florahearth_location_v1',
@@ -423,7 +424,7 @@ export function getSavedTasks(): GardenTask[] {
           id: t.id || `task-${idx}`,
           title: t.title || 'Garden Task',
           type: t.type || 'maintenance',
-          dueDate: t.dueDate || new Date().toISOString().split('T')[0],
+          dueDate: t.dueDate || localDateStr(),
           completed: Boolean(t.completed),
         }));
       }

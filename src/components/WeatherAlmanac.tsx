@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { GardenLocation, GardenSpace, GardenTask } from '../types/garden';
-import { getCropById } from '../data/cropsData';
+import { getTenderCropsByBed } from '../services/frostTender';
 import {
   WeatherAlmanacData,
   WeatherLoreItem,
@@ -34,6 +34,7 @@ import {
   ArrowRight,
   ShieldCheck,
 } from 'lucide-react';
+import { localDateStr } from '../services/dates';
 
 interface WeatherAlmanacProps {
   location: GardenLocation;
@@ -66,29 +67,12 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
   const [gpsLoading, setGpsLoading] = useState<boolean>(false);
   const [frostTaskFeedback, setFrostTaskFeedback] = useState<string | null>(null);
 
-  // Identify frost-tender crops planted in user's garden beds
-  const frostTenderFamilies = ['Solanaceae', 'Cucurbitaceae', 'Lamiaceae'];
-  const frostTenderCropsInBeds: { spaceId: string; bedName: string; crops: string[] }[] = [];
-
-  (spaces || []).forEach(sp => {
-    const cropsInBed: string[] = [];
-    (sp.cells || []).forEach(c => {
-      if (c.cropId) {
-        const crop = getCropById(c.cropId);
-        if (crop && (frostTenderFamilies.includes(crop.family) || ['bush-beans', 'pole-beans', 'basil', 'cucumber', 'squash', 'tomato', 'sweet-pepper'].includes(crop.id))) {
-          const cleanName = crop.name.split('(')[0].trim();
-          if (!cropsInBed.includes(cleanName)) cropsInBed.push(cleanName);
-        }
-      }
-    });
-    if (cropsInBed.length > 0) {
-      frostTenderCropsInBeds.push({ spaceId: sp.id, bedName: sp.name, crops: cropsInBed });
-    }
-  });
+  // Frost-tender crops planted in outdoor beds (derived from crop timing data)
+  const frostTenderCropsInBeds = getTenderCropsByBed(spaces || []);
 
   const handleAddFrostProtectionTask = (bedName: string, cropsList: string[]) => {
     if (!onUpdateTasks) return;
-    const todayStr = new Date().toISOString().split('T')[0];
+    const todayStr = localDateStr();
     const taskTitle = `Cover ${cropsList.join(' & ')} in ${bedName}`;
 
     if ((tasks || []).some(t => t.title.includes(bedName) && t.title.toLowerCase().includes('cover') && t.dueDate === todayStr)) {
@@ -636,8 +620,8 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
                   {indices.frostWarning.actionAdvice}
                 </p>
 
-                {/* Weather -> Task Automation: Bed-specific frost cover buttons */}
-                {frostTenderCropsInBeds.length > 0 ? (
+                {/* Weather -> Task Automation: only on a real frost or freeze-watch night */}
+                {indices.frostWarning.level !== 'none' && !data?.isMockOrFallback && (frostTenderCropsInBeds.length > 0 ? (
                   <div className="pt-2 border-t border-rose-200/50 dark:border-rose-900/40 space-y-2">
                     <span className="text-[11px] font-bold text-rose-950 dark:text-rose-200 flex items-center gap-1.5">
                       <ShieldAlert className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />
@@ -673,7 +657,7 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
                       <span>Add &ldquo;Cover Garden Beds Before Freeze&rdquo; Task</span>
                     </button>
                   </div>
-                )}
+                ))}
 
                 {/* Feedback message */}
                 {frostTaskFeedback && (

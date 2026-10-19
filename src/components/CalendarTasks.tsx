@@ -4,6 +4,7 @@ import { CROPS_DATA } from '../data/cropsData';
 import { Calendar, CheckCircle2, Circle, Clock, Printer, Plus, Sparkles, Filter, AlertCircle, Moon, Bell, BellRing } from 'lucide-react';
 import { getLunarPlantingInfo } from '../services/weatherAlmanacService';
 import { requestNotificationPermission, getNotificationStatus, sendLocalNotification } from '../services/notificationService';
+import { localDateStr } from '../services/dates';
 
 interface CalendarTasksProps {
   location: GardenLocation;
@@ -132,7 +133,7 @@ export const CalendarTasks: React.FC<CalendarTasksProps> = ({
         return {
           ...t,
           completed: !t.completed,
-          completedDate: !t.completed ? new Date().toISOString().split('T')[0] : undefined,
+          completedDate: !t.completed ? localDateStr() : undefined,
         };
       }
       return t;
@@ -147,7 +148,7 @@ export const CalendarTasks: React.FC<CalendarTasksProps> = ({
     const newTask: GardenTask = {
       id: `task-${Date.now()}`,
       title: newTaskTitle,
-      dueDate: newTaskDueDate || new Date().toISOString().split('T')[0],
+      dueDate: newTaskDueDate || localDateStr(),
       type: newTaskType,
       completed: false,
     };
@@ -208,17 +209,23 @@ export const CalendarTasks: React.FC<CalendarTasksProps> = ({
             type="button"
             onClick={async () => {
               const status = getNotificationStatus();
-              if (status.permission !== 'granted') {
-                const granted = await requestNotificationPermission();
-                if (granted) {
-                  setReminderStatus('active');
-                  sendLocalNotification('FloraHearth Garden Reminders Active', 'You will receive reminders for planting, harvesting, and freeze warnings!');
-                } else {
-                  alert('Notification permissions were not granted in your browser. Check browser settings to allow garden reminders.');
-                }
-              } else {
-                sendLocalNotification('FloraHearth Reminder Test', 'Garden reminders are active for tasks due today and frost nights!');
-                setReminderStatus('active');
+              if (!status.supported) {
+                alert('This browser does not support notifications. On iPhone or iPad, add FloraHearth to your Home Screen first, then enable reminders from the installed app.');
+                return;
+              }
+              const granted = status.permission === 'granted' || (await requestNotificationPermission());
+              if (!granted) {
+                setReminderStatus('idle');
+                alert('Notifications are blocked for this site. Allow them in your browser settings to get garden reminders.');
+                return;
+              }
+              const shown = await sendLocalNotification(
+                'Garden reminders are on',
+                'When you open FloraHearth you will be notified about tasks due that day and frost nights for tender crops.'
+              );
+              setReminderStatus(shown ? 'active' : 'idle');
+              if (!shown) {
+                alert('Permission is granted, but this browser would not show a test notification. Try again from the installed app.');
               }
             }}
             aria-label="Enable browser reminders for garden tasks and frost nights"
