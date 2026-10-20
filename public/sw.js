@@ -1,5 +1,5 @@
 // FloraHearth Service Worker - Version Controlled Cache
-const APP_VERSION = 'v2.6.0';
+const APP_VERSION = 'v2.7.0';
 const CACHE_NAME = `florahearth-static-${APP_VERSION}`;
 const DATA_CACHE_NAME = `florahearth-data-${APP_VERSION}`;
 
