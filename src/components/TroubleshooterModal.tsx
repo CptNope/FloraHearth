@@ -38,7 +38,7 @@ export const TroubleshooterModal: React.FC<TroubleshooterModalProps> = ({ isOpen
       return (
         <div className="space-y-4">
           <div className="bg-amber-50 dark:bg-amber-950/40 p-4 rounded-xl border border-amber-200 dark:border-amber-800/60 text-xs text-amber-950 dark:text-amber-100 space-y-2">
-            <h4 className="font-bold text-sm text-amber-900 dark:text-amber-200">Diagnosis: Blossom Drop Analysis</h4>
+            <h3 className="font-bold text-sm text-amber-900 dark:text-amber-200">Diagnosis: Blossom Drop Analysis</h3>
             <p className="leading-relaxed text-stone-800 dark:text-[#d5e4da]">
               When flowers abort without setting fruit, gardeners frequently blame pollinators, but horticultural research shows the top culprit is temperature stress.
             </p>
@@ -62,7 +62,7 @@ export const TroubleshooterModal: React.FC<TroubleshooterModalProps> = ({ isOpen
       return (
         <div className="space-y-4">
           <div className="bg-amber-50 dark:bg-amber-950/40 p-4 rounded-xl border border-amber-200 dark:border-amber-800/60 text-xs text-amber-950 dark:text-amber-100 space-y-2">
-            <h4 className="font-bold text-sm text-amber-900 dark:text-amber-200">Diagnosis: Chlorosis / Leaf Yellowing</h4>
+            <h3 className="font-bold text-sm text-amber-900 dark:text-amber-200">Diagnosis: Chlorosis / Leaf Yellowing</h3>
             <div className="space-y-1.5 text-stone-800 dark:text-[#d5e4da]">
               <div>
                 <strong className="text-stone-900 dark:text-white">Location Check (Lower vs Upper Leaves):</strong>
@@ -88,7 +88,7 @@ export const TroubleshooterModal: React.FC<TroubleshooterModalProps> = ({ isOpen
       return (
         <div className="space-y-4">
           <div className="bg-amber-50 dark:bg-amber-950/40 p-4 rounded-xl border border-amber-200 dark:border-amber-800/60 text-xs text-amber-950 dark:text-amber-100 space-y-2">
-            <h4 className="font-bold text-sm text-amber-900 dark:text-amber-200">Diagnosis: Seed Germination Failure</h4>
+            <h3 className="font-bold text-sm text-amber-900 dark:text-amber-200">Diagnosis: Seed Germination Failure</h3>
             <ul className="list-disc pl-4 space-y-1 text-[11px] text-stone-800 dark:text-[#d5e4da]">
               <li>
                 <strong className="text-stone-900 dark:text-white">Cold Soil:</strong> Peppers and eggplants need 75-85°F soil temperatures to sprout. In cold 60°F soil, seeds rot before germinating. Use a seedling heat mat indoors.
@@ -107,7 +107,7 @@ export const TroubleshooterModal: React.FC<TroubleshooterModalProps> = ({ isOpen
 
     return (
       <div className="bg-amber-50 dark:bg-amber-950/40 p-4 rounded-xl border border-amber-200 dark:border-amber-800/60 text-xs text-amber-950 dark:text-amber-100 space-y-2">
-        <h4 className="font-bold text-sm text-amber-900 dark:text-amber-200">General Diagnostic Insight</h4>
+        <h3 className="font-bold text-sm text-amber-900 dark:text-amber-200">General Diagnostic Insight</h3>
         <p className="text-[11px] leading-relaxed text-stone-800 dark:text-[#d5e4da]">
           Plants exhibit wilting or stunted yields due to either root health (compaction, nematode feeding, or overwatering root rot) or pest vascular blockages (bacterial wilt from cucumber beetles or squash vine borer in the stem base). Inspect the lowest 2 inches of the stem right at soil level for frass or soft lesions.
         </p>
@@ -129,7 +129,7 @@ export const TroubleshooterModal: React.FC<TroubleshooterModalProps> = ({ isOpen
           <div className="flex items-center gap-2.5">
             <HelpCircle className="w-5 h-5 text-emerald-300" aria-hidden="true" />
             <div>
-              <h3 id="troubleshooter-modal-title" className="font-bold text-base font-serif-botanical text-white">Symptom Diagnostic Guide</h3>
+              <h2 id="troubleshooter-modal-title" className="font-bold text-base font-serif-botanical text-white">Symptom Diagnostic Guide</h2>
               <p className="text-[11px] text-emerald-200/80">Follow-up inquiries before jumping to conclusions</p>
             </div>
           </div>

@@ -111,6 +111,12 @@ textarea:focus-visible,
   color: #b45309; /* 5.17:1 contrast against white */
 }
 
+/* Tab headings receive programmatic focus on tab change (so screen readers
+   announce the new view); they are not controls, so no focus ring. */
+#main-content h1[tabindex="-1"]:focus {
+  outline: none !important;
+}
+
 /* WCAG 2.5.8 Target Size (Minimum): every control is at least 24x24 CSS px.
    Icon-only edit/delete buttons, filter chips and text-style buttons were 16-23px. */
 button,

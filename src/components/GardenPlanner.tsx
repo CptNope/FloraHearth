@@ -280,9 +280,9 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
       {/* Top Header & Space Switcher */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-stone-200 dark:border-[#223d2e]">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-[#183a24] dark:text-[#e4efe7] font-serif-botanical">
+          <h1 className="text-2xl font-bold tracking-tight text-[#183a24] dark:text-[#e4efe7] font-serif-botanical">
             Interactive Garden Bed Designer
-          </h2>
+          </h1>
           <p className="text-xs text-stone-600 dark:text-stone-300 mt-1">
             Square Foot Gardening (SFG) grid, multi-season crop rotation history &amp; automatic calendar synchronization.
           </p>
@@ -399,9 +399,9 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
         <div className="lg:col-span-8 bg-white dark:bg-[#132219] border border-stone-200 dark:border-[#223d2e] rounded-3xl p-6 shadow-xs space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-stone-100 dark:border-[#223d2e] pb-3">
             <div>
-              <h3 className="text-base font-bold text-[#183a24] dark:text-white font-serif-botanical">
+              <h2 className="text-base font-bold text-[#183a24] dark:text-white font-serif-botanical">
                 {currentSpace.name} Grid ({currentSpace.gridCols} × {currentSpace.gridRows} ft)
-              </h3>
+              </h2>
               <p className="text-xs text-stone-500 dark:text-stone-400">
                 Click any square to plant selected crop. Click again to clear.
               </p>
@@ -518,7 +518,7 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
           {/* Crop Selector Palette */}
           <div className="bg-white dark:bg-[#132219] border border-stone-200 dark:border-[#223d2e] rounded-2xl p-4 shadow-xs space-y-3">
             <div className="flex items-center justify-between">
-              <h4 className="font-bold text-xs text-[#183a24] dark:text-white">Select Crop to Place</h4>
+              <h3 className="font-bold text-xs text-[#183a24] dark:text-white">Select Crop to Place</h3>
               <span className="text-[10px] text-stone-500 font-mono">SFG Density</span>
             </div>
 
@@ -564,10 +564,10 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
 
           {/* Conflict, Companion & Rotation Warnings */}
           <div className="bg-white dark:bg-[#132219] border border-stone-200 dark:border-[#223d2e] rounded-2xl p-4 shadow-xs space-y-3">
-            <h4 className="font-bold text-xs text-[#183a24] dark:text-white flex items-center gap-1.5">
+            <h3 className="font-bold text-xs text-[#183a24] dark:text-white flex items-center gap-1.5">
               <Sparkles className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
               Bed Ecology &amp; Multi-Season Rotation
-            </h4>
+            </h3>
 
             {/* Multi-Season Rotation Alerts */}
             {rotationWarnings.length > 0 && (
@@ -629,7 +629,7 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
             onSubmit={handleCreateSpace}
             className="bg-white dark:bg-[#112117] border border-stone-200 dark:border-[#223d2e] rounded-2xl p-6 w-full max-w-md shadow-2xl space-y-4 text-xs"
           >
-            <h3 className="text-base font-bold text-[#183a24] dark:text-white font-serif-botanical">Add Garden Bed or Container Space</h3>
+            <h2 className="text-base font-bold text-[#183a24] dark:text-white font-serif-botanical">Add Garden Bed or Container Space</h2>
 
             <div>
               <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Space Name</label>
@@ -712,10 +712,10 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
             className="bg-white dark:bg-[#112117] border border-stone-200 dark:border-[#223d2e] rounded-2xl p-6 w-full max-w-sm shadow-2xl space-y-4 text-xs"
           >
             <div className="flex items-center justify-between border-b border-stone-200 dark:border-[#223d2e] pb-2">
-              <h3 className="font-bold text-sm text-[#183a24] dark:text-white font-serif-botanical flex items-center gap-2">
+              <h2 className="font-bold text-sm text-[#183a24] dark:text-white font-serif-botanical flex items-center gap-2">
                 <RotateCcw className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
                 Archive Season Layout
-              </h3>
+              </h2>
               <button type="button" onClick={() => setIsArchiveModalOpen(false)} aria-label="Close" className="p-1 rounded-lg hover:bg-stone-100 dark:hover:bg-[#1e3528]">
                 <X className="w-4 h-4 text-stone-400" />
               </button>

@@ -128,9 +128,9 @@ export const HydroIndoorGuide: React.FC<HydroIndoorGuideProps> = ({
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-stone-200 dark:border-[#223d2e]">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-[#183a24] dark:text-[#e4efe7] font-serif-botanical">
+          <h1 className="text-2xl font-bold tracking-tight text-[#183a24] dark:text-[#e4efe7] font-serif-botanical">
             Indoor Grow Lights, Hydroponics &amp; Water Logs
-          </h2>
+          </h1>
           <p className="text-xs text-stone-600 dark:text-stone-300 mt-1">
             Log reservoir pH/EC/PPM, calculate Daily Light Integrals (DLI), and manage aquaponic nitrogen cycling.
           </p>
@@ -235,10 +235,10 @@ export const HydroIndoorGuide: React.FC<HydroIndoorGuideProps> = ({
 
           {/* Action Bar */}
           <div className="flex items-center justify-between">
-            <h3 className="font-bold text-sm text-[#183a24] dark:text-white font-serif-botanical flex items-center gap-2">
+            <h2 className="font-bold text-sm text-[#183a24] dark:text-white font-serif-botanical flex items-center gap-2">
               <TrendingUp className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
               Hydroponic &amp; Reservoir Reading History
-            </h3>
+            </h2>
             <button
               type="button"
               onClick={openAddModal}
@@ -547,10 +547,10 @@ export const HydroIndoorGuide: React.FC<HydroIndoorGuideProps> = ({
         <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
             <div className="md:col-span-5 bg-white dark:bg-[#132219] border border-stone-200 dark:border-[#223d2e] rounded-2xl p-5 shadow-xs space-y-4 text-xs">
-              <h3 className="font-bold text-sm text-[#183a24] dark:text-white font-serif-botanical flex items-center gap-2">
+              <h2 className="font-bold text-sm text-[#183a24] dark:text-white font-serif-botanical flex items-center gap-2">
                 <Lightbulb className="w-4 h-4 text-amber-600" aria-hidden="true" />
                 Daily Light Integral (DLI) Calculator
-              </h3>
+              </h2>
               <p className="text-stone-600 dark:text-stone-300 leading-relaxed">
                 Plants respond to total photons received per 24 hours (DLI in mol/m²/day), not just instantaneous wattage.
               </p>
@@ -603,9 +603,9 @@ export const HydroIndoorGuide: React.FC<HydroIndoorGuideProps> = ({
             </div>
 
             <div className="md:col-span-7 bg-white dark:bg-[#132219] border border-stone-200 dark:border-[#223d2e] rounded-2xl p-5 shadow-xs space-y-3 text-xs">
-              <h3 className="font-bold text-sm text-[#183a24] dark:text-white font-serif-botanical">
+              <h2 className="font-bold text-sm text-[#183a24] dark:text-white font-serif-botanical">
                 Target DLI Requirements by Crop
-              </h3>
+              </h2>
               <div className="space-y-2">
                 {[
                   { name: 'Microgreens & Seedlings', dli: '6 - 10 mol', desc: 'Low light requirements; prevent leggy stretching.' },
@@ -637,7 +637,7 @@ export const HydroIndoorGuide: React.FC<HydroIndoorGuideProps> = ({
             {HYDROPONIC_SPECS.map(spec => (
               <div key={spec.systemType} className="bg-white dark:bg-[#132219] border border-stone-200 dark:border-[#223d2e] rounded-2xl p-4 shadow-xs space-y-3 text-xs">
                 <div className="flex items-center justify-between">
-                  <h4 className="font-bold text-sm text-[#183a24] dark:text-white font-serif-botanical">{spec.systemType}</h4>
+                  <h3 className="font-bold text-sm text-[#183a24] dark:text-white font-serif-botanical">{spec.systemType}</h3>
                   <span className="px-2 py-0.5 bg-stone-100 dark:bg-[#182c20] text-stone-700 dark:text-stone-300 rounded font-mono text-[10px]">
                     {spec.bestCrops[0]}
                   </span>
@@ -673,9 +673,9 @@ export const HydroIndoorGuide: React.FC<HydroIndoorGuideProps> = ({
               <Fish className="w-5 h-5" />
             </span>
             <div>
-              <h3 className="font-bold text-base text-[#183a24] dark:text-white font-serif-botanical">
+              <h2 className="font-bold text-base text-[#183a24] dark:text-white font-serif-botanical">
                 Aquaponics Nitrogen Cycle &amp; Biological Equilibrium
-              </h3>
+              </h2>
               <p className="text-stone-600 dark:text-stone-300 mt-0.5">
                 Combines aquaculture (fish) and hydroponics (plants) via a 2-stage biological bacterial biofilter.
               </p>
@@ -711,9 +711,9 @@ export const HydroIndoorGuide: React.FC<HydroIndoorGuideProps> = ({
           <DialogBehavior onClose={() => setIsModalOpen(false)} />
           <div className="bg-white dark:bg-[#112117] border border-stone-200 dark:border-[#223d2e] rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl space-y-4 p-6 text-xs">
             <div className="flex items-center justify-between border-b border-stone-200 dark:border-[#223d2e] pb-3">
-              <h3 className="font-bold text-sm text-[#183a24] dark:text-white font-serif-botanical">
+              <h2 className="font-bold text-sm text-[#183a24] dark:text-white font-serif-botanical">
                 {editingRecord ? 'Edit Hydro Water Reading' : 'Log Reservoir Water Reading'}
-              </h3>
+              </h2>
               <button
                 type="button"
                 onClick={() => setIsModalOpen(false)}

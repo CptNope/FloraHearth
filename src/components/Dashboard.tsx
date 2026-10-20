@@ -128,9 +128,9 @@ export const Dashboard: React.FC<DashboardProps> = ({
               <CloudSun className="w-4 h-4" />
             </span>
             <div>
-              <h3 className="font-bold text-sm text-[#112217] dark:text-[#ecfdf5] font-serif-botanical">
+              <h2 className="font-bold text-sm text-[#112217] dark:text-[#ecfdf5] font-serif-botanical">
                 Live Weather &amp; Farmer&apos;s Almanac Guide
-              </h3>
+              </h2>
               <p className="text-[11px] text-stone-500 dark:text-stone-400 font-mono">
                 {location.city}, {location.state} · {forecastSourceLabel(weatherData)}
               </p>
@@ -239,9 +239,9 @@ export const Dashboard: React.FC<DashboardProps> = ({
           <div className="bg-white border border-stone-200 rounded-2xl p-5 shadow-xs space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="font-bold text-base text-[#183a24] font-serif-botanical">
+                <h2 className="font-bold text-base text-[#183a24] font-serif-botanical">
                   {plantingNow ? 'What to Plant Now in Your Climate' : 'Coming Up Next in Your Climate'}
-                </h3>
+                </h2>
                 <p className="text-xs text-stone-500">
                   {plantingNow
                     ? `Planting windows open today for your frost dates (${location.lastSpringFrost} / ${location.firstFallFrost}).`
@@ -271,9 +271,9 @@ export const Dashboard: React.FC<DashboardProps> = ({
                       {crop.iconEmoji}
                     </span>
                     <div>
-                      <h4 className="font-bold text-xs text-stone-900 group-hover:text-emerald-900">
+                      <h3 className="font-bold text-xs text-stone-900 group-hover:text-emerald-900">
                         {crop.name.split('(')[0]}
-                      </h4>
+                      </h3>
                       <p className="text-[11px] text-stone-600">
                         {stepVerb[kind]} {isNow ? `now – ${shortDate(window.end)}` : `from ${shortDate(window.start)}`}
                       </p>
@@ -292,9 +292,9 @@ export const Dashboard: React.FC<DashboardProps> = ({
           <div className="bg-white border border-stone-200 rounded-2xl p-5 shadow-xs space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="font-bold text-base text-[#183a24] font-serif-botanical">
+                <h2 className="font-bold text-base text-[#183a24] font-serif-botanical">
                   Active Beds &amp; Growing Spaces
-                </h3>
+                </h2>
                 <p className="text-xs text-stone-500">
                   {spaces.length} active spaces · {totalPlacedCells} planted square feet
                 </p>
@@ -311,38 +311,47 @@ export const Dashboard: React.FC<DashboardProps> = ({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {safeSpaces.map(sp => {
                 const cells = sp.cells || [];
-                const plantedCount = cells.filter(c => c.cropId).length;
+                const planted = cells.filter(c => c.cropId);
+                const plantedCount = planted.length;
                 return (
-                  <div
+                  <article
                     key={sp.id}
-                    onClick={() => onNavigate('planner')}
-                    className="p-4 rounded-xl border border-stone-200 bg-[#faf9f5] hover:border-emerald-500 transition-all cursor-pointer space-y-2"
+                    className="relative p-4 rounded-xl border border-stone-200 bg-[#faf9f5] hover:border-emerald-500 focus-within:border-emerald-600 focus-within:ring-2 focus-within:ring-emerald-600/40 transition-colors space-y-2"
                   >
-                    <div className="flex items-center justify-between">
-                      <h4 className="font-bold text-xs text-stone-900">{sp.name}</h4>
-                      <span className="text-[10px] font-mono font-semibold bg-white px-2 py-0.5 rounded-md border border-stone-200">
+                    <div className="flex items-center justify-between gap-2">
+                      <h3 className="font-bold text-xs text-stone-900">
+                        <button
+                          type="button"
+                          onClick={() => onNavigate('planner')}
+                          aria-label={`${sp.name}: open in Bed Designer`}
+                          className="text-left after:absolute after:inset-0 after:rounded-xl after:content-[''] focus-visible:outline-none"
+                        >
+                          {sp.name}
+                        </button>
+                      </h3>
+                      <span className="shrink-0 text-[10px] font-mono font-semibold bg-white px-2 py-0.5 rounded-md border border-stone-200">
                         {sp.gridCols || 4}×{sp.gridRows || 4} ft
                       </span>
                     </div>
 
-                    <p className="text-[11px] text-stone-600 line-clamp-1">
+                    <p className="text-[11px] text-stone-600">
                       {plantedCount} of {(sp.gridCols || 4) * (sp.gridRows || 4)} sq ft planted
                     </p>
 
-                    <div className="flex items-center gap-1 text-base pt-1">
-                      {cells.slice(0, 6).map((c, i) => {
+                    <div className="flex items-center gap-1 text-base pt-1" aria-hidden="true">
+                      {planted.slice(0, 6).map((c, i) => {
                         const crop = CROPS_DATA.find(cr => cr.id === c.cropId);
                         return crop ? (
                           <span key={i} title={crop.name}>{crop.iconEmoji}</span>
                         ) : null;
                       })}
-                      {cells.length > 6 && (
-                        <span className="text-[10px] font-mono text-stone-400 pl-1">
-                          +{cells.length - 6} more
+                      {planted.length > 6 && (
+                        <span className="text-[10px] font-mono text-stone-600 pl-1">
+                          +{planted.length - 6} more
                         </span>
                       )}
                     </div>
-                  </div>
+                  </article>
                 );
               })}
             </div>
@@ -354,10 +363,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
           {/* Action Tasks */}
           <div className="bg-white border border-stone-200 rounded-2xl p-5 shadow-xs space-y-3">
             <div className="flex items-center justify-between">
-              <h3 className="font-bold text-sm text-[#183a24] font-serif-botanical flex items-center gap-2">
+              <h2 className="font-bold text-sm text-[#183a24] font-serif-botanical flex items-center gap-2">
                 <Clock className="w-4 h-4 text-emerald-800" />
                 Upcoming Action Tasks
-              </h3>
+              </h2>
               <button
                 type="button"
                 onClick={() => onNavigate('calendar')}
@@ -385,9 +394,9 @@ export const Dashboard: React.FC<DashboardProps> = ({
           {/* Pantry & Harvest Highlights */}
           <div className="bg-white border border-stone-200 rounded-2xl p-5 shadow-xs space-y-3">
             <div className="flex items-center justify-between">
-              <h3 className="font-bold text-sm text-[#183a24] font-serif-botanical">
+              <h2 className="font-bold text-sm text-[#183a24] font-serif-botanical">
                 Preserved Pantry Stores
-              </h3>
+              </h2>
               <button
                 type="button"
                 onClick={() => onNavigate('preservation')}
@@ -401,7 +410,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
               {pantryItems.slice(0, 3).map(p => (
                 <div key={p.id} className="p-2.5 rounded-xl border border-stone-200 bg-[#fbfbfa] flex items-center justify-between">
                   <div>
-                    <h5 className="font-bold text-stone-900">{p.cropName}</h5>
+                    <h4 className="font-bold text-stone-900">{p.cropName}</h4>
                     <span className="text-[10px] text-stone-500">
                       {p.storageLocation} · Use by {p.bestByDate}
                     </span>
@@ -416,10 +425,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
           {/* Quick Helper Tools */}
           <div className="p-4 bg-[#f3f7f4] border border-[#d6e4da] rounded-2xl text-xs space-y-2.5">
-            <h4 className="font-bold text-emerald-950 flex items-center gap-1.5">
+            <h3 className="font-bold text-emerald-950 flex items-center gap-1.5">
               <Sparkles className="w-4 h-4 text-emerald-800" />
               Specialized Tools
-            </h4>
+            </h3>
             <div className="space-y-1.5">
               <button
                 type="button"

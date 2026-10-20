@@ -142,9 +142,9 @@ export const VersionCacheModal: React.FC<VersionCacheModalProps> = ({
             </span>
             <div>
               <div className="flex items-center gap-2">
-                <h3 id="version-modal-title" className="text-base font-bold tracking-tight text-[#122017] dark:text-white font-serif-botanical">
+                <h2 id="version-modal-title" className="text-base font-bold tracking-tight text-[#122017] dark:text-white font-serif-botanical">
                   PWA Version &amp; Cache Control
-                </h3>
+                </h2>
                 <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-100 dark:bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-500/30">
                   v{APP_VERSION}
                 </span>
@@ -213,7 +213,7 @@ export const VersionCacheModal: React.FC<VersionCacheModalProps> = ({
                 <button
                   type="button"
                   onClick={handleInstallClick}
-                  className="px-2.5 py-1 rounded-md bg-emerald-600 text-white dark:bg-emerald-500 dark:text-stone-950 font-bold hover:bg-emerald-700 dark:hover:bg-emerald-400 transition-colors text-xs flex items-center gap-1"
+                  className="px-2.5 py-1 rounded-md bg-emerald-700 text-white dark:bg-emerald-500 dark:text-stone-950 font-bold hover:bg-emerald-800 dark:hover:bg-emerald-400 transition-colors text-xs flex items-center gap-1"
                 >
                   <Download className="w-3 h-3" />
                   <span>Install App</span>
@@ -224,10 +224,10 @@ export const VersionCacheModal: React.FC<VersionCacheModalProps> = ({
 
           {/* Cache & Storage Diagnostics */}
           <div>
-            <h4 className="text-xs font-bold text-stone-900 dark:text-white uppercase tracking-wider mb-2 flex items-center gap-1.5">
+            <h3 className="text-xs font-bold text-stone-900 dark:text-white uppercase tracking-wider mb-2 flex items-center gap-1.5">
               <HardDrive className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
               <span>Client Cache &amp; Storage Metrics</span>
-            </h4>
+            </h3>
 
             {isLoading ? (
               <div className="p-4 text-center text-stone-500 dark:text-stone-400 bg-stone-50 dark:bg-[#15271d] rounded-xl border border-stone-200 dark:border-[#274333]">
@@ -270,7 +270,7 @@ export const VersionCacheModal: React.FC<VersionCacheModalProps> = ({
             <div className="flex items-start gap-2.5">
               <RefreshCw className="w-5 h-5 text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
               <div>
-                <h4 className="font-bold text-stone-900 dark:text-white text-sm">Hard Cache Reset &amp; Force Refresh</h4>
+                <h3 className="font-bold text-stone-900 dark:text-white text-sm">Hard Cache Reset &amp; Force Refresh</h3>
                 <p className="text-[11px] text-stone-600 dark:text-stone-300 mt-0.5 leading-relaxed">
                   Deletes all cached service worker assets, unregisters stale background workers, and forces your browser to pull the latest production code bundle from the server.
                 </p>
@@ -311,7 +311,7 @@ export const VersionCacheModal: React.FC<VersionCacheModalProps> = ({
                   <button
                     type="button"
                     onClick={handleExecuteReset}
-                    className="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-lg text-xs transition-colors shadow-xs"
+                    className="px-3 py-1.5 bg-rose-700 hover:bg-rose-800 text-white font-bold rounded-lg text-xs transition-colors shadow-xs"
                   >
                     I Understand, Wipe All &amp; Reset
                   </button>

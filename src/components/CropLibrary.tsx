@@ -209,9 +209,9 @@ export const CropLibrary: React.FC<CropLibraryProps> = ({
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-stone-200 dark:border-[#223d2e]">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-[#183a24] dark:text-[#e4efe7] font-serif-botanical">
+          <h1 className="text-2xl font-bold tracking-tight text-[#183a24] dark:text-[#e4efe7] font-serif-botanical">
             Horticultural Crop Library &amp; Seed Stash
-          </h2>
+          </h1>
           <p className="text-xs text-stone-600 dark:text-stone-300 mt-1">
             Browse {CROPS_DATA.length} vegetable, fruit and herb guides, audit packet germination viability, and discover what you can plant right now with seeds you already own.
           </p>
@@ -318,9 +318,9 @@ export const CropLibrary: React.FC<CropLibraryProps> = ({
                       <div className="flex items-center gap-2">
                         <span className="text-2xl shrink-0">{crop?.iconEmoji || '🌱'}</span>
                         <div>
-                          <h4 className="font-bold text-stone-900 dark:text-white text-sm leading-tight">
+                          <h3 className="font-bold text-stone-900 dark:text-white text-sm leading-tight">
                             {seed.varietyName}
-                          </h4>
+                          </h3>
                           <span className="text-[11px] text-stone-500 dark:text-stone-400">
                             {crop?.name.split('(')[0]} · {seed.brand || 'Heirloom / Saved'}
                           </span>
@@ -432,23 +432,29 @@ export const CropLibrary: React.FC<CropLibraryProps> = ({
           {/* Crops Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {filteredCrops.map(crop => (
-              <div
+              <article
                 key={crop.id}
-                onClick={() => setActiveCropDetail(crop)}
-                className="bg-white dark:bg-[#132219] border border-stone-200 dark:border-[#223d2e] rounded-2xl p-4 shadow-xs hover:border-emerald-600 transition-all cursor-pointer space-y-3 flex flex-col justify-between"
+                className="relative bg-white dark:bg-[#132219] border border-stone-200 dark:border-[#223d2e] rounded-2xl p-4 shadow-xs hover:border-emerald-600 focus-within:border-emerald-600 focus-within:ring-2 focus-within:ring-emerald-600/40 transition-colors space-y-3 flex flex-col justify-between"
               >
                 <div className="space-y-2">
                   <div className="flex items-start justify-between">
-                    <span className="text-3xl" role="img" aria-label={crop.name}>{crop.iconEmoji}</span>
+                    <span className="text-3xl" aria-hidden="true">{crop.iconEmoji}</span>
                     <span className="px-2 py-0.5 rounded-md text-[10px] font-mono bg-stone-100 dark:bg-[#182c20] text-stone-600 dark:text-stone-300">
                       {crop.family}
                     </span>
                   </div>
 
                   <div>
-                    <h3 className="font-bold text-sm text-[#183a24] dark:text-white leading-tight font-serif-botanical">
-                      {crop.name}
-                    </h3>
+                    <h2 className="font-bold text-sm text-[#183a24] dark:text-white leading-tight font-serif-botanical">
+                      {/* Stretched button: the whole card is the hit area, the crop name is the accessible name */}
+                      <button
+                        type="button"
+                        onClick={() => setActiveCropDetail(crop)}
+                        className="text-left after:absolute after:inset-0 after:rounded-2xl after:content-[''] focus-visible:outline-none"
+                      >
+                        {crop.name}
+                      </button>
+                    </h2>
                     <p className="text-[11px] text-stone-400 italic">{crop.scientificName}</p>
                   </div>
 
@@ -465,7 +471,7 @@ export const CropLibrary: React.FC<CropLibraryProps> = ({
                     {crop.daysToMaturityRange[0]}-{crop.daysToMaturityRange[1]} days
                   </span>
                 </div>
-              </div>
+              </article>
             ))}
           </div>
         </div>
@@ -477,9 +483,9 @@ export const CropLibrary: React.FC<CropLibraryProps> = ({
           <DialogBehavior onClose={() => setIsSeedModalOpen(false)} />
           <div className="bg-white dark:bg-[#112117] border border-stone-200 dark:border-[#223d2e] rounded-2xl w-full max-w-md p-6 text-xs space-y-4 shadow-2xl">
             <div className="flex items-center justify-between border-b border-stone-200 dark:border-[#223d2e] pb-3">
-              <h3 className="font-bold text-sm text-[#183a24] dark:text-white font-serif-botanical">
+              <h2 className="font-bold text-sm text-[#183a24] dark:text-white font-serif-botanical">
                 {editingSeed ? 'Edit Seed Packet' : 'Add Seed Packet to Stash'}
-              </h3>
+              </h2>
               <button type="button" onClick={() => setIsSeedModalOpen(false)}>
                 <X className="w-4 h-4 text-stone-400" />
               </button>
@@ -607,9 +613,9 @@ export const CropLibrary: React.FC<CropLibraryProps> = ({
               <div className="flex items-center gap-2">
                 <span className="text-3xl">{activeCropDetail.iconEmoji}</span>
                 <div>
-                  <h3 className="font-bold text-base text-[#183a24] dark:text-white font-serif-botanical">
+                  <h2 className="font-bold text-base text-[#183a24] dark:text-white font-serif-botanical">
                     {activeCropDetail.name}
-                  </h3>
+                  </h2>
                   <span className="text-stone-400 italic text-[11px]">{activeCropDetail.scientificName} ({activeCropDetail.family})</span>
                 </div>
               </div>

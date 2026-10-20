@@ -171,9 +171,9 @@ export const CalendarTasks: React.FC<CalendarTasksProps> = ({
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-stone-200">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-[#183a24] font-serif-botanical">
+          <h1 className="text-2xl font-bold tracking-tight text-[#183a24] font-serif-botanical">
             Seasonal Planting Calendar &amp; Task Scheduler
-          </h2>
+          </h1>
           <p className="text-xs text-stone-600 mt-1">
             Dynamic dates calculated from your last spring frost ({location.lastSpringFrost}) and first fall frost ({location.firstFallFrost}) in Zone {location.usdaZone}.
           </p>
@@ -447,7 +447,7 @@ export const CalendarTasks: React.FC<CalendarTasksProps> = ({
         /* Action Checklist View */
         <div className="bg-white border border-stone-200 rounded-2xl p-6 shadow-xs space-y-4 printable-area">
           <div className="flex items-center justify-between pb-3 border-b border-stone-100">
-            <h3 className="font-bold text-sm text-[#183a24]">Seasonal Action Checklist</h3>
+            <h2 className="font-bold text-sm text-[#183a24]">Seasonal Action Checklist</h2>
             <span className="text-xs text-stone-500">
               {tasks.filter(t => t.completed).length} of {tasks.length} tasks completed
             </span>
@@ -511,7 +511,7 @@ export const CalendarTasks: React.FC<CalendarTasksProps> = ({
             onSubmit={handleCreateCustomTask}
             className="bg-white border border-stone-200 rounded-2xl p-6 w-full max-w-md shadow-2xl space-y-4"
           >
-            <h3 id="add-task-dialog-heading" className="text-base font-bold text-[#183a24] font-serif-botanical">Add Garden Task or Reminder</h3>
+            <h2 id="add-task-dialog-heading" className="text-base font-bold text-[#183a24] font-serif-botanical">Add Garden Task or Reminder</h2>
 
             <div>
               <label htmlFor="task-title-input" className="block text-xs font-semibold text-stone-700 mb-1">Task Title</label>

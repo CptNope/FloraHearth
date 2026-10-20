@@ -77,9 +77,9 @@ export const PestSoilHealth: React.FC<PestSoilHealthProps> = ({
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-stone-200">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-[#183a24] font-serif-botanical">
+          <h1 className="text-2xl font-bold tracking-tight text-[#183a24] font-serif-botanical">
             Natural Pest Management, Soil Health &amp; Composting
-          </h2>
+          </h1>
           <p className="text-xs text-stone-600 mt-1">
             Science-grounded Integrated Pest Management (IPM), soil chemistry interpretation, and biological soil building.
           </p>
@@ -150,7 +150,7 @@ export const PestSoilHealth: React.FC<PestSoilHealthProps> = ({
               <div key={guide.id} className="bg-white border border-stone-200 rounded-2xl p-5 shadow-xs space-y-3 text-xs">
                 <div className="flex items-start justify-between">
                   <div>
-                    <h4 className="font-bold text-sm text-[#183a24]">{guide.name}</h4>
+                    <h3 className="font-bold text-sm text-[#183a24]">{guide.name}</h3>
                     <span className="text-[11px] text-stone-500">
                       Affects: {guide.cropsAffected.join(', ')}
                     </span>
@@ -198,7 +198,7 @@ export const PestSoilHealth: React.FC<PestSoilHealthProps> = ({
           {ECOLOGICAL_INSECTS.map(ins => (
             <div key={ins.name} className="bg-white border border-stone-200 rounded-2xl p-5 shadow-xs space-y-3 text-xs">
               <div className="flex items-center justify-between">
-                <h4 className="font-bold text-sm text-[#183a24]">{ins.name}</h4>
+                <h3 className="font-bold text-sm text-[#183a24]">{ins.name}</h3>
                 <span className="px-2 py-0.5 bg-emerald-100 text-emerald-900 font-semibold rounded-md text-[10px] capitalize">
                   {ins.type.replace('-', ' ')}
                 </span>
@@ -231,10 +231,10 @@ export const PestSoilHealth: React.FC<PestSoilHealthProps> = ({
               onSubmit={handleSaveSoilTest}
               className="md:col-span-5 bg-white border border-stone-200 rounded-2xl p-5 shadow-xs space-y-4 text-xs"
             >
-              <h3 className="font-bold text-sm text-[#183a24] font-serif-botanical flex items-center gap-2">
+              <h2 className="font-bold text-sm text-[#183a24] font-serif-botanical flex items-center gap-2">
                 <TestTube2 className="w-4 h-4 text-emerald-800" />
                 Record Soil Test Results
-              </h3>
+              </h2>
               <p className="text-stone-600">
                 Log soil chemistry from your state university cooperative extension lab to receive precise, science-based amendment advice.
               </p>
@@ -353,7 +353,7 @@ export const PestSoilHealth: React.FC<PestSoilHealthProps> = ({
                 <div key={test.id} className="bg-white border border-stone-200 rounded-2xl p-5 shadow-xs space-y-3 text-xs">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h4 className="font-bold text-sm text-[#183a24]">{test.locationName}</h4>
+                      <h3 className="font-bold text-sm text-[#183a24]">{test.locationName}</h3>
                       <span className="text-[11px] text-stone-500 font-mono">Date: {test.date}</span>
                     </div>
                     <div className="flex items-center gap-2">
@@ -423,7 +423,7 @@ export const PestSoilHealth: React.FC<PestSoilHealthProps> = ({
           <DialogBehavior onClose={() => setIsEditSoilOpen(false)} />
           <div className="bg-white dark:bg-[#112117] border border-stone-200 dark:border-[#223d2e] rounded-2xl w-full max-w-md p-6 text-xs space-y-4 shadow-2xl">
             <div className="flex items-center justify-between border-b border-stone-200 dark:border-[#223d2e] pb-3">
-              <h3 className="font-bold text-sm text-[#183a24] dark:text-white font-serif-botanical">Edit Soil Test Record</h3>
+              <h2 className="font-bold text-sm text-[#183a24] dark:text-white font-serif-botanical">Edit Soil Test Record</h2>
               <button type="button" onClick={() => setIsEditSoilOpen(false)}>
                 <X className="w-4 h-4 text-stone-400" />
               </button>
@@ -554,10 +554,10 @@ export const PestSoilHealth: React.FC<PestSoilHealthProps> = ({
         <div className="space-y-6">
           {/* C:N Ratio Visual Tool */}
           <div className="bg-white border border-stone-200 rounded-2xl p-5 shadow-xs space-y-4 text-xs">
-            <h3 className="font-bold text-sm text-[#183a24] font-serif-botanical flex items-center gap-2">
+            <h2 className="font-bold text-sm text-[#183a24] font-serif-botanical flex items-center gap-2">
               <Scale className="w-4 h-4 text-emerald-800" />
               Compost Carbon-to-Nitrogen (C:N) Volume Balancer
-            </h3>
+            </h2>
             <p className="text-stone-600">
               Thermophilic microbes thrive at an optimum C:N ratio of <strong>30:1</strong>. In garden volume practice, this equates to roughly <strong>2 to 3 buckets of brown carbon materials</strong> for every <strong>1 bucket of green nitrogen kitchen scraps</strong>.
             </p>
@@ -623,7 +623,7 @@ export const PestSoilHealth: React.FC<PestSoilHealthProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {COMPOST_METHODS.map(m => (
               <div key={m.method} className="bg-white border border-stone-200 rounded-2xl p-5 shadow-xs space-y-3 text-xs">
-                <h4 className="font-bold text-sm text-[#183a24]">{m.method} Composting</h4>
+                <h3 className="font-bold text-sm text-[#183a24]">{m.method} Composting</h3>
 
                 <div className="space-y-1 text-[11px]">
                   <strong className="text-stone-700">Inputs:</strong>

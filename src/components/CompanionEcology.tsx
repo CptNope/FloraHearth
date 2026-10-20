@@ -33,9 +33,9 @@ export const CompanionEcology: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-stone-200">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-[#183a24] font-serif-botanical">
+          <h1 className="text-2xl font-bold tracking-tight text-[#183a24] font-serif-botanical">
             Companion Planting &amp; Garden Ecology
-          </h2>
+          </h1>
           <p className="text-xs text-stone-600 mt-1">
             Separating peer-reviewed agricultural science (spatial shading, nitrogen fixation, braconid wasp reservoirs) from traditional folklore.
           </p>
@@ -204,7 +204,7 @@ export const CompanionEcology: React.FC = () => {
           {ECOLOGICAL_INSECTS.map(ins => (
             <div key={ins.name} className="bg-white border border-stone-200 rounded-2xl p-5 shadow-xs space-y-3 text-xs">
               <div className="flex items-center justify-between">
-                <h4 className="font-bold text-sm text-[#183a24]">{ins.name}</h4>
+                <h3 className="font-bold text-sm text-[#183a24]">{ins.name}</h3>
                 <span className="px-2 py-0.5 bg-emerald-100 text-emerald-900 font-semibold rounded-md text-[10px] capitalize">
                   {ins.type.replace('-', ' ')}
                 </span>
@@ -231,9 +231,9 @@ export const CompanionEcology: React.FC = () => {
       {activeTab === 'pollination' && (
         <div className="bg-white border border-stone-200 rounded-2xl p-6 shadow-xs space-y-5 text-xs">
           <div>
-            <h3 className="font-bold text-base text-[#183a24] font-serif-botanical">
+            <h2 className="font-bold text-base text-[#183a24] font-serif-botanical">
               Crop Pollination Biology &amp; Hand Pollination Guide
-            </h3>
+            </h2>
             <p className="text-stone-600 mt-0.5">
               Distinguishing true pollination failure from heat-induced pollen sterility, and knowing when protective row netting must be opened.
             </p>
@@ -241,21 +241,21 @@ export const CompanionEcology: React.FC = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="p-4 bg-stone-50 rounded-xl border border-stone-200 space-y-1.5">
-              <h4 className="font-bold text-stone-900">1. Self-Pollinating Crops</h4>
+              <h3 className="font-bold text-stone-900">1. Self-Pollinating Crops</h3>
               <p className="text-[11px] text-stone-600">
                 <strong>Tomatoes, Peppers, Beans, Peas.</strong> Each blossom contains both male (anthers) and female (pistil) parts. Wind vibration or bumblebee sonic buzzing is sufficient to set fruit. Protective insect netting does NOT prevent pollination.
               </p>
             </div>
 
             <div className="p-4 bg-stone-50 rounded-xl border border-stone-200 space-y-1.5">
-              <h4 className="font-bold text-stone-900">2. Insect-Dependent Crops</h4>
+              <h3 className="font-bold text-stone-900">2. Insect-Dependent Crops</h3>
               <p className="text-[11px] text-stone-600">
                 <strong>Cucumbers, Squash, Melons, Pumpkins.</strong> Produce separate male and female flowers. Bees must transfer sticky pollen from male blooms to the female bloom (identified by the miniature baby fruit at the base). <strong>Row covers MUST be removed once female blossoms open!</strong>
               </p>
             </div>
 
             <div className="p-4 bg-stone-50 rounded-xl border border-stone-200 space-y-1.5">
-              <h4 className="font-bold text-stone-900">3. Hand Pollination Technique</h4>
+              <h3 className="font-bold text-stone-900">3. Hand Pollination Technique</h3>
               <p className="text-[11px] text-stone-600">
                 For squash in screened greenhouses or low-pollinator areas: In early morning, pick an open male flower, peel off petals to expose the pollen-dusted anther, and gently swab it inside the center stigma of open female blossoms.
               </p>

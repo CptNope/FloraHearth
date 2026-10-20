@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect, lazy, Suspense } from 'react';
+import React, { useState, useEffect, useCallback, useRef, lazy, Suspense } from 'react';
 import {
   GardenLocation,
   UserPreferences,
@@ -38,6 +38,7 @@ import { getTenderCropsByBed } from './services/frostTender';
 import { Navigation } from './components/Navigation';
 import { Dashboard } from './components/Dashboard';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { tabFromLocation, urlForTab, isKnownTab, titleForTab } from './services/tabRouting';
 
 // Tabs and dialogs load on first use (precached by the service worker for offline use)
 const GardenPlanner = lazy(() => import('./components/GardenPlanner').then(m => ({ default: m.GardenPlanner })));
@@ -65,12 +66,49 @@ function TabLoading() {
 }
 
 export default function App() {
-  // Honor the documented PWA shortcuts and JAT-OS deep links (?tab=planner/crops/calendar).
-  // Unknown tab values fall back to Dashboard rather than rendering an empty app.
-  const [activeTab, setActiveTab] = useState<string>(() => {
-    const requested = new URLSearchParams(window.location.search).get('tab');
-    return requested && ['planner', 'crops', 'calendar'].includes(requested) ? requested : 'dashboard';
-  });
+  // Honor the documented PWA shortcuts and JAT-OS deep links (?tab=planner/crops/calendar);
+  // every tab id is linkable. Unknown values fall back to the Dashboard.
+  const [activeTab, setActiveTabState] = useState<string>(() => tabFromLocation());
+  const focusHeadingOnChange = useRef(false);
+
+  // Changing tabs: push a history entry (Back/Forward work, reload keeps the tab)
+  const activeTabRef = useRef(activeTab);
+  activeTabRef.current = activeTab;
+  const setActiveTab = useCallback((tab: string) => {
+    if (!isKnownTab(tab) || tab === activeTabRef.current) return;
+    focusHeadingOnChange.current = true;
+    try { window.history.pushState({ tab }, '', urlForTab(tab)); } catch { /* sandboxed iframe */ }
+    setActiveTabState(tab);
+  }, []);
+
+  useEffect(() => {
+    const onPop = () => { focusHeadingOnChange.current = true; setActiveTabState(tabFromLocation()); };
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, []);
+
+  // Each tab gets its own document title, and keyboard / screen-reader users
+  // land on the new tab's heading instead of staying on the nav button.
+  useEffect(() => {
+    document.title = titleForTab(activeTab);
+    if (!focusHeadingOnChange.current) return;
+    focusHeadingOnChange.current = false;
+    window.scrollTo({ top: 0 });
+    let frames = 0;
+    let raf = 0;
+    const focusHeading = () => {
+      // Tabs load lazily: wait (up to ~2s) for the tab's <h1> to render
+      const h1 = document.querySelector<HTMLElement>('#main-content h1');
+      if (h1) {
+        if (!h1.hasAttribute('tabindex')) h1.setAttribute('tabindex', '-1');
+        h1.focus({ preventScroll: true });
+      } else if (frames++ < 120) {
+        raf = requestAnimationFrame(focusHeading);
+      }
+    };
+    raf = requestAnimationFrame(focusHeading);
+    return () => cancelAnimationFrame(raf);
+  }, [activeTab]);
   const [location, setLocation] = useState<GardenLocation>(getSavedLocation);
   const [preferences, setPreferences] = useState<UserPreferences>(getSavedPreferences);
   const [spaces, setSpaces] = useState<GardenSpace[]>(getSavedSpaces);
