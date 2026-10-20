@@ -345,7 +345,7 @@ export const HydroIndoorGuide: React.FC<HydroIndoorGuideProps> = ({
                         <text
                           x={padding.left + 6}
                           y={optimalPhTop + 11}
-                          fontSize="9"
+                          fontSize="11"
                           fill="#059669"
                           fontFamily="monospace"
                           fontWeight="bold"
@@ -354,14 +354,14 @@ export const HydroIndoorGuide: React.FC<HydroIndoorGuideProps> = ({
                         </text>
 
                         {/* Y-axis labels for pH (Left) */}
-                        <text x={padding.left - 6} y={getYForPh(7.0) + 3} fontSize="9" textAnchor="end" fill="#6b7280" fontFamily="monospace">7.0</text>
-                        <text x={padding.left - 6} y={getYForPh(6.0) + 3} fontSize="9" textAnchor="end" fill="#059669" fontFamily="monospace" fontWeight="bold">6.0</text>
-                        <text x={padding.left - 6} y={getYForPh(5.0) + 3} fontSize="9" textAnchor="end" fill="#6b7280" fontFamily="monospace">5.0</text>
+                        <text x={padding.left - 6} y={getYForPh(7.0) + 3} fontSize="11" textAnchor="end" fill="#6b7280" fontFamily="monospace">7.0</text>
+                        <text x={padding.left - 6} y={getYForPh(6.0) + 3} fontSize="11" textAnchor="end" fill="#059669" fontFamily="monospace" fontWeight="bold">6.0</text>
+                        <text x={padding.left - 6} y={getYForPh(5.0) + 3} fontSize="11" textAnchor="end" fill="#6b7280" fontFamily="monospace">5.0</text>
 
                         {/* Y-axis labels for PPM (Right) */}
-                        <text x={padding.left + chartW + 6} y={getYForPpm(1600) + 3} fontSize="9" textAnchor="start" fill="#d97706" fontFamily="monospace">1600p</text>
-                        <text x={padding.left + chartW + 6} y={getYForPpm(1000) + 3} fontSize="9" textAnchor="start" fill="#d97706" fontFamily="monospace">1000p</text>
-                        <text x={padding.left + chartW + 6} y={getYForPpm(600) + 3} fontSize="9" textAnchor="start" fill="#d97706" fontFamily="monospace">600p</text>
+                        <text x={padding.left + chartW + 6} y={getYForPpm(1600) + 3} fontSize="11" textAnchor="start" fill="#d97706" fontFamily="monospace">1600p</text>
+                        <text x={padding.left + chartW + 6} y={getYForPpm(1000) + 3} fontSize="11" textAnchor="start" fill="#d97706" fontFamily="monospace">1000p</text>
+                        <text x={padding.left + chartW + 6} y={getYForPpm(600) + 3} fontSize="11" textAnchor="start" fill="#d97706" fontFamily="monospace">600p</text>
 
                         {/* Polylines if >= 2 points */}
                         {sorted.length > 1 && (
@@ -417,7 +417,7 @@ export const HydroIndoorGuide: React.FC<HydroIndoorGuideProps> = ({
                               <text
                                 x={x}
                                 y={yPh - 7}
-                                fontSize="9"
+                                fontSize="11"
                                 textAnchor="middle"
                                 fill="#10b981"
                                 fontFamily="monospace"
@@ -429,7 +429,7 @@ export const HydroIndoorGuide: React.FC<HydroIndoorGuideProps> = ({
                               <text
                                 x={x}
                                 y={height - 5}
-                                fontSize="9"
+                                fontSize="11"
                                 textAnchor="middle"
                                 fill="#6b7280"
                                 fontFamily="monospace"

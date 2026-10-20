@@ -320,7 +320,7 @@ export const PantryTracker: React.FC<PantryTrackerProps> = ({
             <Sparkles className="w-5 h-5" />
           </span>
           <div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
               <span className="font-mono text-xs font-bold uppercase text-emerald-800 dark:text-emerald-400">
                 Preserved Produce on Hand:
               </span>

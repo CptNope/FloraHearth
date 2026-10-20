@@ -182,8 +182,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   {weatherData?.current.weatherDesc || 'Loading…'}
                 </span>
               </div>
-              <div className="flex items-center gap-2 text-xs font-mono text-stone-500 dark:text-stone-400 mt-0.5">
-                <span>Soil: {weatherData ? `${Math.round(weatherData.indices.soilGermination.soilTempF)}°F` : '--'}</span>
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs font-mono text-stone-500 dark:text-stone-400 mt-0.5">
+                <span className="whitespace-nowrap">Soil: {weatherData ? `${Math.round(weatherData.indices.soilGermination.soilTempF)}°F` : '--'}</span>
                 <span>·</span>
                 <span
                   className={

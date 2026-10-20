@@ -402,7 +402,7 @@ export const CropLibrary: React.FC<CropLibraryProps> = ({
               <Search className="w-4 h-4 text-stone-400 absolute left-3 top-3" aria-hidden="true" />
               <input
                 type="text"
-                placeholder="Search crops, botanical family (e.g. Solanaceae), or scientific name..."
+                placeholder="Search name, family or Latin name"
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 aria-label="Search crops by common name, scientific name, or family"

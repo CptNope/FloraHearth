@@ -190,6 +190,33 @@ body {
   animation: fh-arrive 280ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
+/* Browser surfaces: selection, caret, native controls, scrollbars, links */
+::selection {
+  background: #b7e4c7;
+  color: #102417;
+}
+.dark ::selection {
+  background: #1f6f4a;
+  color: #f3f7f4;
+}
+:root {
+  accent-color: #047857;
+  caret-color: #047857;
+  scrollbar-color: #b2c7b7 transparent;
+}
+:root.dark {
+  accent-color: #34d399;
+  caret-color: #34d399;
+  scrollbar-color: #2a4535 transparent;
+}
+a {
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: from-font;
+}
+.underline {
+  text-underline-offset: 0.2em;
+}
+
 /* Reading measure: ~65 characters per line (62ch: Plus Jakarta letters average narrower than the "0" that ch measures) */
 main p:not([class*="text-center"]) {
   max-inline-size: 62ch;
