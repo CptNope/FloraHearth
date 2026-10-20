@@ -254,7 +254,7 @@ export const HydroIndoorGuide: React.FC<HydroIndoorGuideProps> = ({
               </div>
 
               {/* Responsive SVG Chart */}
-              <div className="w-full overflow-x-auto">
+              <div className="w-full overflow-x-auto" tabIndex={0} role="region" aria-label="Water readings table (scrolls sideways)">
                 <div className="min-w-[500px] h-44 relative bg-stone-50 dark:bg-[#0e1a12] rounded-xl p-3 border border-stone-100 dark:border-[#1a3324]">
                   {(() => {
                     const sorted = [...hydroRecords].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()).slice(-10);

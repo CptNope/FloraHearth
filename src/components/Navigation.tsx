@@ -106,7 +106,11 @@ export const Navigation: React.FC<NavigationProps> = ({
 
   const isCurrentTabInBottomBar = mobileBottomItems.some(item => item.id === activeTab);
 
+  // The bottom bar must live outside <header>: the header's backdrop-filter
+  // makes it the containing block for fixed children, which pinned the
+  // "bottom" bar to the top of the screen on phones.
   return (
+    <>
     <header className="sticky top-0 z-40 bg-[#f5f7f5]/95 dark:bg-[#0f1712]/95 backdrop-blur-md border-b border-[#d6e2d8] dark:border-[rgba(255,255,255,0.08)] transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         {/* Main top bar */}
@@ -258,7 +262,7 @@ export const Navigation: React.FC<NavigationProps> = ({
 
       {/* Full Categorized Drawer Menu (Accessible from Desktop All Views & Mobile) */}
       {mobileMenuOpen && (
-        <div className="border-t border-stone-200 dark:border-[#243d2f] bg-[#fcfcfb] dark:bg-[#0c1610] px-4 sm:px-6 py-6 shadow-2xl max-h-[85vh] overflow-y-auto">
+        <div className="border-t border-stone-200 dark:border-[#243d2f] bg-[#fcfcfb] dark:bg-[#0c1610] px-4 sm:px-6 pt-6 pb-24 lg:pb-6 shadow-2xl max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain">
           <div className="max-w-7xl mx-auto space-y-6">
             <div className="flex items-center justify-between border-b border-stone-200/80 dark:border-[#243d2f] pb-3">
               <div className="flex items-center gap-2">
@@ -399,61 +403,63 @@ export const Navigation: React.FC<NavigationProps> = ({
         </div>
       )}
 
-      {/* Mobile Persistent Bottom Bar (Always in reach of user's thumb) */}
-      <nav
-        aria-label="Mobile quick navigation"
-        className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-[#0c1610]/95 backdrop-blur-md border-t border-stone-200 dark:border-[#243d2f] flex items-center justify-around py-2 px-1 text-[10px] shadow-lg"
-      >
-        {mobileBottomItems.map(item => {
-          const Icon = item.icon;
-          const isActive = activeTab === item.id;
-          return (
-            <button
-              key={item.id}
-              type="button"
-              onClick={() => {
-                onSelectTab(item.id);
-                setMobileMenuOpen(false);
-              }}
-              aria-current={isActive ? 'page' : undefined}
-              className={`flex flex-col items-center gap-0.5 px-2 py-1 rounded-lg transition-colors ${
-                isActive
-                  ? 'text-[#183e25] dark:text-[#34d399] font-bold'
-                  : 'text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200'
-              }`}
-            >
-              <Icon className="w-4 h-4" aria-hidden="true" />
-              <span>{item.label}</span>
-            </button>
-          );
-        })}
-
-        {/* All Views Menu Button in Bottom Nav */}
-        <button
-          type="button"
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          aria-expanded={mobileMenuOpen}
-          aria-label={mobileMenuOpen ? 'Close all views menu' : 'Open all views menu'}
-          className={`flex flex-col items-center gap-0.5 px-2 py-1 rounded-lg transition-colors relative ${
-            mobileMenuOpen || !isCurrentTabInBottomBar
-              ? 'text-[#183e25] dark:text-[#34d399] font-bold'
-              : 'text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200'
-          }`}
-        >
-          {mobileMenuOpen ? (
-            <X className="w-4 h-4" aria-hidden="true" />
-          ) : (
-            <Menu className="w-4 h-4" aria-hidden="true" />
-          )}
-          <span>{mobileMenuOpen ? 'Close' : 'All Views'}</span>
-          {!isCurrentTabInBottomBar && (
-            <span
-              className="absolute top-1 right-2.5 w-1.5 h-1.5 rounded-full bg-emerald-600 dark:bg-[#34d399]"
-              title="Active view in directory"
-            />
-          )}
-        </button>
-      </nav>
     </header>
+
+    {/* Mobile Persistent Bottom Bar (Always in reach of user's thumb) */}
+    <nav
+      aria-label="Mobile quick navigation"
+      className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-[#0c1610]/95 backdrop-blur-md border-t border-stone-200 dark:border-[#243d2f] flex items-center justify-around py-2 px-1 text-[10px] shadow-lg"
+    >
+      {mobileBottomItems.map(item => {
+        const Icon = item.icon;
+        const isActive = activeTab === item.id;
+        return (
+          <button
+            key={item.id}
+            type="button"
+            onClick={() => {
+              onSelectTab(item.id);
+              setMobileMenuOpen(false);
+            }}
+            aria-current={isActive ? 'page' : undefined}
+            className={`flex flex-col items-center gap-0.5 px-2 py-1 rounded-lg transition-colors ${
+              isActive
+                ? 'text-[#183e25] dark:text-[#34d399] font-bold'
+                : 'text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200'
+            }`}
+          >
+            <Icon className="w-4 h-4" aria-hidden="true" />
+            <span>{item.label}</span>
+          </button>
+        );
+      })}
+
+      {/* All Views Menu Button in Bottom Nav */}
+      <button
+        type="button"
+        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+        aria-expanded={mobileMenuOpen}
+        aria-label={mobileMenuOpen ? 'Close all views menu' : 'Open all views menu'}
+        className={`flex flex-col items-center gap-0.5 px-2 py-1 rounded-lg transition-colors relative ${
+          mobileMenuOpen || !isCurrentTabInBottomBar
+            ? 'text-[#183e25] dark:text-[#34d399] font-bold'
+            : 'text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-200'
+        }`}
+      >
+        {mobileMenuOpen ? (
+          <X className="w-4 h-4" aria-hidden="true" />
+        ) : (
+          <Menu className="w-4 h-4" aria-hidden="true" />
+        )}
+        <span>{mobileMenuOpen ? 'Close' : 'All Views'}</span>
+        {!isCurrentTabInBottomBar && (
+          <span
+            className="absolute top-1 right-2.5 w-1.5 h-1.5 rounded-full bg-emerald-600 dark:bg-[#34d399]"
+            title="Active view in directory"
+          />
+        )}
+      </button>
+    </nav>
+    </>
   );
 };
