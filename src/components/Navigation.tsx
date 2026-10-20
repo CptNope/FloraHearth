@@ -131,7 +131,7 @@ export const Navigation: React.FC<NavigationProps> = ({
                 <span className="font-extrabold text-lg tracking-tight text-[#122017] dark:text-[#f3f7f4] font-serif-botanical block leading-none">
                   FloraHearth
                 </span>
-                <span className="max-[359px]:hidden text-[10px] text-[#56705d] dark:text-[#7e9987] font-mono tracking-wider uppercase">
+                <span className="max-[359px]:hidden text-2xs text-[#56705d] dark:text-[#7e9987] font-mono tracking-wider uppercase">
                   US Garden &amp; Pantry
                 </span>
               </div>
@@ -317,7 +317,7 @@ export const Navigation: React.FC<NavigationProps> = ({
                               <span>{item.label}</span>
                               <ChevronRight className="w-3.5 h-3.5 opacity-50 shrink-0" aria-hidden="true" />
                             </div>
-                            <p className={`text-[11px] break-words leading-normal mt-0.5 ${isActive ? 'text-emerald-100 dark:text-[#06150d]/80' : 'text-stone-500 dark:text-stone-400'}`}>
+                            <p className={`text-xs break-words leading-normal mt-0.5 ${isActive ? 'text-emerald-100 dark:text-[#06150d]/80' : 'text-stone-500 dark:text-stone-400'}`}>
                               {item.desc}
                             </p>
                           </div>
@@ -343,7 +343,7 @@ export const Navigation: React.FC<NavigationProps> = ({
                 <Settings className="w-4 h-4 text-emerald-700 dark:text-[#34d399] shrink-0" aria-hidden="true" />
                 <div className="overflow-hidden">
                   <div className="text-xs font-semibold text-stone-800 dark:text-white">Garden &amp; Zone Setup</div>
-                  <div className="text-[11px] text-stone-500 dark:text-stone-400 break-words">Zone {location.usdaZone} · {location.city}, {location.state}</div>
+                  <div className="text-xs text-stone-500 dark:text-stone-400 break-words">Zone {location.usdaZone} · {location.city}, {location.state}</div>
                 </div>
               </button>
 
@@ -360,7 +360,7 @@ export const Navigation: React.FC<NavigationProps> = ({
                   <HelpCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" aria-hidden="true" />
                   <div className="overflow-hidden">
                     <div className="text-xs font-semibold text-amber-950 dark:text-amber-200">Plant Doctor Troubleshooter</div>
-                    <div className="text-[11px] text-amber-800/80 dark:text-amber-300/80 break-words">Interactive heat stress &amp; yellow leaf diagnosis</div>
+                    <div className="text-xs text-amber-800/80 dark:text-amber-300/80 break-words">Interactive heat stress &amp; yellow leaf diagnosis</div>
                   </div>
                 </button>
               )}
@@ -377,7 +377,7 @@ export const Navigation: React.FC<NavigationProps> = ({
                 <Layers className="w-4 h-4 text-emerald-700 dark:text-[#34d399] shrink-0" aria-hidden="true" />
                 <div className="overflow-hidden">
                   <div className="text-xs font-semibold text-stone-800 dark:text-white">PWA Storage &amp; Cache</div>
-                  <div className="text-[11px] text-stone-500 dark:text-stone-400 break-words">Version {APP_VERSION} · Hard Cache Reset</div>
+                  <div className="text-xs text-stone-500 dark:text-stone-400 break-words">Version {APP_VERSION} · Hard Cache Reset</div>
                 </div>
               </button>
 
@@ -394,7 +394,7 @@ export const Navigation: React.FC<NavigationProps> = ({
                 )}
                 <div>
                   <div className="text-xs font-semibold text-stone-800 dark:text-white">Display Theme</div>
-                  <div className="text-[11px] text-stone-500 dark:text-stone-400">
+                  <div className="text-xs text-stone-500 dark:text-stone-400">
                     Currently {theme === 'dark' ? 'Dark Mode' : 'Light Mode'}
                   </div>
                 </div>
@@ -409,7 +409,7 @@ export const Navigation: React.FC<NavigationProps> = ({
     {/* Mobile Persistent Bottom Bar (Always in reach of user's thumb) */}
     <nav
       aria-label="Mobile quick navigation"
-      className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-[#0c1610] border-t border-stone-200 dark:border-[#243d2f] flex items-center justify-around pt-1.5 pb-[max(0.375rem,env(safe-area-inset-bottom))] px-1 text-[10px] shadow-lg"
+      className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-[#0c1610] border-t border-stone-200 dark:border-[#243d2f] flex items-center justify-around pt-1.5 pb-[max(0.375rem,env(safe-area-inset-bottom))] px-1 text-2xs shadow-lg"
     >
       {mobileBottomItems.map(item => {
         const Icon = item.icon;

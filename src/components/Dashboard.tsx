@@ -138,13 +138,13 @@ export const Dashboard: React.FC<DashboardProps> = ({
               <h2 className="font-bold text-sm text-[#112217] dark:text-[#ecfdf5] font-serif-botanical">
                 Live Weather &amp; Farmer&apos;s Almanac Guide
               </h2>
-              <p className="text-[11px] text-stone-500 dark:text-stone-400 font-mono">
+              <p className="text-xs text-stone-500 dark:text-stone-400 font-mono">
                 {location.city}, {location.state}
               </p>
               {/* Fixed one-line status (no banner insertion, so nothing shifts when the forecast arrives) */}
               <p
                 role="status"
-                className={`text-[11px] font-mono font-semibold ${
+                className={`text-xs font-mono font-semibold ${
                   weatherData?.forecastStatus === 'estimate'
                     ? 'text-amber-800 dark:text-amber-300'
                     : weatherData?.forecastStatus === 'cached'
@@ -182,7 +182,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   {weatherData?.current.weatherDesc || 'Loading…'}
                 </span>
               </div>
-              <div className="flex items-center gap-2 text-[11px] font-mono text-stone-500 dark:text-stone-400 mt-0.5">
+              <div className="flex items-center gap-2 text-xs font-mono text-stone-500 dark:text-stone-400 mt-0.5">
                 <span>Soil: {weatherData ? `${Math.round(weatherData.indices.soilGermination.soilTempF)}°F` : '--'}</span>
                 <span>·</span>
                 <span
@@ -206,7 +206,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
               {lunar.phaseEmoji}
             </span>
             <div className="space-y-0.5 text-xs">
-              <div className="flex items-center gap-2 font-mono text-[11px] text-emerald-800 dark:text-emerald-400 font-bold">
+              <div className="flex items-center gap-2 font-mono text-xs text-emerald-800 dark:text-emerald-400 font-bold">
                 <span>{lunar.phase} ({lunar.illuminationPct}% illuminated)</span>
                 <span>·</span>
                 <span>Sign: {lunar.zodiacSign}</span>
@@ -214,7 +214,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
               <p className="font-semibold text-stone-800 dark:text-stone-200 leading-tight">
                 {lunar.actionTitle}: {lunar.lunarRuleSummary}
               </p>
-              <p className="text-[11px] text-stone-500 dark:text-stone-400 italic">
+              <p className="text-xs text-stone-500 dark:text-stone-400 italic font-serif-botanical">
                 Almanac lore: &ldquo;{todayLore.saying}&rdquo;
               </p>
             </div>
@@ -292,13 +292,13 @@ export const Dashboard: React.FC<DashboardProps> = ({
                       <h3 className="font-bold text-xs text-stone-900 group-hover:text-emerald-900">
                         {crop.name.split('(')[0]}
                       </h3>
-                      <p className="text-[11px] text-stone-600">
+                      <p className="text-xs text-stone-600">
                         {stepVerb[kind]} {isNow ? `now – ${shortDate(window.end)}` : `from ${shortDate(window.start)}`}
                       </p>
                     </div>
                   </div>
 
-                  <span className="text-[11px] font-semibold text-emerald-800 group-hover:underline" aria-hidden="true">
+                  <span className="text-xs font-semibold text-emerald-800 group-hover:underline" aria-hidden="true">
                     View Guide
                   </span>
                 </button>
@@ -347,12 +347,12 @@ export const Dashboard: React.FC<DashboardProps> = ({
                           {sp.name}
                         </button>
                       </h3>
-                      <span className="shrink-0 text-[10px] font-mono font-semibold bg-white px-2 py-0.5 rounded-md border border-stone-200">
+                      <span className="shrink-0 text-2xs font-mono font-semibold bg-white px-2 py-0.5 rounded-md border border-stone-200">
                         {sp.gridCols || 4}×{sp.gridRows || 4} ft
                       </span>
                     </div>
 
-                    <p className="text-[11px] text-stone-600">
+                    <p className="text-xs text-stone-600">
                       {plantedCount} of {(sp.gridCols || 4) * (sp.gridRows || 4)} sq ft planted
                     </p>
 
@@ -364,7 +364,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                         ) : null;
                       })}
                       {planted.length > 6 && (
-                        <span className="text-[10px] font-mono text-stone-600 pl-1">
+                        <span className="text-2xs font-mono text-stone-600 pl-1">
                           +{planted.length - 6} more
                         </span>
                       )}
@@ -388,7 +388,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
               <button
                 type="button"
                 onClick={() => onNavigate('calendar')}
-                className="text-[11px] text-emerald-800 font-semibold underline"
+                className="text-xs text-emerald-800 font-semibold underline"
               >
                 View all
               </button>
@@ -400,7 +400,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   <div className="flex items-center justify-between">
                     <span className="font-bold text-stone-800 break-words">{task.title}</span>
                   </div>
-                  <div className="flex items-center justify-between text-[10px] text-stone-500 font-mono">
+                  <div className="flex items-center justify-between text-2xs text-stone-500 font-mono">
                     <span>Due: {task.dueDate}</span>
                     <span className="capitalize">{task.type.replace('-', ' ')}</span>
                   </div>
@@ -418,7 +418,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
               <button
                 type="button"
                 onClick={() => onNavigate('preservation')}
-                className="text-[11px] text-emerald-800 font-semibold underline"
+                className="text-xs text-emerald-800 font-semibold underline"
               >
                 Canning Center
               </button>
@@ -429,7 +429,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 <div key={p.id} className="p-2.5 rounded-xl border border-stone-200 bg-[#fbfbfa] flex items-center justify-between">
                   <div>
                     <h3 className="font-bold text-stone-900">{p.cropName}</h3>
-                    <span className="text-[10px] text-stone-500">
+                    <span className="text-2xs text-stone-500">
                       {p.storageLocation} · Use by {p.bestByDate}
                     </span>
                   </div>

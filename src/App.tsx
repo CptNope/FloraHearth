@@ -559,13 +559,13 @@ export default function App() {
           <button
             type="button"
             onClick={() => setIsVersionModalOpen(true)}
-            className="inline-flex items-center gap-1 font-mono text-[11px] px-2 py-0.5 rounded-md bg-stone-100 dark:bg-[#182b21] text-emerald-700 dark:text-emerald-400 border border-stone-200/80 dark:border-[#243d2f] hover:underline"
+            className="inline-flex items-center gap-1 font-mono text-xs px-2 py-0.5 rounded-md bg-stone-100 dark:bg-[#182b21] text-emerald-700 dark:text-emerald-400 border border-stone-200/80 dark:border-[#243d2f] hover:underline"
           >
             <Layers className="w-3 h-3" />
             <span>v{APP_VERSION} (PWA Cache Control)</span>
           </button>
         </div>
-        <p className="text-[11px] text-stone-400 dark:text-stone-400 max-w-2xl mx-auto">
+        <p className="text-xs text-stone-400 dark:text-stone-400 max-w-2xl mx-auto">
           Built for offline PWA installation and GitHub Pages deployment. Data synthesized from USDA ARS, National Center for Home Food Preservation (NCHFP), and University Cooperative Extension Services.
         </p>
       </footer>

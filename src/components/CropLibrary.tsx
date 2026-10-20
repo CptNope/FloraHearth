@@ -331,7 +331,7 @@ export const CropLibrary: React.FC<CropLibraryProps> = ({
                           <h3 className="font-bold text-stone-900 dark:text-white text-sm leading-tight">
                             {seed.varietyName}
                           </h3>
-                          <span className="text-[11px] text-stone-500 dark:text-stone-400">
+                          <span className="text-xs text-stone-500 dark:text-stone-400">
                             {crop?.name.split('(')[0]} · {seed.brand || 'Heirloom / Saved'}
                           </span>
                         </div>
@@ -363,25 +363,25 @@ export const CropLibrary: React.FC<CropLibraryProps> = ({
 
                     {/* Plant Now Badge */}
                     {plantNow && (
-                      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-900 dark:text-emerald-300 font-semibold text-[11px]">
+                      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-900 dark:text-emerald-300 font-semibold text-xs">
                         <CheckCircle className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
                         <span>In Season: Plant Now This Week!</span>
                       </div>
                     )}
 
                     {/* Viability Warning Box */}
-                    <div className={`p-2 rounded-xl border text-[11px] font-mono ${viability.badgeClass}`}>
+                    <div className={`p-2 rounded-xl border text-xs font-mono ${viability.badgeClass}`}>
                       {viability.text}
                     </div>
 
-                    <div className="flex items-center justify-between text-[11px] text-stone-500 dark:text-stone-400 pt-1 border-t border-stone-100 dark:border-[#223d2e]">
+                    <div className="flex items-center justify-between text-xs text-stone-500 dark:text-stone-400 pt-1 border-t border-stone-100 dark:border-[#223d2e]">
                       <span>Bought: <strong>{seed.yearBought}</strong></span>
                       <span className="capitalize">Remaining: <strong>{seed.quantityStatus.replace('-', ' ')}</strong></span>
                       {seed.germinationRatePct && <span>Germ: <strong>{seed.germinationRatePct}%</strong></span>}
                     </div>
 
                     {seed.notes && (
-                      <p className="text-[11px] text-stone-500 dark:text-stone-400 italic">
+                      <p className="text-xs text-stone-500 dark:text-stone-400 italic font-serif-botanical">
                         {seed.notes}
                       </p>
                     )}
@@ -449,7 +449,7 @@ export const CropLibrary: React.FC<CropLibraryProps> = ({
                 <div className="space-y-2">
                   <div className="flex items-start justify-between">
                     <span className="text-3xl" aria-hidden="true">{crop.iconEmoji}</span>
-                    <span className="px-2 py-0.5 rounded-md text-[10px] font-mono bg-stone-100 dark:bg-[#182c20] text-stone-600 dark:text-stone-300">
+                    <span className="px-2 py-0.5 rounded-md text-2xs font-mono bg-stone-100 dark:bg-[#182c20] text-stone-600 dark:text-stone-300">
                       {crop.family}
                     </span>
                   </div>
@@ -465,15 +465,15 @@ export const CropLibrary: React.FC<CropLibraryProps> = ({
                         {crop.name}
                       </button>
                     </h2>
-                    <p className="text-[11px] text-stone-400 italic">{crop.scientificName}</p>
+                    <p className="text-xs text-stone-400 italic font-serif-botanical">{crop.scientificName}</p>
                   </div>
 
-                  <p className="text-[11px] text-stone-600 dark:text-stone-300 line-clamp-2">
+                  <p className="text-xs text-stone-600 dark:text-stone-300 line-clamp-2">
                     {crop.harvestGuidance}
                   </p>
                 </div>
 
-                <div className="pt-2 border-t border-stone-100 dark:border-[#223d2e] flex items-center justify-between text-[11px] font-mono">
+                <div className="pt-2 border-t border-stone-100 dark:border-[#223d2e] flex items-center justify-between text-xs font-mono">
                   <span className="text-emerald-800 dark:text-emerald-400 font-semibold">
                     ${crop.retailGroceryValuePerLb.toFixed(2)}/lb
                   </span>
@@ -626,7 +626,7 @@ export const CropLibrary: React.FC<CropLibraryProps> = ({
                   <h2 className="font-bold text-base text-[#183a24] dark:text-white font-serif-botanical">
                     {activeCropDetail.name}
                   </h2>
-                  <span className="text-stone-400 italic text-[11px]">{activeCropDetail.scientificName} ({activeCropDetail.family})</span>
+                  <span className="text-stone-400 italic font-serif-botanical text-xs">{activeCropDetail.scientificName} ({activeCropDetail.family})</span>
                 </div>
               </div>
               <button type="button" onClick={() => setActiveCropDetail(null)}>
@@ -638,17 +638,17 @@ export const CropLibrary: React.FC<CropLibraryProps> = ({
               {activeCropDetail.harvestGuidance}
             </p>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 bg-stone-50 dark:bg-[#182c20] p-3 rounded-xl border border-stone-200 dark:border-[#223d2e] font-mono text-[11px]">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 bg-stone-50 dark:bg-[#182c20] p-3 rounded-xl border border-stone-200 dark:border-[#223d2e] font-mono text-xs">
               <div>
-                <span className="text-stone-400 block text-[10px]">SFG Density</span>
+                <span className="text-stone-400 block text-2xs">SFG Density</span>
                 <strong>{activeCropDetail.sfgPerSquare} / sq ft</strong>
               </div>
               <div>
-                <span className="text-stone-400 block text-[10px]">Depth</span>
+                <span className="text-stone-400 block text-2xs">Depth</span>
                 <strong>{activeCropDetail.plantingDepthInches}</strong>
               </div>
               <div>
-                <span className="text-stone-400 block text-[10px]">Days to Harvest</span>
+                <span className="text-stone-400 block text-2xs">Days to Harvest</span>
                 <strong>{activeCropDetail.daysToMaturityRange[0]}-{activeCropDetail.daysToMaturityRange[1]}d</strong>
               </div>
             </div>

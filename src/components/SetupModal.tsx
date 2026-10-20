@@ -251,7 +251,7 @@ export const SetupModal: React.FC<SetupModalProps> = ({
                   {isManualFrost && (
                     <div className="grid grid-cols-2 gap-3 mt-2 bg-white p-3 rounded-lg border border-stone-200">
                       <div>
-                        <label htmlFor="spring-frost-input" className="block text-[11px] font-medium text-stone-600 mb-1">Last Spring Frost (MM-DD)</label>
+                        <label htmlFor="spring-frost-input" className="block text-xs font-medium text-stone-600 mb-1">Last Spring Frost (MM-DD)</label>
                         <input
                           id="spring-frost-input"
                           type="text"
@@ -262,7 +262,7 @@ export const SetupModal: React.FC<SetupModalProps> = ({
                         />
                       </div>
                       <div>
-                        <label htmlFor="fall-frost-input" className="block text-[11px] font-medium text-stone-600 mb-1">First Fall Frost (MM-DD)</label>
+                        <label htmlFor="fall-frost-input" className="block text-xs font-medium text-stone-600 mb-1">First Fall Frost (MM-DD)</label>
                         <input
                           id="fall-frost-input"
                           type="text"
@@ -312,7 +312,7 @@ export const SetupModal: React.FC<SetupModalProps> = ({
                       }`}
                     >
                       <span className="font-semibold block">{m.label}</span>
-                      <span className="text-[11px] text-stone-500 leading-tight block mt-0.5">{m.desc}</span>
+                      <span className="text-xs text-stone-500 leading-tight block mt-0.5">{m.desc}</span>
                     </button>
                   ))}
                 </div>
@@ -459,7 +459,7 @@ export const SetupModal: React.FC<SetupModalProps> = ({
                           <span className="font-semibold">{g.label}</span>
                           {active && <Check className="w-4 h-4 text-emerald-700" />}
                         </div>
-                        <span className="text-[11px] text-stone-500 block mt-0.5">{g.desc}</span>
+                        <span className="text-xs text-stone-500 block mt-0.5">{g.desc}</span>
                       </button>
                     );
                   })}
@@ -470,7 +470,7 @@ export const SetupModal: React.FC<SetupModalProps> = ({
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <label className="text-xs font-semibold text-stone-700">Recommended Crops for Zone {location.usdaZone}</label>
-                  <span className="text-[11px] text-emerald-800">Tap to toggle your favorites</span>
+                  <span className="text-xs text-emerald-800">Tap to toggle your favorites</span>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-56 overflow-y-auto pr-1">
                   {CROPS_DATA.map((crop) => {
@@ -489,7 +489,7 @@ export const SetupModal: React.FC<SetupModalProps> = ({
                         <span className="text-xl shrink-0">{crop.iconEmoji}</span>
                         <div className="overflow-hidden">
                           <div className="text-xs break-words font-medium">{crop.name.split('(')[0]}</div>
-                          <div className="text-[10px] text-stone-500 break-words">{crop.difficulty} · {crop.sfgPerSquare}/sq ft</div>
+                          <div className="text-2xs text-stone-500 break-words">{crop.difficulty} · {crop.sfgPerSquare}/sq ft</div>
                         </div>
                         {isSelected && <Check className="w-3.5 h-3.5 ml-auto text-emerald-700 shrink-0" />}
                       </button>

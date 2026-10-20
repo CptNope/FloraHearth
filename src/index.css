@@ -2,6 +2,20 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* Type role scale (typeset pass). Replaces 9/10/11/12/14px one-offs:
+   2xs  12px  labels, badges, metadata (the floor)
+   xs   13px  secondary UI text, table cells, captions
+   sm   15px  body copy, guidance, form text
+   base 16px  emphasized body, inputs on touch screens            */
+@theme {
+  --text-2xs: 0.75rem;
+  --text-2xs--line-height: 1.45;
+  --text-xs: 0.8125rem;
+  --text-xs--line-height: 1.5;
+  --text-sm: 0.9375rem;
+  --text-sm--line-height: 1.55;
+}
+
 @layer base {
   :root {
     --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
@@ -174,6 +188,25 @@ body {
 }
 .animate-fadeIn {
   animation: fh-arrive 280ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Reading measure: ~65 characters per line (62ch: Plus Jakarta letters average narrower than the "0" that ch measures) */
+main p:not([class*="text-center"]) {
+  max-inline-size: 62ch;
+}
+
+/* Tabular data: aligned digits in tables and readings */
+table, .font-mono {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Touch screens: inputs at 16px so iOS Safari doesn't zoom on focus */
+@media (pointer: coarse) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  select,
+  textarea {
+    font-size: 1rem !important;
+  }
 }
 
 /* WCAG 2.3.3 Reduced Motion: fewer and gentler, not none.

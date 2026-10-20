@@ -383,7 +383,7 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
             }`}
           >
             <span>{space.name}</span>
-            <span className="text-[10px] opacity-75">
+            <span className="text-2xs opacity-75">
               ({space.gridCols}×{space.gridRows} ft)
             </span>
             {space.seasonHistory && space.seasonHistory.length > 0 && (
@@ -450,11 +450,11 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
                   <div key={idx} className="p-2.5 bg-white dark:bg-[#111f16] rounded-xl border border-stone-200/70 dark:border-[#223d2e] flex items-center justify-between">
                     <div>
                       <strong className="text-stone-900 dark:text-white block">{rec.season}</strong>
-                      <span className="text-[11px] text-stone-500 dark:text-stone-400">
+                      <span className="text-xs text-stone-500 dark:text-stone-400">
                         {rec.crops.map(c => `${c.cropName} (${c.family})`).join(', ')}
                       </span>
                     </div>
-                    <span className="font-mono text-[10px] px-2 py-0.5 rounded bg-stone-100 dark:bg-[#182c20] text-stone-600 dark:text-stone-300">
+                    <span className="font-mono text-2xs px-2 py-0.5 rounded bg-stone-100 dark:bg-[#182c20] text-stone-600 dark:text-stone-300">
                       {rec.crops.length} crops
                     </span>
                   </div>
@@ -493,15 +493,15 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
                       {crop ? (
                         <>
                           <span className="text-2xl leading-none">{crop.iconEmoji}</span>
-                          <span className="text-[10px] font-semibold text-stone-800 dark:text-stone-200 text-center leading-tight truncate w-full mt-1">
+                          <span className="text-2xs font-semibold text-stone-800 dark:text-stone-200 text-center leading-tight truncate w-full mt-1">
                             {cell?.varietyName || crop.name.split('(')[0]}
                           </span>
-                          <span className="text-[9px] text-emerald-800 dark:text-emerald-400 font-mono">
+                          <span className="text-2xs text-emerald-800 dark:text-emerald-400 font-mono">
                             ×{cell?.count || crop.sfgPerSquare}
                           </span>
                         </>
                       ) : (
-                        <span className="text-[10px] text-stone-400 font-mono">
+                        <span className="text-2xs text-stone-400 font-mono">
                           {x + 1},{y + 1}
                         </span>
                       )}
@@ -519,7 +519,7 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
           <div className="bg-white dark:bg-[#132219] border border-stone-200 dark:border-[#223d2e] rounded-2xl p-4 shadow-xs space-y-3">
             <div className="flex items-center justify-between">
               <h3 className="font-bold text-xs text-[#183a24] dark:text-white">Select Crop to Place</h3>
-              <span className="text-[10px] text-stone-500 font-mono">SFG Density</span>
+              <span className="text-2xs text-stone-500 font-mono">SFG Density</span>
             </div>
 
             <div className="grid grid-cols-2 gap-2 max-h-64 overflow-y-auto pr-1">
@@ -539,7 +539,7 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
                     <span className="text-xl shrink-0">{crop.iconEmoji}</span>
                     <div className="overflow-hidden">
                       <div className="text-xs break-words">{crop.name.split('(')[0]}</div>
-                      <div className="text-[10px] text-stone-500 dark:text-stone-400 break-words font-mono">
+                      <div className="text-2xs text-stone-500 dark:text-stone-400 break-words font-mono">
                         {crop.sfgPerSquare} / sq ft
                       </div>
                     </div>
@@ -554,8 +554,8 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
                   <span>{selectedCropToPlace.name}</span>
                   <span className="font-mono">{selectedCropToPlace.sfgPerSquare}/sq ft</span>
                 </div>
-                <p className="text-[11px] text-stone-600 dark:text-stone-300">{selectedCropToPlace.soilPreferences}</p>
-                <div className="text-[10px] text-stone-500 dark:text-stone-400 pt-1">
+                <p className="text-xs text-stone-600 dark:text-stone-300">{selectedCropToPlace.soilPreferences}</p>
+                <div className="text-2xs text-stone-500 dark:text-stone-400 pt-1">
                   <strong>Companions:</strong> {selectedCropToPlace.companions.slice(0, 4).join(', ')}
                 </div>
               </div>
@@ -576,7 +576,7 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
                   <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
                   Crop Rotation Alert
                 </div>
-                <ul className="text-[11px] text-amber-950 dark:text-amber-300 space-y-1 pl-4 list-disc">
+                <ul className="text-xs text-amber-950 dark:text-amber-300 space-y-1 pl-4 list-disc">
                   {rotationWarnings.map((w, i) => (
                     <li key={i}>{w}</li>
                   ))}
@@ -590,7 +590,7 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
                   <ShieldAlert className="w-4 h-4 text-rose-700 shrink-0" />
                   Adjacent Antagonists Detected
                 </div>
-                <ul className="text-[11px] text-rose-900 dark:text-rose-200 space-y-1 pl-4 list-disc">
+                <ul className="text-xs text-rose-900 dark:text-rose-200 space-y-1 pl-4 list-disc">
                   {conflicts.map((c, i) => (
                     <li key={i}>{c}</li>
                   ))}
@@ -604,7 +604,7 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
                   <Check className="w-4 h-4 text-emerald-700 shrink-0" />
                   Beneficial Synergies Active
                 </div>
-                <ul className="text-[11px] text-emerald-900 dark:text-emerald-200 space-y-1 pl-4 list-disc">
+                <ul className="text-xs text-emerald-900 dark:text-emerald-200 space-y-1 pl-4 list-disc">
                   {companions.map((c, i) => (
                     <li key={i}>{c}</li>
                   ))}
@@ -613,7 +613,7 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
             )}
 
             {conflicts.length === 0 && companions.length === 0 && rotationWarnings.length === 0 && (
-              <p className="text-xs text-stone-500 italic">
+              <p className="text-xs text-stone-500 italic font-serif-botanical">
                 No ecological conflicts or rotation violations detected in this bed layout.
               </p>
             )}
@@ -735,7 +735,7 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
                 placeholder="e.g. Spring 2025, Fall 2024"
                 className="w-full px-3 py-2 border border-stone-300 dark:border-[#223d2e] dark:bg-[#182c20] rounded-xl text-xs font-mono"
               />
-              <p className="mt-1 text-[11px] text-stone-600 dark:text-stone-300">Include the year: rotation advice counts years from it.</p>
+              <p className="mt-1 text-xs text-stone-600 dark:text-stone-300">Include the year: rotation advice counts years from it.</p>
             </div>
 
             <label className="flex items-start gap-2 text-stone-700 dark:text-stone-200">

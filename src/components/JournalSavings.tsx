@@ -699,7 +699,7 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
                     <button
                       type="button"
                       onClick={() => { setEntryPhotoFile(null); setEntryPhotoPreview(null); }}
-                      className="text-[10px] text-rose-600 underline"
+                      className="text-2xs text-rose-600 underline"
                     >
                       Remove
                     </button>
@@ -741,11 +741,11 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
                     <div className="flex items-start justify-between gap-3">
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="font-mono text-stone-500 dark:text-stone-400 text-[11px] flex items-center gap-1">
+                          <span className="font-mono text-stone-500 dark:text-stone-400 text-xs flex items-center gap-1">
                             <Calendar className="w-3 h-3 text-stone-400" />
                             {entry.date}
                           </span>
-                          <span className="px-2 py-0.5 rounded-md font-mono text-[10px] uppercase font-bold bg-stone-100 dark:bg-[#182c20] text-stone-700 dark:text-stone-300">
+                          <span className="px-2 py-0.5 rounded-md font-mono text-2xs uppercase font-bold bg-stone-100 dark:bg-[#182c20] text-stone-700 dark:text-stone-300">
                             {entry.category}
                           </span>
                         </div>
@@ -786,7 +786,7 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
                           <span className="font-mono font-bold text-sm">{entry.yieldLbs} lbs</span>
                           {entry.cropName && <span>({entry.cropName})</span>}
                         </div>
-                        <span className="font-mono text-[11px] font-bold">
+                        <span className="font-mono text-xs font-bold">
                           ~${((entry.yieldLbs) * (entry.cropId ? (getCropById(entry.cropId)?.retailGroceryValuePerLb || 3.80) : 3.80)).toFixed(2)} retail value
                         </span>
                       </div>
@@ -801,7 +801,7 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
                           className="relative group rounded-xl overflow-hidden border border-stone-200 dark:border-[#223d2e] max-h-48 block"
                         >
                           <img src={photoUrl} alt={`Photo: ${entry.title}`} loading="lazy" decoding="async" className="w-full h-44 object-cover group-hover:scale-105 transition-transform" />
-                          <div className="absolute bottom-2 right-2 px-2 py-0.5 bg-black/70 text-white rounded-md text-[10px] font-mono flex items-center gap-1">
+                          <div className="absolute bottom-2 right-2 px-2 py-0.5 bg-black/70 text-white rounded-md text-2xs font-mono flex items-center gap-1">
                             <ImageIcon className="w-3 h-3" />
                             <span>Click to enlarge</span>
                           </div>
@@ -813,7 +813,7 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
                       <div className="flex flex-wrap items-center gap-1.5 pt-1">
                         <Tag className="w-3 h-3 text-stone-400" />
                         {entry.tags.map(t => (
-                          <span key={t} className="px-2 py-0.5 rounded-md bg-stone-100 dark:bg-[#182c20] text-stone-600 dark:text-stone-300 text-[10px]">
+                          <span key={t} className="px-2 py-0.5 rounded-md bg-stone-100 dark:bg-[#182c20] text-stone-600 dark:text-stone-300 text-2xs">
                             #{t}
                           </span>
                         ))}
@@ -833,27 +833,27 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
           {/* Summary Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="bg-white dark:bg-[#132219] p-4 rounded-2xl border border-stone-200 dark:border-[#223d2e] shadow-xs">
-              <span className="text-[11px] font-semibold text-stone-500 dark:text-stone-400 block">Total Garden Expenses</span>
+              <span className="text-xs font-semibold text-stone-500 dark:text-stone-400 block">Total Garden Expenses</span>
               <div className="text-2xl font-extrabold text-rose-700 dark:text-rose-400 font-mono mt-1">
                 ${totalSpent.toFixed(2)}
               </div>
-              <p className="text-[10px] text-stone-400 mt-0.5">Seeds, soil amendments, compost &amp; equipment</p>
+              <p className="text-2xs text-stone-400 mt-0.5">Seeds, soil amendments, compost &amp; equipment</p>
             </div>
 
             <div className="bg-white dark:bg-[#132219] p-4 rounded-2xl border border-stone-200 dark:border-[#223d2e] shadow-xs">
-              <span className="text-[11px] font-semibold text-stone-500 dark:text-stone-400 block">Harvest Retail Grocery Value</span>
+              <span className="text-xs font-semibold text-stone-500 dark:text-stone-400 block">Harvest Retail Grocery Value</span>
               <div className="text-2xl font-extrabold text-[#183a24] dark:text-[#34d399] font-mono mt-1">
                 ${totalRealisticGroceryValue.toFixed(2)}
               </div>
-              <p className="text-[10px] text-stone-400 mt-0.5">{totalHarvestLbs.toFixed(1)} lbs harvested across all crops</p>
+              <p className="text-2xs text-stone-400 mt-0.5">{totalHarvestLbs.toFixed(1)} lbs harvested across all crops</p>
             </div>
 
             <div className="bg-white dark:bg-[#132219] p-4 rounded-2xl border border-stone-200 dark:border-[#223d2e] shadow-xs">
-              <span className="text-[11px] font-semibold text-stone-500 dark:text-stone-400 block">Net Household ROI</span>
+              <span className="text-xs font-semibold text-stone-500 dark:text-stone-400 block">Net Household ROI</span>
               <div className={`text-2xl font-extrabold font-mono mt-1 ${netSavings >= 0 ? 'text-emerald-700 dark:text-emerald-400' : 'text-amber-700'}`}>
                 {netSavings >= 0 ? `+$${netSavings.toFixed(2)}` : `-$${Math.abs(netSavings).toFixed(2)}`}
               </div>
-              <p className="text-[10px] text-stone-400 mt-0.5">
+              <p className="text-2xs text-stone-400 mt-0.5">
                 {netSavings >= 0 ? 'Garden has paid for itself!' : 'Yields will amortize setup costs over subsequent seasons.'}
               </p>
             </div>
@@ -870,11 +870,11 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
             </p>
 
             {Object.keys(cropHarvestMap).length === 0 ? (
-              <p className="text-stone-400 italic">No crop harvests logged yet. Log harvest weights to see per-crop financial returns.</p>
+              <p className="text-stone-400 italic font-serif-botanical">No crop harvests logged yet. Log harvest weights to see per-crop financial returns.</p>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-left">
-                  <thead className="bg-stone-50 dark:bg-[#182c20] text-stone-600 dark:text-stone-300 text-[10px] uppercase font-mono border-b border-stone-200 dark:border-[#223d2e]">
+                  <thead className="bg-stone-50 dark:bg-[#182c20] text-stone-600 dark:text-stone-300 text-2xs uppercase font-mono border-b border-stone-200 dark:border-[#223d2e]">
                     <tr>
                       <th className="py-2.5 px-3">Crop Name</th>
                       <th className="py-2.5 px-3">Harvested (lbs)</th>
@@ -968,7 +968,7 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
                   <div key={exp.id} className="py-2.5 flex items-center justify-between gap-3">
                     <div>
                       <strong className="text-stone-800 dark:text-stone-200 block">{exp.itemDescription}</strong>
-                      <span className="text-[10px] text-stone-400 font-mono">{exp.date} · {exp.category}</span>
+                      <span className="text-2xs text-stone-400 font-mono">{exp.date} · {exp.category}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="font-mono font-bold text-stone-900 dark:text-white">${exp.cost.toFixed(2)}</span>
@@ -1117,7 +1117,7 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
               </div>
 
               {cfSyncStatus && (
-                <div className="p-3 bg-stone-50 dark:bg-[#182c20] rounded-xl border border-stone-200 dark:border-[#223d2e] text-[11px] font-mono text-stone-700 dark:text-stone-300">
+                <div className="p-3 bg-stone-50 dark:bg-[#182c20] rounded-xl border border-stone-200 dark:border-[#223d2e] text-xs font-mono text-stone-700 dark:text-stone-300">
                   {cfSyncStatus}
                 </div>
               )}

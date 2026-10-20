@@ -351,7 +351,7 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* Moon Sign */}
               <div className="bg-white/10 backdrop-blur-xs rounded-2xl p-4 border border-white/10 space-y-1">
-                <span className="text-[11px] uppercase tracking-wider text-emerald-300 font-mono block">
+                <span className="text-xs uppercase tracking-wider text-emerald-300 font-mono block">
                   Astrological Moon Sign
                 </span>
                 <div className="text-lg font-bold text-white flex items-center gap-2">
@@ -368,7 +368,7 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
 
               {/* Almanac Directive */}
               <div className="md:col-span-2 bg-white/10 backdrop-blur-xs rounded-2xl p-4 border border-white/10 space-y-2">
-                <span className="text-[11px] uppercase tracking-wider text-emerald-300 font-mono block">
+                <span className="text-xs uppercase tracking-wider text-emerald-300 font-mono block">
                   Today&apos;s Almanac Rule: {lunar.phaseQuarter}
                 </span>
                 <h3 className="text-base sm:text-lg font-bold text-white font-serif-botanical">
@@ -436,7 +436,7 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
                 <span className="text-xs font-mono font-bold text-emerald-800 dark:text-emerald-400 tracking-wider uppercase">
                   Current Observations
                 </span>
-                <span className="text-[11px] text-stone-400 font-mono">
+                <span className="text-xs text-stone-400 font-mono">
                   Updated {cur.updatedAt}
                 </span>
               </div>
@@ -470,7 +470,7 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
             {/* Quick Metrics Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-4 border-t border-stone-100 dark:border-[rgba(255,255,255,0.06)] text-xs">
               <div className="p-2.5 bg-stone-50 dark:bg-[#172d1f] rounded-xl space-y-0.5">
-                <div className="flex items-center gap-1 text-stone-500 dark:text-stone-400 text-[11px]">
+                <div className="flex items-center gap-1 text-stone-500 dark:text-stone-400 text-xs">
                   <Droplets className="w-3.5 h-3.5 text-blue-500" />
                   <span>Humidity</span>
                 </div>
@@ -480,7 +480,7 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
               </div>
 
               <div className="p-2.5 bg-stone-50 dark:bg-[#172d1f] rounded-xl space-y-0.5">
-                <div className="flex items-center gap-1 text-stone-500 dark:text-stone-400 text-[11px]">
+                <div className="flex items-center gap-1 text-stone-500 dark:text-stone-400 text-xs">
                   <Wind className="w-3.5 h-3.5 text-teal-500" />
                   <span>Wind</span>
                 </div>
@@ -490,7 +490,7 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
               </div>
 
               <div className="p-2.5 bg-stone-50 dark:bg-[#172d1f] rounded-xl space-y-0.5">
-                <div className="flex items-center gap-1 text-stone-500 dark:text-stone-400 text-[11px]">
+                <div className="flex items-center gap-1 text-stone-500 dark:text-stone-400 text-xs">
                   <Sun className="w-3.5 h-3.5 text-amber-500" />
                   <span>UV Index</span>
                 </div>
@@ -500,7 +500,7 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
               </div>
 
               <div className="p-2.5 bg-stone-50 dark:bg-[#172d1f] rounded-xl space-y-0.5">
-                <div className="flex items-center gap-1 text-stone-500 dark:text-stone-400 text-[11px]">
+                <div className="flex items-center gap-1 text-stone-500 dark:text-stone-400 text-xs">
                   <Compass className="w-3.5 h-3.5 text-indigo-500" />
                   <span>Barometer</span>
                 </div>
@@ -510,7 +510,7 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
               </div>
 
               <div className="p-2.5 bg-stone-50 dark:bg-[#172d1f] rounded-xl space-y-0.5">
-                <div className="flex items-center gap-1 text-stone-500 dark:text-stone-400 text-[11px]">
+                <div className="flex items-center gap-1 text-stone-500 dark:text-stone-400 text-xs">
                   <Thermometer className="w-3.5 h-3.5 text-rose-500" />
                   <span>Dew Point</span>
                 </div>
@@ -520,7 +520,7 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
               </div>
 
               <div className="p-2.5 bg-stone-50 dark:bg-[#172d1f] rounded-xl space-y-0.5">
-                <div className="flex items-center gap-1 text-stone-500 dark:text-stone-400 text-[11px]">
+                <div className="flex items-center gap-1 text-stone-500 dark:text-stone-400 text-xs">
                   <Sprout className="w-3.5 h-3.5 text-emerald-500" />
                   <span>GDD Base 50</span>
                 </div>
@@ -544,7 +544,7 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
                     <h4 className="font-bold text-xs text-stone-900 dark:text-stone-100">
                       0-10cm Soil Temperature
                     </h4>
-                    <span className="text-[11px] text-stone-500 font-mono">Seed Germination Ready</span>
+                    <span className="text-xs text-stone-500 font-mono">Seed Germination Ready</span>
                   </div>
                 </div>
                 <div className="text-right">
@@ -559,7 +559,7 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
               </p>
 
               <div className="pt-2 border-t border-stone-100 dark:border-white/5 space-y-1">
-                <span className="text-[10px] font-mono uppercase tracking-wider text-emerald-700 dark:text-emerald-400 block font-bold">
+                <span className="text-2xs font-mono uppercase tracking-wider text-emerald-700 dark:text-emerald-400 block font-bold">
                   Sow Directly in Beds Now:
                 </span>
                 <p className="text-xs text-stone-700 dark:text-stone-200 font-medium">
@@ -595,7 +595,7 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
                     <h4 className="font-bold text-xs text-stone-900 dark:text-stone-100">
                       Frost &amp; Freeze Shield
                     </h4>
-                    <span className="text-[11px] text-stone-500 font-mono">
+                    <span className="text-xs text-stone-500 font-mono">
                       {indices.frostWarning.level === 'unknown'
                         ? 'Tonight: no live forecast'
                         : `Tonight: ${Math.round(indices.frostWarning.tonightMinTemp)}°F Low`}
@@ -603,7 +603,7 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
                   </div>
                 </div>
                 <span
-                  className={`text-[11px] font-bold font-mono px-2 py-0.5 rounded-lg border ${
+                  className={`text-xs font-bold font-mono px-2 py-0.5 rounded-lg border ${
                     indices.frostWarning.level === 'hard-freeze' || indices.frostWarning.level === 'frost'
                       ? 'bg-rose-100 text-rose-900 border-rose-300 dark:bg-rose-900/60 dark:text-rose-200 dark:border-rose-700'
                       : indices.frostWarning.level === 'watch'
@@ -622,7 +622,7 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
               </p>
 
               <div className="pt-2 border-t border-stone-100 dark:border-white/5 space-y-2">
-                <span className="text-[10px] font-mono uppercase tracking-wider text-rose-700 dark:text-rose-400 block font-bold">
+                <span className="text-2xs font-mono uppercase tracking-wider text-rose-700 dark:text-rose-400 block font-bold">
                   Recommended Action:
                 </span>
                 <p className="text-xs text-stone-700 dark:text-stone-200 font-medium">
@@ -632,7 +632,7 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
                 {/* Weather -> Task Automation: only on a real frost or freeze-watch night */}
                 {indices.frostWarning.level !== 'none' && indices.frostWarning.level !== 'unknown' && !data?.isMockOrFallback && (frostTenderCropsInBeds.length > 0 ? (
                   <div className="pt-2 border-t border-rose-200/50 dark:border-rose-900/40 space-y-2">
-                    <span className="text-[11px] font-bold text-rose-950 dark:text-rose-200 flex items-center gap-1.5">
+                    <span className="text-xs font-bold text-rose-950 dark:text-rose-200 flex items-center gap-1.5">
                       <ShieldAlert className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />
                       Tender Crops Planted in Your Beds:
                     </span>
@@ -646,7 +646,7 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
                           <button
                             type="button"
                             onClick={() => handleAddFrostProtectionTask(b.bedName, b.crops)}
-                            className="inline-flex items-center justify-center gap-1.5 px-3 py-1 bg-rose-700 hover:bg-rose-800 text-white rounded-lg font-semibold text-[11px] transition-colors shrink-0 shadow-xs"
+                            className="inline-flex items-center justify-center gap-1.5 px-3 py-1 bg-rose-700 hover:bg-rose-800 text-white rounded-lg font-semibold text-xs transition-colors shrink-0 shadow-xs"
                           >
                             <Bell className="w-3 h-3" />
                             <span>Add Cover Task for Tonight</span>
@@ -660,7 +660,7 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
                     <button
                       type="button"
                       onClick={() => handleAddFrostProtectionTask('Outdoor Garden Beds', ['Frost-Tender Plants'])}
-                      className="inline-flex items-center gap-1.5 px-3 py-1 bg-rose-700 hover:bg-rose-800 text-white rounded-lg font-semibold text-[11px] transition-colors shadow-xs"
+                      className="inline-flex items-center gap-1.5 px-3 py-1 bg-rose-700 hover:bg-rose-800 text-white rounded-lg font-semibold text-xs transition-colors shadow-xs"
                     >
                       <Bell className="w-3 h-3" />
                       <span>Add &ldquo;Cover Garden Beds Before Freeze&rdquo; Task</span>
@@ -676,7 +676,7 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
                       <button
                         type="button"
                         onClick={() => onNavigate('calendar')}
-                        className="text-[11px] text-emerald-800 dark:text-emerald-300 underline font-bold flex items-center gap-1 shrink-0"
+                        className="text-xs text-emerald-800 dark:text-emerald-300 underline font-bold flex items-center gap-1 shrink-0"
                       >
                         <span>View Calendar</span>
                         <ArrowRight className="w-3 h-3" />
@@ -698,13 +698,13 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
                     <h4 className="font-bold text-xs text-stone-900 dark:text-stone-100">
                       Spraying &amp; Foliar Feed
                     </h4>
-                    <span className="text-[11px] text-stone-500 font-mono">
+                    <span className="text-xs text-stone-500 font-mono">
                       Wind {indices.sprayingWindow.windMph} mph · Rain {indices.sprayingWindow.rainRiskPct}%
                     </span>
                   </div>
                 </div>
                 <span
-                  className={`text-[10px] font-bold font-mono px-2 py-0.5 rounded-lg border ${
+                  className={`text-2xs font-bold font-mono px-2 py-0.5 rounded-lg border ${
                     indices.sprayingWindow.status === 'ideal'
                       ? 'bg-emerald-100 text-emerald-900 border-emerald-300 dark:bg-emerald-900/40 dark:text-emerald-200 dark:border-emerald-700'
                       : 'bg-amber-100 text-amber-900 border-amber-300 dark:bg-amber-900/40 dark:text-amber-200 dark:border-amber-700'
@@ -730,12 +730,12 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
                     <h4 className="font-bold text-xs text-stone-900 dark:text-stone-100">
                       Bed Moisture &amp; Workability
                     </h4>
-                    <span className="text-[11px] text-stone-500 font-mono">
+                    <span className="text-xs text-stone-500 font-mono">
                       Moisture: {cur.soilMoisturePct}%
                     </span>
                   </div>
                 </div>
-                <span className="text-[10px] font-bold font-mono px-2 py-0.5 rounded-lg border bg-stone-100 dark:bg-stone-800 text-stone-800 dark:text-stone-200 border-stone-300 dark:border-stone-700">
+                <span className="text-2xs font-bold font-mono px-2 py-0.5 rounded-lg border bg-stone-100 dark:bg-stone-800 text-stone-800 dark:text-stone-200 border-stone-300 dark:border-stone-700">
                   {indices.tillingAndMowing.badge}
                 </span>
               </div>
@@ -772,7 +772,7 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
                   key={idx}
                   className="flex-1 p-3 bg-stone-50 dark:bg-[#172d1f] rounded-2xl border border-stone-200/80 dark:border-white/5 text-center space-y-1.5 shrink-0 min-w-[70px]"
                 >
-                  <span className="text-[11px] font-mono text-stone-500 dark:text-stone-400 block font-medium">
+                  <span className="text-xs font-mono text-stone-500 dark:text-stone-400 block font-medium">
                     {h.displayTime}
                   </span>
                   <span className="text-2xl select-none block" role="img" aria-label={h.weatherDesc}>
@@ -782,11 +782,11 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
                     {h.tempF}°
                   </span>
                   {h.popPct > 15 ? (
-                    <span className="text-[10px] font-bold text-blue-600 dark:text-blue-400 block font-mono">
+                    <span className="text-2xs font-bold text-blue-600 dark:text-blue-400 block font-mono">
                       💧 {h.popPct}%
                     </span>
                   ) : (
-                    <span className="text-[10px] text-stone-400 dark:text-stone-400 block font-mono">
+                    <span className="text-2xs text-stone-400 dark:text-stone-400 block font-mono">
                       Soil {Math.round(h.soilTempF)}°
                     </span>
                   )}
@@ -839,7 +839,7 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
                     <span className="font-bold text-xs text-stone-900 dark:text-stone-100">
                       {d.dayName}
                     </span>
-                    <span className="text-[11px] font-mono text-stone-400">
+                    <span className="text-xs font-mono text-stone-400">
                       {d.formattedDate}
                     </span>
                   </div>
@@ -852,19 +852,19 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
                       <div className="font-bold text-sm text-stone-900 dark:text-stone-100 font-mono">
                         {d.tempMaxF}° / {d.tempMinF}°
                       </div>
-                      <span className="text-[10px] text-stone-500 font-mono">
+                      <span className="text-2xs text-stone-500 font-mono">
                         {d.popPct > 20 ? `💧 ${d.popPct}%` : 'Dry'}
                       </span>
                     </div>
                   </div>
 
-                  <p className="text-[11px] text-stone-600 dark:text-stone-300 leading-tight">
+                  <p className="text-xs text-stone-600 dark:text-stone-300 leading-tight">
                     {d.weatherDesc}
                   </p>
                 </div>
 
                 <div className="pt-2 border-t border-stone-200/60 dark:border-white/5 space-y-1">
-                  <div className="flex items-center justify-between text-[11px] font-mono">
+                  <div className="flex items-center justify-between text-xs font-mono">
                     <span className="text-stone-400">Moon:</span>
                     <span className="font-semibold text-emerald-800 dark:text-emerald-300 flex items-center gap-1">
                       <span>{d.moonIcon}</span>
@@ -873,7 +873,7 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
                   </div>
 
                   {d.frostRisk !== 'none' && (
-                    <div className="text-[10px] font-bold font-mono text-rose-700 dark:text-rose-400">
+                    <div className="text-2xs font-bold font-mono text-rose-700 dark:text-rose-400">
                       ⚠️ {d.frostRiskLabel} ({d.tempMinF}°F)
                     </div>
                   )}
@@ -976,11 +976,11 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
                 <span className="text-base select-none">{item.moonEmoji}</span>
               </div>
 
-              <div className="text-[11px] text-stone-500 dark:text-stone-400 font-mono">
+              <div className="text-xs text-stone-500 dark:text-stone-400 font-mono">
                 {item.sign} ({item.element})
               </div>
 
-              <div className="text-[10px] font-medium text-emerald-800 dark:text-emerald-300 line-clamp-2">
+              <div className="text-2xs font-medium text-emerald-800 dark:text-emerald-300 line-clamp-2">
                 {item.bestFor.map((b) => b.replace(/-/g, ' ')).join(', ')}
               </div>
             </div>
@@ -1002,13 +1002,13 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
           </blockquote>
 
           <div className="space-y-2 pt-2 border-t border-white/10 text-xs text-emerald-100/90 leading-relaxed">
-            <strong className="text-white block font-mono text-[11px] uppercase tracking-wider">
+            <strong className="text-white block font-mono text-xs uppercase tracking-wider">
               The Science Behind It:
             </strong>
             <p>{todayLore.scienceExplanation}</p>
           </div>
 
-          <div className="text-[11px] font-mono text-emerald-300/80 pt-1">
+          <div className="text-xs font-mono text-emerald-300/80 pt-1">
             {todayLore.traditionNote} · {todayLore.historicalContext}
           </div>
         </div>
@@ -1033,7 +1033,7 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
                     key={cat}
                     type="button"
                     onClick={() => setActiveLoreCategory(cat)}
-                    className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold whitespace-nowrap transition-colors ${
+                    className={`px-2.5 py-1 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors ${
                       activeLoreCategory === cat
                         ? 'bg-emerald-800 text-white dark:bg-emerald-700'
                         : 'bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 hover:bg-stone-200'
@@ -1057,7 +1057,7 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
                   <h4 className="font-bold text-xs text-stone-900 dark:text-stone-100 font-serif-botanical">
                     &ldquo;{item.saying}&rdquo;
                   </h4>
-                  <span className="text-[10px] font-mono text-emerald-800 dark:text-emerald-400 font-semibold px-2 py-0.5 bg-emerald-50 dark:bg-emerald-950/60 rounded-md">
+                  <span className="text-2xs font-mono text-emerald-800 dark:text-emerald-400 font-semibold px-2 py-0.5 bg-emerald-50 dark:bg-emerald-950/60 rounded-md">
                     {item.category}
                   </span>
                 </div>

@@ -74,7 +74,7 @@ export class ErrorBoundary extends Component<Props, State> {
             </div>
 
             {this.state.error && (
-              <div className="bg-[#0a130e] border border-[#1b3124] rounded-xl p-3 text-left overflow-x-auto text-[11px] font-mono text-stone-400">
+              <div className="bg-[#0a130e] border border-[#1b3124] rounded-xl p-3 text-left overflow-x-auto text-xs font-mono text-stone-400">
                 <span className="text-amber-300 font-semibold block mb-1">Diagnostic:</span>
                 {this.state.error.message || 'Unknown render exception'}
               </div>
