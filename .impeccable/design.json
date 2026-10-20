@@ -1,0 +1,578 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-20T16:00:52+00:00",
+  "title": "Design System: FloraHearth",
+  "extensions": {
+    "colorMeta": {
+      "hemlock-ink": {
+        "role": "primary",
+        "displayName": "Hemlock Ink",
+        "canonical": "oklch(32.8% 0.062 152.6)",
+        "tonalRamp": [
+          "#001201",
+          "#042c14",
+          "#23492f",
+          "#42684d",
+          "#61886c",
+          "#81aa8c",
+          "#a6d0b1",
+          "#e4f3e8"
+        ]
+      },
+      "hemlock-ink-deep": {
+        "role": "primary",
+        "displayName": "Hemlock Ink Deep",
+        "canonical": "oklch(26.2% 0.046 154.0)",
+        "tonalRamp": [
+          "#001003",
+          "#0f2a1a",
+          "#2c4735",
+          "#496652",
+          "#688671",
+          "#89a792",
+          "#aecdb7",
+          "#e7f2ea"
+        ]
+      },
+      "pressed-leaf": {
+        "role": "primary",
+        "displayName": "Pressed Leaf",
+        "canonical": "oklch(50.8% 0.105 165.6)",
+        "tonalRamp": [
+          "#001602",
+          "#003217",
+          "#005032",
+          "#00704f",
+          "#2f916e",
+          "#56b38f",
+          "#7ddab4",
+          "#d9f7e9"
+        ]
+      },
+      "new-shoot": {
+        "role": "secondary",
+        "displayName": "New Shoot",
+        "canonical": "oklch(69.6% 0.149 162.5)",
+        "tonalRamp": [
+          "#001800",
+          "#003609",
+          "#005526",
+          "#007643",
+          "#009762",
+          "#14ba82",
+          "#53e2a7",
+          "#d0fae4"
+        ]
+      },
+      "new-shoot-bright": {
+        "role": "secondary",
+        "displayName": "New Shoot Bright",
+        "canonical": "oklch(77.3% 0.153 163.2)",
+        "tonalRamp": [
+          "#001900",
+          "#00360a",
+          "#005626",
+          "#007644",
+          "#009862",
+          "#00bb83",
+          "#4ae3a8",
+          "#cffbe4"
+        ]
+      },
+      "new-shoot-ink": {
+        "role": "secondary",
+        "displayName": "New Shoot Ink",
+        "canonical": "oklch(17.4% 0.029 156.9)",
+        "tonalRamp": [
+          "#020f06",
+          "#18281e",
+          "#33453a",
+          "#516357",
+          "#708376",
+          "#90a497",
+          "#b6cabd",
+          "#e9f1ec"
+        ]
+      },
+      "herbarium-paper": {
+        "role": "neutral",
+        "displayName": "Herbarium Paper",
+        "canonical": "oklch(97.6% 0.005 145.5)",
+        "tonalRamp": [
+          "#0a0c0a",
+          "#222523",
+          "#3e403e",
+          "#5c5e5c",
+          "#7b7e7b",
+          "#9c9f9c",
+          "#c2c5c2",
+          "#eeefee"
+        ]
+      },
+      "specimen-white": {
+        "role": "neutral",
+        "displayName": "Specimen White",
+        "canonical": "oklch(100.0% 0.000 89.9)",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#242424",
+          "#404040",
+          "#5d5d5d",
+          "#7d7d7d",
+          "#9e9e9e",
+          "#c4c4c4",
+          "#eeeeee"
+        ]
+      },
+      "sage-wash": {
+        "role": "neutral",
+        "displayName": "Sage Wash",
+        "canonical": "oklch(95.8% 0.009 150.7)",
+        "tonalRamp": [
+          "#080c09",
+          "#212522",
+          "#3c413d",
+          "#5a5f5b",
+          "#797f7a",
+          "#9aa09b",
+          "#c0c6c1",
+          "#edefed"
+        ]
+      },
+      "sage-press": {
+        "role": "neutral",
+        "displayName": "Sage Press",
+        "canonical": "oklch(93.4% 0.018 150.5)",
+        "tonalRamp": [
+          "#060d07",
+          "#1e271f",
+          "#39433b",
+          "#566158",
+          "#768178",
+          "#97a299",
+          "#bcc8be",
+          "#ebf0ec"
+        ]
+      },
+      "sage-hairline": {
+        "role": "neutral",
+        "displayName": "Sage Hairline",
+        "canonical": "oklch(90.1% 0.019 150.5)",
+        "tonalRamp": [
+          "#060d07",
+          "#1e271f",
+          "#39433b",
+          "#566158",
+          "#768178",
+          "#97a298",
+          "#bcc8be",
+          "#ebf0ec"
+        ]
+      },
+      "heading-ink": {
+        "role": "neutral",
+        "displayName": "Heading Ink",
+        "canonical": "oklch(23.9% 0.036 154.2)",
+        "tonalRamp": [
+          "#000f05",
+          "#15291c",
+          "#314637",
+          "#4e6454",
+          "#6d8474",
+          "#8ea594",
+          "#b3cbba",
+          "#e8f1eb"
+        ]
+      },
+      "body-moss": {
+        "role": "neutral",
+        "displayName": "Body Moss",
+        "canonical": "oklch(34.6% 0.041 154.5)",
+        "tonalRamp": [
+          "#001004",
+          "#122a1b",
+          "#2e4636",
+          "#4b6553",
+          "#6b8572",
+          "#8ba693",
+          "#b0ccb8",
+          "#e7f1ea"
+        ]
+      },
+      "caption-lichen": {
+        "role": "neutral",
+        "displayName": "Caption Lichen",
+        "canonical": "oklch(43.5% 0.041 154.6)",
+        "tonalRamp": [
+          "#001004",
+          "#122a1b",
+          "#2e4636",
+          "#4b6553",
+          "#6a8572",
+          "#8ba693",
+          "#b0ccb8",
+          "#e7f1ea"
+        ]
+      },
+      "obsidian-loam": {
+        "role": "neutral",
+        "displayName": "Obsidian Loam",
+        "canonical": "oklch(17.6% 0.017 159.7)",
+        "tonalRamp": [
+          "#050d09",
+          "#1d2721",
+          "#38433d",
+          "#56615a",
+          "#75817a",
+          "#96a29b",
+          "#bbc8c0",
+          "#ebf0ed"
+        ]
+      },
+      "spruce-card": {
+        "role": "neutral",
+        "displayName": "Spruce Card",
+        "canonical": "oklch(22.1% 0.022 158.4)",
+        "tonalRamp": [
+          "#040e08",
+          "#1b2720",
+          "#36433b",
+          "#546259",
+          "#738178",
+          "#94a399",
+          "#b9c9bf",
+          "#eaf0ec"
+        ]
+      },
+      "spruce-wash": {
+        "role": "neutral",
+        "displayName": "Spruce Wash",
+        "canonical": "oklch(25.5% 0.028 159.0)",
+        "tonalRamp": [
+          "#020f07",
+          "#18281f",
+          "#33443a",
+          "#516358",
+          "#708377",
+          "#91a498",
+          "#b6cabe",
+          "#e9f1ec"
+        ]
+      },
+      "spruce-press": {
+        "role": "neutral",
+        "displayName": "Spruce Press",
+        "canonical": "oklch(30.5% 0.038 158.4)",
+        "tonalRamp": [
+          "#001006",
+          "#132a1d",
+          "#2e4638",
+          "#4c6456",
+          "#6b8475",
+          "#8ca696",
+          "#b1ccbb",
+          "#e8f1eb"
+        ]
+      },
+      "night-hairline": {
+        "role": "neutral",
+        "displayName": "Night Hairline",
+        "canonical": "rgba(255, 255, 255, 0.08)"
+      },
+      "mist-heading": {
+        "role": "neutral",
+        "displayName": "Mist Heading",
+        "canonical": "oklch(97.2% 0.006 153.8)",
+        "tonalRamp": [
+          "#090c0a",
+          "#222523",
+          "#3d413e",
+          "#5b5f5c",
+          "#7b7e7c",
+          "#9c9f9d",
+          "#c1c5c2",
+          "#edefee"
+        ]
+      },
+      "mist-body": {
+        "role": "neutral",
+        "displayName": "Mist Body",
+        "canonical": "oklch(86.9% 0.020 154.8)",
+        "tonalRamp": [
+          "#050e08",
+          "#1c2720",
+          "#38433b",
+          "#556159",
+          "#748178",
+          "#95a299",
+          "#bac8be",
+          "#ebf0ec"
+        ]
+      },
+      "lichen-caption": {
+        "role": "neutral",
+        "displayName": "Lichen Caption",
+        "canonical": "oklch(72.4% 0.051 156.8)",
+        "tonalRamp": [
+          "#001103",
+          "#0a2b1a",
+          "#274835",
+          "#456752",
+          "#648771",
+          "#85a892",
+          "#aacfb7",
+          "#e5f2ea"
+        ]
+      },
+      "caution-wash": {
+        "role": "tertiary",
+        "displayName": "Caution Wash",
+        "canonical": "oklch(96.2% 0.058 95.6)",
+        "tonalRamp": [
+          "#130a00",
+          "#2d2300",
+          "#493f18",
+          "#675e36",
+          "#887d55",
+          "#a99f75",
+          "#cfc59a",
+          "#f2efe0"
+        ]
+      },
+      "caution-ink": {
+        "role": "tertiary",
+        "displayName": "Caution Ink",
+        "canonical": "oklch(47.3% 0.125 46.2)",
+        "tonalRamp": [
+          "#2d0000",
+          "#4f0000",
+          "#712100",
+          "#944211",
+          "#b86337",
+          "#dd8458",
+          "#ffaa7d",
+          "#ffe6d6"
+        ]
+      },
+      "frost-alert": {
+        "role": "tertiary",
+        "displayName": "Frost Alert",
+        "canonical": "oklch(52.5% 0.211 18.9)",
+        "tonalRamp": [
+          "#360000",
+          "#5a0000",
+          "#7f001b",
+          "#a52838",
+          "#cb4d56",
+          "#f16f76",
+          "#ff969b",
+          "#ffe0e0"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Dashboard welcome and hero moments only."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Each tab's <h1> page title."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Card/section headings; crop and bed names."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Guidance and descriptions; ~65 characters per line."
+      },
+      "body-secondary": {
+        "displayName": "Body Secondary",
+        "purpose": "Table cells, captions, secondary UI (most common size)."
+      },
+      "label": {
+        "displayName": "Specimen Label",
+        "purpose": "Uppercase mono labels, badges, table headers; the 12px floor."
+      },
+      "data": {
+        "displayName": "Data",
+        "purpose": "Temperatures, dates, ppm, prices; tabular numerals."
+      }
+    },
+    "shadows": [
+      {
+        "name": "whisper",
+        "value": "0 1px 2px 0 rgb(0 0 0 / 0.05)",
+        "purpose": "Default edge of cards and buttons (Tailwind shadow-xs)."
+      },
+      {
+        "name": "dialog",
+        "value": "0 25px 50px -12px rgb(0 0 0 / 0.25)",
+        "purpose": "Modal dialogs only (Tailwind shadow-2xl)."
+      }
+    ],
+    "motion": [
+      {
+        "name": "feedback",
+        "value": "150ms ease",
+        "purpose": "Colour/opacity state changes on controls (Tailwind default transition)."
+      },
+      {
+        "name": "arrive",
+        "value": "280ms cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Update-banner arrival; reduced motion: 150ms opacity only."
+      },
+      {
+        "name": "breathe",
+        "value": "1.8s ease-in-out infinite (opacity 1 to 0.4)",
+        "purpose": "Spinner replacement under prefers-reduced-motion."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      },
+      {
+        "name": "xl",
+        "value": "1280px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The main action on a card or dialog; names its action in words.",
+      "html": "<button class=\"ds-btn-primary\">Save Journal Entry</button>",
+      "css": ".ds-btn-primary{background:#183e25;color:#fff;font:500 0.8125rem/1.5 'Plus Jakarta Sans',system-ui,sans-serif;padding:6px 14px;border:0;border-radius:12px;box-shadow:0 1px 2px 0 rgb(0 0 0/.05);transition:background-color .15s}.ds-btn-primary:hover{background:#102b1a}.ds-btn-primary:focus-visible{outline:2px solid #047857;outline-offset:2px}"
+    },
+    {
+      "name": "Primary Button (dark)",
+      "kind": "button",
+      "refersTo": "button-primary-dark",
+      "description": "Primary action on dark surfaces: New Shoot with New Shoot Ink text.",
+      "html": "<div class=\"ds-dark\"><button class=\"ds-btn-primary-dark\">Sync Bed to Calendar</button></div>",
+      "css": ".ds-dark{background:#0a130e;padding:16px;border-radius:12px}.ds-btn-primary-dark{background:#10b981;color:#05140b;font:700 0.8125rem/1.5 'Plus Jakarta Sans',system-ui,sans-serif;padding:6px 14px;border:0;border-radius:12px;transition:background-color .15s}.ds-btn-primary-dark:hover{background:#34d399}.ds-btn-primary-dark:focus-visible{outline:2px solid #34d399;outline-offset:2px}"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Supporting actions: sage wash, hairline border, Hemlock Ink text.",
+      "html": "<button class=\"ds-btn-secondary\">Archive Season</button>",
+      "css": ".ds-btn-secondary{background:#edf3ee;color:#183e25;font:600 0.8125rem/1.5 'Plus Jakarta Sans',system-ui,sans-serif;padding:6px 12px;border:1px solid #d6e2d8;border-radius:12px;transition:background-color .15s,border-color .15s}.ds-btn-secondary:hover{background:#e1ede3;border-color:#b2c7b7}.ds-btn-secondary:focus-visible{outline:2px solid #047857;outline-offset:2px}"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Hairline field with a green focus ring; 16px text on touch screens.",
+      "html": "<label class=\"ds-field\"><span>Location / Bed Name</span><input class=\"ds-input\" value=\"Raised Bed 1\"></label>",
+      "css": ".ds-field{display:grid;gap:4px;font:600 0.8125rem/1.5 'Plus Jakarta Sans',system-ui,sans-serif;color:#284030;max-width:280px}.ds-input{font:400 0.8125rem/1.5 'Plus Jakarta Sans',system-ui,sans-serif;color:#102417;background:#fff;border:1px solid #d6e2d8;border-radius:12px;padding:8px 12px;transition:border-color .15s,box-shadow .15s}.ds-input:focus{outline:none;border-color:#047857;box-shadow:0 0 0 1px #047857}"
+    },
+    {
+      "name": "Specimen Label",
+      "kind": "chip",
+      "refersTo": "specimen-label",
+      "description": "Monospace uppercase tag for families, statuses and table headers.",
+      "html": "<span class=\"ds-label\">Solanaceae</span> <span class=\"ds-label ds-label-good\">beneficial</span> <span class=\"ds-label ds-label-bad\">antagonistic</span>",
+      "css": ".ds-label{display:inline-block;font:700 0.75rem/1.45 'JetBrains Mono',monospace;letter-spacing:.05em;text-transform:uppercase;background:#edf3ee;color:#284030;padding:2px 8px;border-radius:6px}.ds-label-good{background:#d0fae5;color:#004f3b}.ds-label-bad{background:#ffe4e6;color:#8b0836}"
+    },
+    {
+      "name": "Crop Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Catalogue card: serif name as a stretched button, mono data row.",
+      "html": "<article class=\"ds-card\"><div class=\"ds-card-top\"><span aria-hidden=\"true\">🍅</span><span class=\"ds-label\">Solanaceae</span></div><h3 class=\"ds-card-title\"><button>Tomato</button></h3><p class=\"ds-card-latin\">Solanum lycopersicum</p><div class=\"ds-card-data\"><span>$3.80/lb</span><span>60-85 days</span></div></article>",
+      "css": ".ds-card{position:relative;max-width:240px;background:#fff;border:1px solid #d6e2d8;border-radius:16px;padding:16px;box-shadow:0 1px 2px 0 rgb(0 0 0/.05);transition:border-color .15s}.ds-card:hover,.ds-card:focus-within{border-color:#047857}.ds-card-top{display:flex;justify-content:space-between;align-items:start;font-size:1.875rem}.ds-card-title{margin:8px 0 0;font:700 0.9375rem/1.3 Newsreader,Georgia,serif;color:#183a24}.ds-card-title button{all:unset;cursor:pointer}.ds-card-title button::after{content:'';position:absolute;inset:0;border-radius:16px}.ds-card-latin{margin:2px 0 0;font:italic 400 0.8125rem/1.4 Newsreader,Georgia,serif;color:#3f5847}.ds-card-data{display:flex;justify-content:space-between;margin-top:12px;padding-top:8px;border-top:1px solid #edf3ee;font:600 0.8125rem/1.5 'JetBrains Mono',monospace;font-variant-numeric:tabular-nums;color:#047857}.ds-label{font:700 0.75rem/1.45 'JetBrains Mono',monospace;letter-spacing:.05em;text-transform:uppercase;background:#edf3ee;color:#284030;padding:2px 8px;border-radius:6px}"
+    },
+    {
+      "name": "Desktop Tab Row",
+      "kind": "nav",
+      "refersTo": "nav-item-active",
+      "description": "Horizontal tabs under the header; active tab filled with Hemlock Ink.",
+      "html": "<nav class=\"ds-nav\"><button class=\"ds-nav-item ds-active\">Dashboard</button><button class=\"ds-nav-item\">Bed Designer</button><button class=\"ds-nav-item\">Crop Guides</button></nav>",
+      "css": ".ds-nav{display:flex;gap:4px;font:600 0.8125rem/1.5 'Plus Jakarta Sans',system-ui,sans-serif}.ds-nav-item{background:transparent;color:#3c5244;border:0;border-radius:12px;padding:6px 12px;cursor:pointer;transition:background-color .15s,color .15s}.ds-nav-item:hover{background:#edf2ee;color:#122017}.ds-active,.ds-active:hover{background:#183e25;color:#fff;font-weight:700}.ds-nav-item:focus-visible{outline:2px solid #047857;outline-offset:2px}"
+    },
+    {
+      "name": "Advisory Banner",
+      "kind": "custom",
+      "description": "Amber status banner for estimates and advisories; names the problem and the next step.",
+      "html": "<div class=\"ds-banner\" role=\"status\"><strong>These are seasonal estimates, not a forecast.</strong> Check a local forecast before relying on them.</div>",
+      "css": ".ds-banner{max-width:520px;background:#fef3c7;color:#461901;border:1px solid #fcd34d;border-radius:16px;padding:12px 16px;font:400 0.8125rem/1.5 'Plus Jakarta Sans',system-ui,sans-serif}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Living Herbarium",
+    "overview": "FloraHearth is laid out like a well-kept herbarium: each crop, bed, jar and reading is a catalogued specimen with a clear name, a label and a place. Plant names are set in a literary serif, the way they would be written on a specimen sheet; labels and measurements are set in a small monospace, like the typed tags pinned beside them; everything else is a quiet, legible sans. The palette is drawn from the same cabinet: herbarium paper and sage washes by day, deep spruce and loam by night, with Hemlock Ink and New Shoot greens marking what can be acted on.\n\nThe mood is calm, precise and trustworthy. This is reference a gardener acts on (whether to cover tomatoes tonight, which canner a crop needs), so nothing shouts and nothing is decorative for its own sake. Density is high but ordered: small, consistent roles carry a lot of information, and amber and rose appear only when something genuinely needs attention. Depth is flat and tonal; hierarchy comes from surface steps, hairline borders and type, not from shadows.\n\nDark mode is the default and the night-garden face of the same herbarium; light mode is the paper face. Both must hold the same contrast and meaning.",
+    "keyCharacteristics": [
+      "Serif names, monospace labels and data, sans everything else",
+      "Flat tonal surfaces with hairline borders; shadows only on dialogs",
+      "Green means \"act here\"; amber means caution; rose means danger or loss",
+      "Gently rounded, catalogue-card shapes (12–16px corners)",
+      "Dark-first, with an equally careful light theme"
+    ],
+    "rules": [
+      {
+        "name": "The Green Means Go Rule",
+        "body": "Hemlock Ink and New Shoot mark things the user can act on, or confirmed good news. Never use them as decoration or as a section background.",
+        "section": "colors"
+      },
+      {
+        "name": "The Status Colours Are Rare Rule",
+        "body": "Amber and rose appear only when the content needs attention. If a screen is mostly amber, the warning has lost its meaning.",
+        "section": "colors"
+      },
+      {
+        "name": "The Two Faces Rule",
+        "body": "Every colour pairing must pass WCAG AA in both themes, including hover and pressed states. White text never sits on a mid-tone (500–600) green, amber or rose; use the 700+ shade, or dark text on a light tint.",
+        "section": "colors"
+      },
+      {
+        "name": "The Specimen Label Rule",
+        "body": "Monospace is for labels and measured data only. Plant and bed names are never monospace; they are serif.",
+        "section": "typography"
+      },
+      {
+        "name": "The 12px Floor Rule",
+        "body": "No text below 0.75rem. Inputs render at 16px on touch screens so iOS never zooms on focus.",
+        "section": "typography"
+      },
+      {
+        "name": "The Real Weights Rule",
+        "body": "Use only weights that are actually loaded (all three families load as variable fonts, 400–800). Italics come from Newsreader, the only family with an italic loaded: Latin names and quoted lore are Newsreader italic.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat-By-Default Rule",
+        "body": "Hierarchy comes from tone, borders and type. A new shadow needs a reason: it must mean \"this is above the page\".",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** use the theme tokens (`--surface-*`, `--text-*`, `--accent-*`) for new UI instead of new hex values; existing hard-coded hexes should move onto them over time.",
+      "**Do** set plant and bed names in Newsreader, labels and measurements in JetBrains Mono, and everything else in Plus Jakarta Sans.",
+      "**Do** check every new colour pairing at AA in both themes, including hover.",
+      "**Do** keep text at 12px or larger and prose near 65 characters per line.",
+      "**Do** make anything clickable a real button or link, with the item's name as its accessible name."
+    ],
+    "donts": [
+      "**Don't** put white text on 500–600 shades of green, amber or rose (they fail AA); use 700+ or dark text on a light tint.",
+      "**Don't** add glass, backdrop blur or decorative shadows to navigation, cards or overlays.",
+      "**Don't** introduce new near-identical greens; Hemlock Ink and New Shoot are the action colours.",
+      "**Don't** use monospace for names or prose.",
+      "**Don't** rely on a global dark-mode override for new components; give them explicit `dark:` values or tokens."
+    ]
+  }
+}
