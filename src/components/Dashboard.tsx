@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { ForecastStatusNotice, forecastSourceLabel } from './ForecastStatusNotice';
+import React, { useState, useEffect, useMemo } from 'react';
+import { forecastSourceLabel } from './ForecastStatusNotice';
 import { GardenLocation, GardenSpace, GardenTask, PantryItem } from '../types/garden';
 import { CROPS_DATA } from '../data/cropsData';
 import { getPlantingSuggestions } from '../services/bedSchedule';
+import { localDateStr, formatShortDate } from '../services/dates';
 import {
   Sun,
   Moon,
@@ -65,10 +66,16 @@ export const Dashboard: React.FC<DashboardProps> = ({
   }, [location.city, location.state, location.zipCode, location.latitude, location.longitude]);
 
   // What can actually be planted now, from each crop's timing and the user's frost dates
-  const plantNowSuggestions = getPlantingSuggestions(CROPS_DATA, location, 4);
+  // Memoized: recomputed only when the frost dates or the day change
+  const todayKey = localDateStr();
+  const plantNowSuggestions = useMemo(
+    () => getPlantingSuggestions(CROPS_DATA, location, 4),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [location.lastSpringFrost, location.firstFallFrost, todayKey]
+  );
   const plantingNow = plantNowSuggestions.some(s => s.isNow);
   const stepVerb = { 'seed-start': 'Start indoors', transplant: 'Transplant', 'direct-sow': 'Sow or plant' } as const;
-  const shortDate = (d: Date) => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  const shortDate = formatShortDate;
 
   const pendingTasks = (tasks || []).filter(t => !t.completed).slice(0, 4);
 
@@ -132,7 +139,20 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 Live Weather &amp; Farmer&apos;s Almanac Guide
               </h2>
               <p className="text-[11px] text-stone-500 dark:text-stone-400 font-mono">
-                {location.city}, {location.state} · {forecastSourceLabel(weatherData)}
+                {location.city}, {location.state}
+              </p>
+              {/* Fixed one-line status (no banner insertion, so nothing shifts when the forecast arrives) */}
+              <p
+                role="status"
+                className={`text-[11px] font-mono font-semibold ${
+                  weatherData?.forecastStatus === 'estimate'
+                    ? 'text-amber-800 dark:text-amber-300'
+                    : weatherData?.forecastStatus === 'cached'
+                    ? 'text-stone-700 dark:text-stone-200'
+                    : 'text-emerald-800 dark:text-emerald-400'
+                }`}
+              >
+                {forecastSourceLabel(weatherData)}
               </p>
             </div>
           </div>
@@ -146,8 +166,6 @@ export const Dashboard: React.FC<DashboardProps> = ({
             <ArrowRight className="w-3.5 h-3.5" />
           </button>
         </div>
-
-        <ForecastStatusNotice data={weatherData} />
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
           {/* Current Weather Snapshot (5 cols) */}

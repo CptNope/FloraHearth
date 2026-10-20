@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { DialogBehavior } from './DialogBehavior';
 import { getPlantingSuggestions } from '../services/bedSchedule';
+import { localDateStr } from '../services/dates';
 import { Crop, SeedPacket, GardenLocation } from '../types/garden';
 import { CROPS_DATA, getCropById } from '../data/cropsData';
 import {
@@ -139,12 +140,21 @@ export const CropLibrary: React.FC<CropLibraryProps> = ({
   };
 
   // A crop is plantable now if one of its seed-start, transplant or sowing
-  // windows (from the user's frost dates) includes today
-  const isPlantableNow = (cropId: string) => {
-    const crop = getCropById(cropId);
-    if (!crop || !location) return false;
-    return getPlantingSuggestions([crop], location, 1).some(sug => sug.isNow);
-  };
+  // windows (from the user's frost dates) includes today. Computed once per
+  // location/day for the crops in the seed stash, not on every render.
+  const seedCropIds = Array.from(new Set(seeds.map(sd => sd.cropId))).sort().join(',');
+  const plantableNowIds = useMemo(() => {
+    const ids = new Set<string>();
+    if (!location) return ids;
+    seedCropIds.split(',').filter(Boolean).forEach(id => {
+      const crop = getCropById(id);
+      if (crop && getPlantingSuggestions([crop], location, 1).some(sug => sug.isNow)) ids.add(id);
+    });
+    return ids;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [seedCropIds, location?.lastSpringFrost, location?.firstFallFrost, localDateStr()]);
+  const isPlantableNow = (cropId: string) => plantableNowIds.has(cropId);
+
 
   const openAddSeedModal = () => {
     setEditingSeed(null);
@@ -479,7 +489,7 @@ export const CropLibrary: React.FC<CropLibraryProps> = ({
 
       {/* Add / Edit Seed Modal */}
       {isSeedModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
           <DialogBehavior onClose={() => setIsSeedModalOpen(false)} />
           <div className="bg-white dark:bg-[#112117] border border-stone-200 dark:border-[#223d2e] rounded-2xl w-full max-w-md p-6 text-xs space-y-4 shadow-2xl">
             <div className="flex items-center justify-between border-b border-stone-200 dark:border-[#223d2e] pb-3">
@@ -606,7 +616,7 @@ export const CropLibrary: React.FC<CropLibraryProps> = ({
 
       {/* Active Crop Detail Modal */}
       {activeCropDetail && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
           <DialogBehavior onClose={() => setActiveCropDetail(null)} />
           <div className="bg-white dark:bg-[#112117] border border-stone-200 dark:border-[#223d2e] rounded-2xl w-full max-w-lg p-6 text-xs space-y-4 max-h-[90vh] overflow-y-auto shadow-2xl">
             <div className="flex items-center justify-between border-b border-stone-200 dark:border-[#223d2e] pb-3">

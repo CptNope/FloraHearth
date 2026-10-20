@@ -419,7 +419,7 @@ export const PestSoilHealth: React.FC<PestSoilHealthProps> = ({
 
       {/* Edit Soil Test Modal */}
       {isEditSoilOpen && editingSoilTest && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
           <DialogBehavior onClose={() => setIsEditSoilOpen(false)} />
           <div className="bg-white dark:bg-[#112117] border border-stone-200 dark:border-[#223d2e] rounded-2xl w-full max-w-md p-6 text-xs space-y-4 shadow-2xl">
             <div className="flex items-center justify-between border-b border-stone-200 dark:border-[#223d2e] pb-3">

@@ -713,7 +713,7 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
                 />
                 {entryPhotoPreview && (
                   <div className="mt-2 relative rounded-xl overflow-hidden border border-stone-200 dark:border-[#223d2e] h-28 bg-stone-100 dark:bg-[#182c20]">
-                    <img src={entryPhotoPreview} alt="Preview" className="w-full h-full object-cover" />
+                    <img src={entryPhotoPreview} alt="Selected photo preview" decoding="async" className="w-full h-full object-cover" />
                   </div>
                 )}
               </div>
@@ -800,7 +800,7 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
                           onClick={() => setViewingPhotoUrl(photoUrl)}
                           className="relative group rounded-xl overflow-hidden border border-stone-200 dark:border-[#223d2e] max-h-48 block"
                         >
-                          <img src={photoUrl} alt="Plant photo" className="w-full h-44 object-cover group-hover:scale-105 transition-transform" />
+                          <img src={photoUrl} alt={`Photo: ${entry.title}`} loading="lazy" decoding="async" className="w-full h-44 object-cover group-hover:scale-105 transition-transform" />
                           <div className="absolute bottom-2 right-2 px-2 py-0.5 bg-black/70 text-white rounded-md text-[10px] font-mono flex items-center gap-1">
                             <ImageIcon className="w-3 h-3" />
                             <span>Click to enlarge</span>
@@ -1128,7 +1128,7 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
 
       {/* Full Photo Modal */}
       {viewingPhotoUrl && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-xs p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4">
           <DialogBehavior onClose={() => setViewingPhotoUrl(null)} label="Garden photo" />
           <div className="relative max-w-3xl w-full max-h-[90vh] flex flex-col items-center">
             <button
@@ -1138,14 +1138,14 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
             >
               <X className="w-6 h-6" />
             </button>
-            <img src={viewingPhotoUrl} alt="Plant journal full" className="max-w-full max-h-[85vh] rounded-2xl object-contain shadow-2xl" />
+            <img src={viewingPhotoUrl} alt="Garden journal photo, full size" decoding="async" className="max-w-full max-h-[85vh] rounded-2xl object-contain shadow-2xl" />
           </div>
         </div>
       )}
 
       {/* Edit Journal Entry Modal */}
       {isEditJournalOpen && editingJournal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
           <DialogBehavior onClose={() => setIsEditJournalOpen(false)} />
           <div className="bg-white dark:bg-[#112117] border border-stone-200 dark:border-[#223d2e] rounded-2xl w-full max-w-md p-6 text-xs space-y-4 shadow-2xl">
             <div className="flex items-center justify-between border-b border-stone-200 dark:border-[#223d2e] pb-3">
@@ -1214,7 +1214,7 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
 
       {/* Edit Expense Modal */}
       {isEditExpenseOpen && editingExpense && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
           <DialogBehavior onClose={() => setIsEditExpenseOpen(false)} />
           <div className="bg-white dark:bg-[#112117] border border-stone-200 dark:border-[#223d2e] rounded-2xl w-full max-w-sm p-6 text-xs space-y-4 shadow-2xl">
             <div className="flex items-center justify-between border-b border-stone-200 dark:border-[#223d2e] pb-3">

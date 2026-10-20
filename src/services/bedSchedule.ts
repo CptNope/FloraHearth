@@ -1,6 +1,6 @@
 import { Crop, GardenLocation, GardenSpace, GardenTask } from '../types/garden';
 import { getCropById } from '../data/cropsData';
-import { addDays, localDateStr, parseLocalDate } from './dates';
+import { addDays, localDateStr, parseLocalDate, formatShortDateYear } from './dates';
 
 /**
  * Builds the seed-start / plant / harvest schedule for the crops in a bed,
@@ -67,7 +67,7 @@ const relativeToFrost = ([a, b]: [number, number], frostName: string): string =>
   return `from ${wk(b)} before to ${wk(-a)} after your ${frostName}`;
 };
 
-const fmt = (d: Date) => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+const fmt = formatShortDateYear;
 const windowText = (w: Window) =>
   localDateStr(w.start) === localDateStr(w.end) ? fmt(w.start) : `${fmt(w.start)} – ${fmt(w.end)}`;
 

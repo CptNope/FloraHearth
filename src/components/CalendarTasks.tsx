@@ -5,7 +5,7 @@ import { CROPS_DATA } from '../data/cropsData';
 import { Calendar, CheckCircle2, Circle, Clock, Printer, Plus, Sparkles, Filter, AlertCircle, Moon, Bell, BellRing } from 'lucide-react';
 import { getLunarPlantingInfo } from '../services/weatherAlmanacService';
 import { requestNotificationPermission, getNotificationStatus, sendLocalNotification } from '../services/notificationService';
-import { localDateStr } from '../services/dates';
+import { localDateStr, formatShortDate } from '../services/dates';
 
 interface CalendarTasksProps {
   location: GardenLocation;
@@ -161,7 +161,7 @@ export const CalendarTasks: React.FC<CalendarTasksProps> = ({
 
   const formatDateShort = (d?: Date | null) => {
     if (!d || isNaN(d.getTime())) return 'N/A';
-    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    return formatShortDate(d);
   };
 
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];

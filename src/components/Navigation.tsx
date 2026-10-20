@@ -112,7 +112,7 @@ export const Navigation: React.FC<NavigationProps> = ({
   // "bottom" bar to the top of the screen on phones.
   return (
     <>
-    <header className="sticky top-0 z-40 pt-[env(safe-area-inset-top)] bg-[#f5f7f5]/95 dark:bg-[#0f1712]/95 backdrop-blur-md border-b border-[#d6e2d8] dark:border-[rgba(255,255,255,0.08)] transition-colors">
+    <header className="sticky top-0 z-40 pt-[env(safe-area-inset-top)] bg-[#f5f7f5] dark:bg-[#0f1712] border-b border-[#d6e2d8] dark:border-[rgba(255,255,255,0.08)] transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         {/* Main top bar */}
         <div className="flex flex-wrap items-center justify-between min-h-16 gap-x-2 gap-y-1 py-2">
@@ -409,7 +409,7 @@ export const Navigation: React.FC<NavigationProps> = ({
     {/* Mobile Persistent Bottom Bar (Always in reach of user's thumb) */}
     <nav
       aria-label="Mobile quick navigation"
-      className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-[#0c1610]/95 backdrop-blur-md border-t border-stone-200 dark:border-[#243d2f] flex items-center justify-around pt-1.5 pb-[max(0.375rem,env(safe-area-inset-bottom))] px-1 text-[10px] shadow-lg"
+      className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-[#0c1610] border-t border-stone-200 dark:border-[#243d2f] flex items-center justify-around pt-1.5 pb-[max(0.375rem,env(safe-area-inset-bottom))] px-1 text-[10px] shadow-lg"
     >
       {mobileBottomItems.map(item => {
         const Icon = item.icon;

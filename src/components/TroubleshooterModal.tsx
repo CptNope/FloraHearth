@@ -117,7 +117,7 @@ export const TroubleshooterModal: React.FC<TroubleshooterModalProps> = ({ isOpen
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 overflow-y-auto"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 overflow-y-auto"
       role="dialog"
       aria-modal="true"
       aria-labelledby="troubleshooter-modal-title"

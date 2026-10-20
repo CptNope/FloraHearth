@@ -2,15 +2,15 @@ import React from 'react';
 import { CloudOff, History } from 'lucide-react';
 import { WeatherAlmanacData } from '../types/weatherAlmanac';
 
-/** One-line description of where the weather numbers came from. */
+/** Short, single-line description of where the weather numbers came from. */
 export function forecastSourceLabel(data: WeatherAlmanacData | null): string {
   if (!data) return 'Loading forecast…';
-  if (data.forecastStatus === 'estimate') return 'Seasonal estimate · live forecast unavailable';
+  if (data.forecastStatus === 'estimate') return 'Estimate only · no live forecast';
   if (data.forecastStatus === 'cached') {
     const t = new Date(data.fetchedAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-    return `Open-Meteo forecast from ${t} (offline)`;
+    return `Offline · forecast from ${t}`;
   }
-  return 'Live from Open-Meteo';
+  return 'Live forecast · Open-Meteo';
 }
 
 /**

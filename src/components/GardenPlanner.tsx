@@ -623,7 +623,7 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
 
       {/* Modal for Creating New Space */}
       {isCreatingSpace && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
           <DialogBehavior onClose={() => setIsCreatingSpace(false)} />
           <form
             onSubmit={handleCreateSpace}
@@ -705,7 +705,7 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
 
       {/* Modal for Archiving Season Layout */}
       {isArchiveModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
           <DialogBehavior onClose={() => setIsArchiveModalOpen(false)} />
           <form
             onSubmit={handleArchiveCurrentSeason}
