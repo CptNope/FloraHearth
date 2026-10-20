@@ -65,7 +65,12 @@ function TabLoading() {
 }
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<string>('dashboard');
+  // Honor the documented PWA shortcuts and JAT-OS deep links (?tab=planner/crops/calendar).
+  // Unknown tab values fall back to Dashboard rather than rendering an empty app.
+  const [activeTab, setActiveTab] = useState<string>(() => {
+    const requested = new URLSearchParams(window.location.search).get('tab');
+    return requested && ['planner', 'crops', 'calendar'].includes(requested) ? requested : 'dashboard';
+  });
   const [location, setLocation] = useState<GardenLocation>(getSavedLocation);
   const [preferences, setPreferences] = useState<UserPreferences>(getSavedPreferences);
   const [spaces, setSpaces] = useState<GardenSpace[]>(getSavedSpaces);
