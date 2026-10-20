@@ -371,7 +371,7 @@ export default function App() {
         <div
           role="status"
           aria-live="polite"
-          className="bg-emerald-600 dark:bg-emerald-700 text-white px-4 py-2 text-xs font-medium flex items-center justify-between gap-3 shadow-md z-50 animate-fadeIn"
+          className="bg-emerald-700 dark:bg-emerald-800 text-white px-4 py-2 text-xs font-medium flex items-center justify-between gap-3 shadow-md z-50 animate-fadeIn"
         >
           <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-emerald-200 shrink-0" aria-hidden="true" />
