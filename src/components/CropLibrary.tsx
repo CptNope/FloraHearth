@@ -213,7 +213,7 @@ export const CropLibrary: React.FC<CropLibraryProps> = ({
             Horticultural Crop Library &amp; Seed Stash
           </h2>
           <p className="text-xs text-stone-600 dark:text-stone-300 mt-1">
-            Browse 70+ vegetable and herb guides, audit packet germination viability, and discover what you can plant right now with seeds you already own.
+            Browse {CROPS_DATA.length} vegetable, fruit and herb guides, audit packet germination viability, and discover what you can plant right now with seeds you already own.
           </p>
         </div>
 
@@ -228,7 +228,7 @@ export const CropLibrary: React.FC<CropLibraryProps> = ({
             }`}
           >
             <BookOpen className="w-3.5 h-3.5 text-emerald-700 dark:text-emerald-400" />
-            <span>Crop Guides (70+)</span>
+            <span>Crop Guides ({CROPS_DATA.length})</span>
           </button>
           <button
             type="button"

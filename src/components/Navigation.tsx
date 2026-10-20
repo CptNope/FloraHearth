@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { CROPS_DATA } from '../data/cropsData';
 import { GardenLocation } from '../types/garden';
 import { APP_VERSION, AppTheme } from '../services/pwaVersionService';
 import {
@@ -65,7 +66,7 @@ export const Navigation: React.FC<NavigationProps> = ({
         { id: 'dashboard', label: 'Dashboard', desc: 'Seasonal overview & today’s chores', icon: Sprout },
         { id: 'weather-almanac', label: 'Weather & Almanac', desc: 'Live Open-Meteo & Farmer’s Almanac', icon: CloudSun },
         { id: 'planner', label: 'Bed Designer', desc: 'Square foot & row companion layouts', icon: LayoutGrid },
-        { id: 'crops', label: 'Crop Guides', desc: '70+ vegetable, fruit & herb varieties', icon: BookOpen },
+        { id: 'crops', label: 'Crop Guides', desc: `${CROPS_DATA.length} vegetable, fruit & herb guides`, icon: BookOpen },
         { id: 'calendar', label: 'Calendar & Tasks', desc: 'Frost-timed sowing & harvest schedule', icon: Calendar },
       ],
     },
@@ -80,7 +81,7 @@ export const Navigation: React.FC<NavigationProps> = ({
       title: 'Harvest & Pantry',
       items: [
         { id: 'preservation', label: 'Safe Preservation', desc: 'USDA canning, dehydrating & altitude guide', icon: ShieldCheck },
-        { id: 'pantry', label: 'Pantry & Yields', desc: 'Caloric self-sufficiency & batch tracking', icon: Utensils },
+        { id: 'pantry', label: 'Pantry & Yields', desc: 'Preserved stores, jar use & batch tracking', icon: Utensils },
         { id: 'journal', label: 'Journal & ROI', desc: 'Growth logs, harvest weight & savings calculator', icon: BookText },
       ],
     },

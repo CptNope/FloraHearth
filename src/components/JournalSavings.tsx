@@ -3,7 +3,7 @@ import { DialogBehavior } from './DialogBehavior';
 import { JournalEntry, ExpenseRecord, PantryItem } from '../types/garden';
 import { CROPS_DATA, getCropById } from '../data/cropsData';
 import { exportAllDataJson, importAllDataJson, hasUserSavedData, validateBackupBundle, getBundleExportedAt, consumeOpenBackupRequest, OPEN_BACKUP_EVENT, requestPersistentStorage, getPersistenceStatus } from '../services/storage';
-import { saveJournalPhoto, getJournalPhoto, deleteJournalPhoto } from '../services/imageStorage';
+import { saveJournalPhoto, getJournalPhoto, deleteJournalPhoto, compressImage, getAllJournalPhotos, putJournalPhotos } from '../services/imageStorage';
 import { PANTRY_DEFAULTS, CropPreservationMethod, getQuickPreserveMethods, getCanningMethods } from '../services/preservationMapping';
 import { localDateStr } from '../services/dates';
 import {
@@ -108,16 +108,17 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
   useEffect(() => {
     let isMounted = true;
     async function loadPhotos() {
-      const map: Record<string, string> = {};
-      for (const entry of journalEntries) {
-        if (entry.photoId) {
-          const url = await getJournalPhoto(entry.photoId);
-          if (url && isMounted) {
-            map[entry.id] = url;
-          }
-        }
-      }
-      if (isMounted) setPhotosMap(map);
+      // Only fetch photos not already loaded, in parallel
+      const missing = journalEntries.filter(e => e.photoId && !photosMap[e.id]);
+      const loaded = await Promise.all(missing.map(async e => [e.id, await getJournalPhoto(e.photoId!)] as const));
+      if (!isMounted) return;
+      const keep = new Set(journalEntries.map(e => e.id));
+      setPhotosMap(prev => {
+        const next: Record<string, string> = {};
+        Object.entries(prev).forEach(([id, url]) => { if (keep.has(id)) next[id] = url; });
+        loaded.forEach(([id, url]) => { if (url) next[id] = url; });
+        return next;
+      });
     }
     loadPhotos();
     return () => {
@@ -161,15 +162,11 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
   const netSavings = totalRealisticGroceryValue - totalSpent;
 
   // Handle Photo selection
-  const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setEntryPhotoFile(file);
-      const reader = new FileReader();
-      reader.onload = ev => {
-        setEntryPhotoPreview(ev.target?.result as string);
-      };
-      reader.readAsDataURL(file);
+      setEntryPhotoPreview(await compressImage(file));
     }
   };
 
@@ -184,6 +181,8 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
         await saveJournalPhoto(photoId, entryPhotoPreview);
       } catch (err) {
         console.warn('Failed to save photo to IndexedDB', err);
+        photoId = undefined; // don't point the entry at a photo that isn't there
+        alert('The photo could not be saved on this device (storage is full or blocked). The entry was saved without it.');
       }
     }
 
@@ -272,8 +271,14 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
     setIsEditExpenseOpen(false);
   };
 
-  const handleExportJson = () => {
-    const jsonStr = exportAllDataJson();
+  const handleExportJson = async () => {
+    // Include the journal's photos (stored separately in IndexedDB)
+    const bundle = JSON.parse(exportAllDataJson());
+    const referenced = new Set(journalEntries.map(j => j.photoId).filter(Boolean) as string[]);
+    const allPhotos = await getAllJournalPhotos();
+    const photos = Object.fromEntries(Object.entries(allPhotos).filter(([id]) => referenced.has(id)));
+    if (Object.keys(photos).length > 0) bundle.photos = photos;
+    const jsonStr = JSON.stringify(bundle, null, 2);
     const blob = new Blob([jsonStr], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -288,7 +293,7 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = event => {
+    reader.onload = async event => {
       const content = event.target?.result as string;
       e.target.value = ''; // allow choosing the same file again
       if (hasUserSavedData() && !confirm(`Replace ALL garden data on this device with "${file.name}"?`)) {
@@ -297,7 +302,14 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
       }
       const success = importAllDataJson(content);
       if (success) {
-        setCfSyncStatus('JSON backup successfully restored into FloraHearth!');
+        let restoredPhotos = 0;
+        try {
+          const photos = JSON.parse(content)?.photos;
+          if (photos && typeof photos === 'object') restoredPhotos = await putJournalPhotos(photos);
+        } catch (err) {
+          console.warn('Photos in the backup could not be restored', err);
+        }
+        setCfSyncStatus(`JSON backup restored${restoredPhotos ? `, including ${restoredPhotos} photo${restoredPhotos === 1 ? '' : 's'}` : ''}.`);
         onDataImportSuccess();
       } else {
         setCfSyncStatus('Invalid JSON backup file.');
@@ -999,7 +1011,7 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
               Local JSON Export &amp; Restore
             </h3>
             <p className="text-stone-600 dark:text-stone-300">
-              Download a complete JSON snapshot of your beds, planting schedule, pantry jars, soil tests, hydro readings, and expenses. Safari and mobile browsers can clear localStorage on storage cleanup; keeping a backup file safeguards your season of data.
+              Download a complete JSON snapshot of your beds, planting schedule, pantry jars, soil tests, hydro readings, expenses and journal photos. Safari and mobile browsers can clear localStorage on storage cleanup; keeping a backup file safeguards your season of data.
             </p>
 
             <div className="flex flex-wrap items-center gap-3 pt-2">
@@ -1050,7 +1062,7 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
                   Cloudflare Worker + D1 Remote Sync (Optional)
                 </h3>
                 <p className="text-stone-600 dark:text-stone-300 mt-0.5">
-                  Sync your garden data across devices through your own Cloudflare Worker, which stores one backup in Cloudflare D1. A ready-to-deploy Worker is in the repo under <code>worker/</code>. Data travels as plain JSON over HTTPS, so keep the sync token secret. Journal photos stay on each device and are not synced.
+                  Sync your garden data across devices through your own Cloudflare Worker, which stores one backup in Cloudflare D1. A ready-to-deploy Worker is in the repo under <code>worker/</code>. Data travels as plain JSON over HTTPS, so keep the sync token secret. Journal photos stay on each device and are not synced (they are included in the downloaded backup file).
                 </p>
               </div>
             </div>
