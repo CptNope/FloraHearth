@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { DialogBehavior } from './DialogBehavior';
 import { GardenLocation, GardenTask } from '../types/garden';
 import { CROPS_DATA } from '../data/cropsData';
 import { Calendar, CheckCircle2, Circle, Clock, Printer, Plus, Sparkles, Filter, AlertCircle, Moon, Bell, BellRing } from 'lucide-react';
@@ -178,7 +179,7 @@ export const CalendarTasks: React.FC<CalendarTasksProps> = ({
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {/* Mode toggle */}
           <div className="flex bg-[#edf2ee] dark:bg-[#111c15] border border-[#d6e2d8] dark:border-[rgba(255,255,255,0.08)] p-1 rounded-xl text-xs font-semibold">
             <button
@@ -309,7 +310,7 @@ export const CalendarTasks: React.FC<CalendarTasksProps> = ({
           </div>
         </div>
 
-        <div className="flex items-center gap-3 text-[11px]">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px]">
           <span className="flex items-center gap-1.5">
             <span className="w-3 h-3 rounded-xs bg-indigo-700 inline-block" /> Indoor Starts
           </span>
@@ -330,7 +331,7 @@ export const CalendarTasks: React.FC<CalendarTasksProps> = ({
 
       {viewMode === 'timeline' ? (
         /* Timeline View */
-        <div className="bg-white border border-stone-200 rounded-2xl p-4 sm:p-6 shadow-xs overflow-x-auto printable-area">
+        <div className="bg-white border border-stone-200 rounded-2xl p-4 sm:p-6 shadow-xs overflow-x-auto printable-area" tabIndex={0} role="region" aria-label="Crop timeline (scrolls sideways on small screens)">
           <div className="min-w-[700px] space-y-4">
             {/* Month Axis */}
             <div className="grid grid-cols-12 gap-1 text-center font-mono text-xs text-stone-400 border-b border-stone-200 pb-2">
@@ -505,6 +506,7 @@ export const CalendarTasks: React.FC<CalendarTasksProps> = ({
           aria-modal="true"
           aria-labelledby="add-task-dialog-heading"
         >
+          <DialogBehavior onClose={() => setIsAddingTask(false)} />
           <form
             onSubmit={handleCreateCustomTask}
             className="bg-white border border-stone-200 rounded-2xl p-6 w-full max-w-md shadow-2xl space-y-4"

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { DialogBehavior } from './DialogBehavior';
 import { PantryItem, UserPreferences } from '../types/garden';
 import {
   ShoppingCart,
@@ -131,7 +132,7 @@ export const PantryTracker: React.FC<PantryTrackerProps> = ({
 
   const expiringSoonItems = itemsWithExpiry.filter(item => item.daysUntilExpiry <= 30);
 
-  // Caloric / Duration of food on hand estimation
+  // How long preserved produce lasts at ~2 side servings per person per day (not a calorie estimate)
   // Estimate servings: quart jars ~ 4 servings; pints ~ 2 servings; lbs ~ 4 servings; bulbs ~ 8 servings
   const totalServingsEstimate = pantryItems.reduce((acc, item) => {
     const unitLower = item.unit.toLowerCase();
@@ -250,7 +251,7 @@ export const PantryTracker: React.FC<PantryTrackerProps> = ({
             Pantry Inventory, Food Security &amp; Batch Tracker
           </h2>
           <p className="text-xs text-stone-600 dark:text-stone-300 mt-1">
-            Track preserved pantry stores, log jar usage, audit expiration dates, and compute household self-sufficiency duration.
+            Track preserved pantry stores, log jar usage, audit expiration dates, and see how long your preserved produce will last.
           </p>
         </div>
 
@@ -321,14 +322,14 @@ export const PantryTracker: React.FC<PantryTrackerProps> = ({
           <div>
             <div className="flex items-center gap-2">
               <span className="font-mono text-xs font-bold uppercase text-emerald-800 dark:text-emerald-400">
-                Pantry Self-Sufficiency Estimate:
+                Preserved Produce on Hand:
               </span>
               <span className="font-extrabold text-base text-[#183a24] dark:text-white font-mono">
-                ~{monthsOfFoodOnHand} months of food on hand
+                ~{monthsOfFoodOnHand} months of side servings
               </span>
             </div>
             <p className="text-xs text-stone-600 dark:text-stone-300 mt-0.5">
-              Based on {pantryItems.reduce((acc, i) => acc + i.quantity, 0)} total containers (~{totalServingsEstimate} preserved servings) for a household of {householdSize} people.
+              About {totalServingsEstimate} servings of fruit and vegetables from {pantryItems.reduce((acc, i) => acc + i.quantity, 0)} containers, at 2 servings per person per day for {householdSize} {householdSize === 1 ? 'person' : 'people'}. This counts produce only, not total calories or a full diet.
             </p>
           </div>
         </div>
@@ -661,6 +662,7 @@ export const PantryTracker: React.FC<PantryTrackerProps> = ({
       {/* Edit / Add Modal */}
       {isEditModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+          <DialogBehavior onClose={() => setIsEditModalOpen(false)} />
           <div className="bg-white dark:bg-[#112117] border border-stone-200 dark:border-[#223d2e] rounded-2xl w-full max-w-md overflow-hidden shadow-2xl p-6 text-xs space-y-4">
             <div className="flex items-center justify-between border-b border-stone-200 dark:border-[#223d2e] pb-3">
               <h3 className="font-bold text-sm text-[#183a24] dark:text-white font-serif-botanical">

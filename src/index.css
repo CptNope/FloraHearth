@@ -111,6 +111,17 @@ textarea:focus-visible,
   color: #b45309; /* 5.17:1 contrast against white */
 }
 
+/* WCAG 2.5.8 Target Size (Minimum): every control is at least 24x24 CSS px.
+   Icon-only edit/delete buttons, filter chips and text-style buttons were 16-23px. */
+button,
+[role="button"],
+[role="tab"],
+select,
+input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="hidden"]):not([type="file"]) {
+  min-height: 24px;
+  min-width: 24px;
+}
+
 /* WCAG 2.3.3 Reduced Motion: Respect system preferences */
 @media (prefers-reduced-motion: reduce) {
   *, ::before, ::after {

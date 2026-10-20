@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { DialogBehavior } from './DialogBehavior';
 import { JournalEntry, ExpenseRecord, PantryItem } from '../types/garden';
 import { CROPS_DATA, getCropById } from '../data/cropsData';
-import { exportAllDataJson, importAllDataJson, hasUserSavedData, validateBackupBundle, getBundleExportedAt } from '../services/storage';
-import { saveJournalPhoto, getJournalPhoto, deleteJournalPhoto } from '../services/imageStorage';
+import { exportAllDataJson, importAllDataJson, hasUserSavedData, validateBackupBundle, getBundleExportedAt, consumeOpenBackupRequest, OPEN_BACKUP_EVENT, requestPersistentStorage, getPersistenceStatus } from '../services/storage';
+import { saveJournalPhoto, getJournalPhoto, deleteJournalPhoto, compressImage, getAllJournalPhotos, putJournalPhotos } from '../services/imageStorage';
 import { PANTRY_DEFAULTS, CropPreservationMethod, getQuickPreserveMethods, getCanningMethods } from '../services/preservationMapping';
 import { localDateStr } from '../services/dates';
 import {
@@ -56,7 +57,16 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
   onAddPantryItem,
   onNavigateToTab,
 }) => {
-  const [activeTab, setActiveTab] = useState<'journal' | 'finances' | 'photos' | 'backup'>('journal');
+  const [activeTab, setActiveTab] = useState<'journal' | 'finances' | 'photos' | 'backup'>(() => (consumeOpenBackupRequest() ? 'backup' : 'journal'));
+  useEffect(() => {
+    const open = () => { consumeOpenBackupRequest(); setActiveTab('backup'); };
+    window.addEventListener(OPEN_BACKUP_EVENT, open);
+    return () => window.removeEventListener(OPEN_BACKUP_EVENT, open);
+  }, []);
+
+  // Persistent storage status for the Sync & Backup tab
+  const [persistStatus, setPersistStatus] = useState<'persisted' | 'not-persisted' | 'denied' | 'unsupported' | null>(null);
+  useEffect(() => { getPersistenceStatus().then(setPersistStatus); }, []);
 
   // New Journal Entry state
   const [entryTitle, setEntryTitle] = useState('');
@@ -98,16 +108,17 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
   useEffect(() => {
     let isMounted = true;
     async function loadPhotos() {
-      const map: Record<string, string> = {};
-      for (const entry of journalEntries) {
-        if (entry.photoId) {
-          const url = await getJournalPhoto(entry.photoId);
-          if (url && isMounted) {
-            map[entry.id] = url;
-          }
-        }
-      }
-      if (isMounted) setPhotosMap(map);
+      // Only fetch photos not already loaded, in parallel
+      const missing = journalEntries.filter(e => e.photoId && !photosMap[e.id]);
+      const loaded = await Promise.all(missing.map(async e => [e.id, await getJournalPhoto(e.photoId!)] as const));
+      if (!isMounted) return;
+      const keep = new Set(journalEntries.map(e => e.id));
+      setPhotosMap(prev => {
+        const next: Record<string, string> = {};
+        Object.entries(prev).forEach(([id, url]) => { if (keep.has(id)) next[id] = url; });
+        loaded.forEach(([id, url]) => { if (url) next[id] = url; });
+        return next;
+      });
     }
     loadPhotos();
     return () => {
@@ -151,15 +162,11 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
   const netSavings = totalRealisticGroceryValue - totalSpent;
 
   // Handle Photo selection
-  const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePhotoSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setEntryPhotoFile(file);
-      const reader = new FileReader();
-      reader.onload = ev => {
-        setEntryPhotoPreview(ev.target?.result as string);
-      };
-      reader.readAsDataURL(file);
+      setEntryPhotoPreview(await compressImage(file));
     }
   };
 
@@ -174,6 +181,8 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
         await saveJournalPhoto(photoId, entryPhotoPreview);
       } catch (err) {
         console.warn('Failed to save photo to IndexedDB', err);
+        photoId = undefined; // don't point the entry at a photo that isn't there
+        alert('The photo could not be saved on this device (storage is full or blocked). The entry was saved without it.');
       }
     }
 
@@ -262,8 +271,14 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
     setIsEditExpenseOpen(false);
   };
 
-  const handleExportJson = () => {
-    const jsonStr = exportAllDataJson();
+  const handleExportJson = async () => {
+    // Include the journal's photos (stored separately in IndexedDB)
+    const bundle = JSON.parse(exportAllDataJson());
+    const referenced = new Set(journalEntries.map(j => j.photoId).filter(Boolean) as string[]);
+    const allPhotos = await getAllJournalPhotos();
+    const photos = Object.fromEntries(Object.entries(allPhotos).filter(([id]) => referenced.has(id)));
+    if (Object.keys(photos).length > 0) bundle.photos = photos;
+    const jsonStr = JSON.stringify(bundle, null, 2);
     const blob = new Blob([jsonStr], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -278,7 +293,7 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = event => {
+    reader.onload = async event => {
       const content = event.target?.result as string;
       e.target.value = ''; // allow choosing the same file again
       if (hasUserSavedData() && !confirm(`Replace ALL garden data on this device with "${file.name}"?`)) {
@@ -287,7 +302,14 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
       }
       const success = importAllDataJson(content);
       if (success) {
-        setCfSyncStatus('JSON backup successfully restored into FloraHearth!');
+        let restoredPhotos = 0;
+        try {
+          const photos = JSON.parse(content)?.photos;
+          if (photos && typeof photos === 'object') restoredPhotos = await putJournalPhotos(photos);
+        } catch (err) {
+          console.warn('Photos in the backup could not be restored', err);
+        }
+        setCfSyncStatus(`JSON backup restored${restoredPhotos ? `, including ${restoredPhotos} photo${restoredPhotos === 1 ? '' : 's'}` : ''}.`);
         onDataImportSuccess();
       } else {
         setCfSyncStatus('Invalid JSON backup file.');
@@ -512,12 +534,15 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
                   const crop = preservePromptHarvest.cropId ? getCropById(preservePromptHarvest.cropId) : null;
                   const canning = getCanningMethods(crop);
                   if (canning.includes('pressure-canning')) {
-                    return 'Log a frozen, dried or stored batch now. This is a low-acid crop: canning it requires a pressure canner, never a water bath.';
+                    return `Log a frozen, dried or stored batch now. This is a low-acid crop: canning it plain requires a pressure canner, never a water bath${canning.includes('pickling') ? ' (tested pickle recipes are the exception)' : ''}.`;
+                  }
+                  if (canning.includes('pickling') && !canning.includes('water-bath-canning')) {
+                    return 'Log a frozen, dried or stored batch now. This crop can only be water-bath canned as a tested pickle or relish recipe, not plain.';
                   }
                   if (canning.length > 0) {
                     return 'Log a frozen, dried or stored batch now, or follow a tested canning procedure first.';
                   }
-                  return 'Log a preserved batch straight to your pantry inventory.';
+                  return 'Log a preserved batch straight to your pantry inventory. There is no tested home-canning process for this crop.';
                 })()}
               </span>
             </div>
@@ -553,7 +578,7 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
                       onClick={() => { setPreservePromptHarvest(null); onNavigateToTab('preservation'); }}
                       className="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-[#132219] border border-[#234730] dark:border-emerald-500 text-[#183422] dark:text-emerald-200 font-semibold rounded-xl hover:bg-emerald-50 dark:hover:bg-emerald-950 transition-colors"
                     >
-                      <span>{canning.includes('pressure-canning') ? 'Pressure-canning guide' : 'Canning guide'}</span>
+                      <span>{canning.includes('pressure-canning') ? 'Pressure-canning guide' : canning.includes('water-bath-canning') ? 'Canning guide' : 'Tested pickle recipes'}</span>
                       <ArrowRight className="w-3.5 h-3.5" />
                     </button>
                   )}
@@ -986,7 +1011,7 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
               Local JSON Export &amp; Restore
             </h3>
             <p className="text-stone-600 dark:text-stone-300">
-              Download a complete JSON snapshot of your beds, planting schedule, pantry jars, soil tests, hydro readings, and expenses. Safari and mobile browsers can clear localStorage on storage cleanup; keeping a backup file safeguards your season of data.
+              Download a complete JSON snapshot of your beds, planting schedule, pantry jars, soil tests, hydro readings, expenses and journal photos. Safari and mobile browsers can clear localStorage on storage cleanup; keeping a backup file safeguards your season of data.
             </p>
 
             <div className="flex flex-wrap items-center gap-3 pt-2">
@@ -999,11 +1024,32 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
                 <span>Export Complete Garden Backup (.json)</span>
               </button>
 
-              <label className="flex items-center gap-2 px-4 py-2 bg-stone-100 hover:bg-stone-200/80 dark:bg-[#182c20] text-stone-800 dark:text-stone-200 font-semibold rounded-xl cursor-pointer transition-colors border border-stone-300 dark:border-[#223d2e]">
+              <label className="flex items-center gap-2 px-4 py-2 bg-stone-100 hover:bg-stone-200/80 dark:bg-[#182c20] text-stone-800 dark:text-stone-200 font-semibold rounded-xl cursor-pointer transition-colors border border-stone-300 dark:border-[#223d2e] focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-emerald-600">
                 <Upload className="w-4 h-4" />
                 <span>Restore Backup File</span>
-                <input type="file" accept=".json" onChange={handleImportJson} className="hidden" />
+                <input type="file" accept=".json" onChange={handleImportJson} className="sr-only" />
               </label>
+            </div>
+
+            <div className="pt-3 border-t border-stone-100 dark:border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <p className="text-stone-600 dark:text-stone-300" role="status">
+                {persistStatus === 'persisted' && <><strong className="text-emerald-800 dark:text-emerald-300">Protected:</strong> this browser won&apos;t clear FloraHearth&apos;s data to free up space.</>}
+                {persistStatus === 'not-persisted' && <><strong>Not protected:</strong> this browser may clear FloraHearth&apos;s data when the device runs low on space.</>}
+                {persistStatus === 'denied' && <><strong>Not protected:</strong> the browser declined. Installing FloraHearth to your home screen usually allows it; keep backups either way.</>}
+                {persistStatus === 'unsupported' && <>This browser can&apos;t protect site data from cleanup, so keep a backup file.</>}
+              </p>
+              {persistStatus === 'not-persisted' && (
+                <button
+                  type="button"
+                  onClick={async () => {
+                    const r = await requestPersistentStorage();
+                    setPersistStatus(r === 'persisted' ? 'persisted' : r === 'denied' ? 'denied' : 'unsupported');
+                  }}
+                  className="shrink-0 px-3 py-1.5 border border-[#234730] dark:border-emerald-500 text-[#183422] dark:text-emerald-200 font-semibold rounded-xl hover:bg-emerald-50 dark:hover:bg-emerald-950"
+                >
+                  Keep my data on this device
+                </button>
+              )}
             </div>
           </div>
 
@@ -1016,7 +1062,7 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
                   Cloudflare Worker + D1 Remote Sync (Optional)
                 </h3>
                 <p className="text-stone-600 dark:text-stone-300 mt-0.5">
-                  Sync your garden data across devices through your own Cloudflare Worker, which stores one backup in Cloudflare D1. A ready-to-deploy Worker is in the repo under <code>worker/</code>. Data travels as plain JSON over HTTPS, so keep the sync token secret. Journal photos stay on each device and are not synced.
+                  Sync your garden data across devices through your own Cloudflare Worker, which stores one backup in Cloudflare D1. A ready-to-deploy Worker is in the repo under <code>worker/</code>. Data travels as plain JSON over HTTPS, so keep the sync token secret. Journal photos stay on each device and are not synced (they are included in the downloaded backup file).
                 </p>
               </div>
             </div>
@@ -1083,6 +1129,7 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
       {/* Full Photo Modal */}
       {viewingPhotoUrl && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-xs p-4">
+          <DialogBehavior onClose={() => setViewingPhotoUrl(null)} label="Garden photo" />
           <div className="relative max-w-3xl w-full max-h-[90vh] flex flex-col items-center">
             <button
               type="button"
@@ -1099,6 +1146,7 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
       {/* Edit Journal Entry Modal */}
       {isEditJournalOpen && editingJournal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+          <DialogBehavior onClose={() => setIsEditJournalOpen(false)} />
           <div className="bg-white dark:bg-[#112117] border border-stone-200 dark:border-[#223d2e] rounded-2xl w-full max-w-md p-6 text-xs space-y-4 shadow-2xl">
             <div className="flex items-center justify-between border-b border-stone-200 dark:border-[#223d2e] pb-3">
               <h3 className="font-bold text-sm text-[#183a24] dark:text-white font-serif-botanical">Edit Journal Entry</h3>
@@ -1167,6 +1215,7 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
       {/* Edit Expense Modal */}
       {isEditExpenseOpen && editingExpense && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+          <DialogBehavior onClose={() => setIsEditExpenseOpen(false)} />
           <div className="bg-white dark:bg-[#112117] border border-stone-200 dark:border-[#223d2e] rounded-2xl w-full max-w-sm p-6 text-xs space-y-4 shadow-2xl">
             <div className="flex items-center justify-between border-b border-stone-200 dark:border-[#223d2e] pb-3">
               <h3 className="font-bold text-sm text-[#183a24] dark:text-white font-serif-botanical">Edit Expense</h3>

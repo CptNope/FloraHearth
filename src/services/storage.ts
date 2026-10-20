@@ -284,13 +284,78 @@ export const INITIAL_SAMPLE_SEEDS: SeedPacket[] = [
 ];
 
 // Helper functions for reading and writing to localStorage safely
-function safeSetItem(key: string, value: string): void {
+export const STORAGE_ERROR_EVENT = 'florahearth-storage-error';
+export const OPEN_BACKUP_EVENT = 'florahearth-open-backup';
+
+// Lets the storage-error banner open Journal > Sync & Backup whether or not
+// the Journal tab is mounted yet.
+let pendingOpenBackup = false;
+export function requestOpenBackup(): void {
+  pendingOpenBackup = true;
+  if (typeof window !== 'undefined') window.dispatchEvent(new Event(OPEN_BACKUP_EVENT));
+}
+export function consumeOpenBackupRequest(): boolean {
+  const v = pendingOpenBackup;
+  pendingOpenBackup = false;
+  return v;
+}
+export type StorageErrorKind = 'quota' | 'blocked';
+
+const WEATHER_CACHE_KEY = 'florahearth_weather_cache';
+
+function isQuotaError(e: unknown): boolean {
+  const err = e as { name?: string; code?: number };
+  return err?.name === 'QuotaExceededError' || err?.name === 'NS_ERROR_DOM_QUOTA_REACHED' || err?.code === 22 || err?.code === 1014;
+}
+
+/**
+ * Write to localStorage. Returns false if the value could not be saved, and
+ * tells the app so it can warn the user instead of failing silently.
+ * On a full store, the disposable weather cache is dropped and the write retried.
+ */
+function safeSetItem(key: string, value: string): boolean {
+  if (typeof window === 'undefined' || typeof window.localStorage === 'undefined') return false;
   try {
-    if (typeof window !== 'undefined' && typeof window.localStorage !== 'undefined') {
-      window.localStorage.setItem(key, value);
-    }
+    window.localStorage.setItem(key, value);
+    return true;
   } catch (e) {
+    if (isQuotaError(e) && key !== WEATHER_CACHE_KEY) {
+      try {
+        window.localStorage.removeItem(WEATHER_CACHE_KEY);
+        window.localStorage.setItem(key, value);
+        return true;
+      } catch (e2) {
+        e = e2;
+      }
+    }
     console.warn(`Failed to write to localStorage for key: ${key}`, e);
+    const kind: StorageErrorKind = isQuotaError(e) ? 'quota' : 'blocked';
+    window.dispatchEvent(new CustomEvent(STORAGE_ERROR_EVENT, { detail: { key, kind } }));
+    return false;
+  }
+}
+
+/**
+ * Ask the browser not to evict FloraHearth's data under storage pressure.
+ * Chromium decides silently; some browsers show a prompt, so only call this
+ * from a user action or an installed app.
+ */
+export async function requestPersistentStorage(): Promise<'persisted' | 'denied' | 'unsupported'> {
+  try {
+    if (!navigator.storage?.persist) return 'unsupported';
+    if (await navigator.storage.persisted()) return 'persisted';
+    return (await navigator.storage.persist()) ? 'persisted' : 'denied';
+  } catch {
+    return 'unsupported';
+  }
+}
+
+export async function getPersistenceStatus(): Promise<'persisted' | 'not-persisted' | 'unsupported'> {
+  try {
+    if (!navigator.storage?.persisted) return 'unsupported';
+    return (await navigator.storage.persisted()) ? 'persisted' : 'not-persisted';
+  } catch {
+    return 'unsupported';
   }
 }
 

@@ -106,7 +106,7 @@ export async function checkAndTriggerDueReminders(tasks: GardenTask[]): Promise<
  * actually planted outdoors and the forecast is real (not offline fallback data).
  */
 export async function checkAndTriggerFrostAlert(
-  frostLevel: 'none' | 'watch' | 'frost' | 'hard-freeze',
+  frostLevel: 'none' | 'watch' | 'frost' | 'hard-freeze' | 'unknown',
   tonightMinTemp: number,
   tenderCrops: string[],
   isRealForecast: boolean

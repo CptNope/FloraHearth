@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { DialogBehavior } from './DialogBehavior';
 import { HydroWaterRecord } from '../types/garden';
 import { HYDROPONIC_SPECS } from '../data/ipmSoilData';
 import { Lightbulb, Waves, Fish, Thermometer, ShieldAlert, Plus, Edit2, Trash2, X, Check, Activity, AlertTriangle, TrendingUp } from 'lucide-react';
@@ -10,6 +11,14 @@ interface HydroIndoorGuideProps {
   onUpdateHydroRecord: (record: HydroWaterRecord) => void;
   onDeleteHydroRecord: (id: string) => void;
 }
+
+const SYSTEM_LABELS: Record<HydroWaterRecord['systemType'], string> = {
+  kratky: 'Kratky',
+  dwc: 'DWC',
+  nft: 'NFT',
+  drip: 'Drip',
+  aquaponics: 'Aquaponics',
+};
 
 export const HydroIndoorGuide: React.FC<HydroIndoorGuideProps> = ({
   hydroRecords,
@@ -39,6 +48,12 @@ export const HydroIndoorGuide: React.FC<HydroIndoorGuideProps> = ({
   const [formAmmonia, setFormAmmonia] = useState<string>('0');
   const [formNitrite, setFormNitrite] = useState<string>('0');
   const [formNitrate, setFormNitrate] = useState<string>('30');
+
+  // Trend chart shows one system at a time (defaults to the most recently logged one)
+  const chartSystems = Array.from(new Set([...hydroRecords].sort((a, b) => b.date.localeCompare(a.date)).map(r => r.systemType)));
+  const [chartSystemChoice, setChartSystemChoice] = useState<HydroWaterRecord['systemType'] | null>(null);
+  const chartSystem = chartSystemChoice && chartSystems.includes(chartSystemChoice) ? chartSystemChoice : chartSystems[0];
+  const chartRecords = hydroRecords.filter(r => r.systemType === chartSystem);
   const [formNotes, setFormNotes] = useState<string>('');
 
   const openAddModal = () => {
@@ -78,9 +93,10 @@ export const HydroIndoorGuide: React.FC<HydroIndoorGuideProps> = ({
       ph: Number(formPh),
       ecPpm: Number(formEc),
       waterTempF: Number(formTemp),
-      ammoniaPpm: formAmmonia !== '' ? Number(formAmmonia) : undefined,
-      nitritePpm: formNitrite !== '' ? Number(formNitrite) : undefined,
-      nitratePpm: formNitrate !== '' ? Number(formNitrate) : undefined,
+      // Nitrogen-cycle readings only apply to aquaponics (fish) systems
+      ammoniaPpm: formSystem === 'aquaponics' && formAmmonia !== '' ? Number(formAmmonia) : undefined,
+      nitritePpm: formSystem === 'aquaponics' && formNitrite !== '' ? Number(formNitrite) : undefined,
+      nitratePpm: formSystem === 'aquaponics' && formNitrate !== '' ? Number(formNitrate) : undefined,
       notes: formNotes.trim(),
     };
 
@@ -239,8 +255,18 @@ export const HydroIndoorGuide: React.FC<HydroIndoorGuideProps> = ({
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <span className="font-bold text-xs text-stone-900 dark:text-stone-100 flex items-center gap-1.5">
                   <Activity className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                  Reservoir Parameter Trends ({hydroRecords.length} Readings)
+                  Reservoir Trends ({chartRecords.length} {SYSTEM_LABELS[chartSystem] || chartSystem} reading{chartRecords.length === 1 ? '' : 's'})
                 </span>
+                {chartSystems.length > 1 && (
+                  <select
+                    aria-label="System to chart"
+                    value={chartSystem}
+                    onChange={e => setChartSystemChoice(e.target.value as HydroWaterRecord['systemType'])}
+                    className="text-xs px-2 py-1 border border-stone-300 dark:border-[#223d2e] rounded-lg bg-white dark:bg-[#182c20]"
+                  >
+                    {chartSystems.map(sys => <option key={sys} value={sys}>{SYSTEM_LABELS[sys] || sys}</option>)}
+                  </select>
+                )}
                 <div className="flex items-center gap-4 text-[11px] font-mono">
                   <div className="flex items-center gap-1.5">
                     <span className="w-3 h-3 rounded-full bg-emerald-500 inline-block" />
@@ -254,10 +280,11 @@ export const HydroIndoorGuide: React.FC<HydroIndoorGuideProps> = ({
               </div>
 
               {/* Responsive SVG Chart */}
-              <div className="w-full overflow-x-auto">
+              <div className="w-full overflow-x-auto" tabIndex={0} role="region" aria-label="pH and EC trend chart (scrolls sideways)">
                 <div className="min-w-[500px] h-44 relative bg-stone-50 dark:bg-[#0e1a12] rounded-xl p-3 border border-stone-100 dark:border-[#1a3324]">
                   {(() => {
-                    const sorted = [...hydroRecords].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()).slice(-10);
+                    // One system at a time: different systems run different pH/EC targets
+                    const sorted = [...chartRecords].sort((a, b) => a.date.localeCompare(b.date)).slice(-10);
                     const width = 500;
                     const height = 140;
                     const padding = { top: 20, right: 40, bottom: 25, left: 40 };
@@ -681,6 +708,7 @@ export const HydroIndoorGuide: React.FC<HydroIndoorGuideProps> = ({
       {/* Log / Edit Water Reading Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+          <DialogBehavior onClose={() => setIsModalOpen(false)} />
           <div className="bg-white dark:bg-[#112117] border border-stone-200 dark:border-[#223d2e] rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl space-y-4 p-6 text-xs">
             <div className="flex items-center justify-between border-b border-stone-200 dark:border-[#223d2e] pb-3">
               <h3 className="font-bold text-sm text-[#183a24] dark:text-white font-serif-botanical">

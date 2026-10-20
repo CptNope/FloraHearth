@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { DialogBehavior } from './DialogBehavior';
 import { X, HelpCircle, ChevronRight, RefreshCw } from 'lucide-react';
 
 interface TroubleshooterModalProps {
@@ -121,6 +122,7 @@ export const TroubleshooterModal: React.FC<TroubleshooterModalProps> = ({ isOpen
       aria-modal="true"
       aria-labelledby="troubleshooter-modal-title"
     >
+      <DialogBehavior onClose={onClose} />
       <div className="bg-[#fcfcf9] dark:bg-[#0e1912] border border-stone-300 dark:border-[#223d2e] rounded-2xl w-full max-w-xl overflow-hidden shadow-2xl flex flex-col my-8 max-h-[90vh]">
         {/* Header */}
         <div className="bg-[#1c3a27] dark:bg-[#14301f] text-white px-6 py-4 flex items-center justify-between">

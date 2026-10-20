@@ -106,6 +106,15 @@ export function getAltitudeAdjustedCanningTime(baseTimeMin: number, elevationFt:
   return baseTimeMin + 15;
 }
 
+/**
+ * Weighted-gauge canners only have 5/10/15 lb weights, so low-acid foods use
+ * 10 lb at or below 1,000 ft and 15 lb above (USDA Complete Guide).
+ */
+export function getWeightedGaugePsi(elevationFt: number): 10 | 15 {
+  return elevationFt <= 1000 ? 10 : 15;
+}
+
+/** Dial-gauge pressure for low-acid foods by altitude (USDA Complete Guide). */
 export function getAltitudeAdjustedPressurePsi(dialBasePsi: number, elevationFt: number): number {
   if (elevationFt <= 2000) return dialBasePsi;
   if (elevationFt <= 4000) return dialBasePsi + 1;

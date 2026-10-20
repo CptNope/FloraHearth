@@ -123,7 +123,12 @@ export interface Crop {
   companionNotes: string;
   harvestGuidance: string;
   curingGuidance?: string;
-  preservationMethods: ('freezing' | 'dehydration' | 'water-bath-canning' | 'pressure-canning' | 'fermentation' | 'cold-storage')[];
+  /**
+   * water-bath-canning: tested high-acid process (fruit; tomatoes with added acid)
+   * pickling: safe canned ONLY as a tested pickle/relish/salsa recipe (USDA Guide 6)
+   * pressure-canning: a tested USDA pressure process exists for this crop
+   */
+  preservationMethods: ('freezing' | 'dehydration' | 'water-bath-canning' | 'pickling' | 'pressure-canning' | 'fermentation' | 'cold-storage')[];
   pestVulnerabilities: string[];
   pollinationType: 'self' | 'insect' | 'wind';
   iconEmoji: string;

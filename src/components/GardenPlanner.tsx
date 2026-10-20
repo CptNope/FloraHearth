@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { DialogBehavior } from './DialogBehavior';
 import { buildBedTasks, mergeBedTasks } from '../services/bedSchedule';
 import { GardenSpace, GridCell, Crop, PlantFamily, GrowingMethod, SunlightLevel, GardenLocation, GardenTask, BedSeasonRecord } from '../types/garden';
 import { CROPS_DATA, getCropById } from '../data/cropsData';
@@ -49,7 +50,8 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
 
   // Season history & sync feedback state
   const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false);
-  const [archiveSeasonName, setArchiveSeasonName] = useState(`Spring ${new Date().getFullYear() - 1}`);
+  const [archiveSeasonName, setArchiveSeasonName] = useState(`${new Date().getMonth() >= 6 ? 'Summer' : 'Spring'} ${new Date().getFullYear()}`);
+  const [archiveClearsBed, setArchiveClearsBed] = useState(true);
   const [isHistoryDrawerOpen, setIsHistoryDrawerOpen] = useState(false);
   const [syncFeedback, setSyncFeedback] = useState<string | null>(null);
 
@@ -170,13 +172,16 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
 
     const newHistoryRecord: BedSeasonRecord = {
       season: archiveSeasonName.trim(),
-      year: new Date().getFullYear(),
+      // Use the year in the season name ("Fall 2024"), else the current year
+      year: Number(archiveSeasonName.match(/\b(19|20)\d{2}\b/)?.[0]) || new Date().getFullYear(),
       crops: pastCrops,
     };
 
     const updatedSpace: GardenSpace = {
       ...currentSpace,
       seasonHistory: [...(currentSpace.seasonHistory || []), newHistoryRecord],
+      // Start the next season with an empty grid unless the user keeps the layout
+      cells: archiveClearsBed ? currentSpace.cells.map(c => ({ x: c.x, y: c.y, cropId: null })) : currentSpace.cells,
     };
 
     onUpdateSpaces(spaces.map(s => s.id === updatedSpace.id ? updatedSpace : s));
@@ -235,28 +240,33 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
       });
     });
 
-    // Multi-Season Crop Rotation Checks
+    // Multi-Season Crop Rotation Checks: a family should not return to the
+    // same bed until its rotation interval has passed (3 yr for nightshades and
+    // alliums, 2 yr for brassicas and cucurbits).
     if (currentSpace.seasonHistory && currentSpace.seasonHistory.length > 0) {
       const activeFamilies = Object.keys(familyCount) as PlantFamily[];
-
-      currentSpace.seasonHistory.forEach(pastRecord => {
-        pastRecord.crops.forEach(pastCrop => {
-          if (activeFamilies.includes(pastCrop.family)) {
-            if (pastCrop.family === 'Solanaceae') {
-              const warning = `Solanaceae (Nightshades) grew here in ${pastRecord.season}. 3-year minimum rotation recommended to prevent soil-borne Fusarium, Verticillium & root-knot nematodes.`;
-              if (!rotationWarnings.includes(warning)) rotationWarnings.push(warning);
-            } else if (pastCrop.family === 'Brassicaceae') {
-              const warning = `Brassicaceae (Brassicas) grew here in ${pastRecord.season}. 2-year rotation recommended to prevent clubroot and cabbage root maggots.`;
-              if (!rotationWarnings.includes(warning)) rotationWarnings.push(warning);
-            } else if (pastCrop.family === 'Alliaceae') {
-              const warning = `Alliaceae (Alliums) grew here in ${pastRecord.season}. 3-year rotation prevents persistent white rot fungal sclerotia.`;
-              if (!rotationWarnings.includes(warning)) rotationWarnings.push(warning);
-            } else if (pastCrop.family === 'Cucurbitaceae') {
-              const warning = `Cucurbitaceae (Cucurbits) grew here in ${pastRecord.season}. 2-year rotation recommended to avoid overwintering squash vine borer pupae and bacterial wilt.`;
-              if (!rotationWarnings.includes(warning)) rotationWarnings.push(warning);
-            }
-          }
-        });
+      const thisYear = new Date().getFullYear();
+      const RULES: Partial<Record<PlantFamily, { years: number; label: string; why: string }>> = {
+        Solanaceae: { years: 3, label: 'Solanaceae (nightshades)', why: 'soil-borne Fusarium, Verticillium and root-knot nematodes' },
+        Alliaceae: { years: 3, label: 'Alliaceae (alliums)', why: 'persistent white rot sclerotia' },
+        Brassicaceae: { years: 2, label: 'Brassicaceae (brassicas)', why: 'clubroot and cabbage root maggots' },
+        Cucurbitaceae: { years: 2, label: 'Cucurbitaceae (cucurbits)', why: 'overwintering squash vine borers and bacterial wilt' },
+      };
+      // Most recent season each family grew here
+      const lastGrown = new Map<PlantFamily, BedSeasonRecord>();
+      currentSpace.seasonHistory.forEach(rec => rec.crops.forEach(c => {
+        const prev = lastGrown.get(c.family);
+        if (!prev || rec.year > prev.year) lastGrown.set(c.family, rec);
+      }));
+      lastGrown.forEach((rec, family) => {
+        const rule = RULES[family];
+        if (!rule || !activeFamilies.includes(family)) return;
+        const yearsAgo = thisYear - rec.year;
+        if (yearsAgo >= rule.years) return;
+        const nextOk = rec.year + rule.years;
+        rotationWarnings.push(
+          `${rule.label} grew here in ${rec.season}. A ${rule.years}-year rotation is recommended to avoid ${rule.why}; this bed is clear for them from ${nextOk}.`
+        );
       });
     }
 
@@ -614,6 +624,7 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
       {/* Modal for Creating New Space */}
       {isCreatingSpace && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+          <DialogBehavior onClose={() => setIsCreatingSpace(false)} />
           <form
             onSubmit={handleCreateSpace}
             className="bg-white dark:bg-[#112117] border border-stone-200 dark:border-[#223d2e] rounded-2xl p-6 w-full max-w-md shadow-2xl space-y-4 text-xs"
@@ -695,6 +706,7 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
       {/* Modal for Archiving Season Layout */}
       {isArchiveModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+          <DialogBehavior onClose={() => setIsArchiveModalOpen(false)} />
           <form
             onSubmit={handleArchiveCurrentSeason}
             className="bg-white dark:bg-[#112117] border border-stone-200 dark:border-[#223d2e] rounded-2xl p-6 w-full max-w-sm shadow-2xl space-y-4 text-xs"
@@ -723,7 +735,18 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
                 placeholder="e.g. Spring 2025, Fall 2024"
                 className="w-full px-3 py-2 border border-stone-300 dark:border-[#223d2e] dark:bg-[#182c20] rounded-xl text-xs font-mono"
               />
+              <p className="mt-1 text-[11px] text-stone-600 dark:text-stone-300">Include the year: rotation advice counts years from it.</p>
             </div>
+
+            <label className="flex items-start gap-2 text-stone-700 dark:text-stone-200">
+              <input
+                type="checkbox"
+                checked={archiveClearsBed}
+                onChange={e => setArchiveClearsBed(e.target.checked)}
+                className="mt-0.5 accent-emerald-700"
+              />
+              <span>Clear the bed after saving, ready to plan the next season</span>
+            </label>
 
             <div className="flex justify-end gap-2 pt-2 border-t border-stone-200 dark:border-[#223d2e]">
               <button

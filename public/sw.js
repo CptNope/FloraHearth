@@ -1,5 +1,5 @@
 // FloraHearth Service Worker - Version Controlled Cache
-const APP_VERSION = 'v2.6.0';
+const APP_VERSION = 'v2.7.0';
 const CACHE_NAME = `florahearth-static-${APP_VERSION}`;
 const DATA_CACHE_NAME = `florahearth-data-${APP_VERSION}`;
 
@@ -11,7 +11,9 @@ const PRECACHE_ASSETS = [
   './apple-touch-icon.png',
   './pwa-192x192.png',
   './pwa-512x512.png',
-  './pwa-maskable-512x512.png'
+  './pwa-maskable-512x512.png',
+  // Hashed JS/CSS chunks, filled in at build time by vite.config.ts
+/* __BUILD_ASSETS__ */
 ];
 
 // Install: precache foundational shell

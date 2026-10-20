@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { DialogBehavior } from './DialogBehavior';
+import { getPlantingSuggestions } from '../services/bedSchedule';
 import { Crop, SeedPacket, GardenLocation } from '../types/garden';
 import { CROPS_DATA, getCropById } from '../data/cropsData';
 import {
@@ -136,23 +138,12 @@ export const CropLibrary: React.FC<CropLibraryProps> = ({
     };
   };
 
-  // Check if a crop can be planted now (current season)
+  // A crop is plantable now if one of its seed-start, transplant or sowing
+  // windows (from the user's frost dates) includes today
   const isPlantableNow = (cropId: string) => {
     const crop = getCropById(cropId);
     if (!crop || !location) return false;
-    // Current month (1-12)
-    const currentMonth = new Date().getMonth() + 1;
-    // Fall planting in autumn (months 8-10) or spring planting in months 2-6
-    if (crop.plantingTiming.fallPlantingWeeksBeforeFirstFrost && (currentMonth >= 8 && currentMonth <= 10)) {
-      return true;
-    }
-    if (location.isMildWinter && crop.plantingTiming.overwinteringSafe && (currentMonth >= 9 || currentMonth <= 3)) {
-      return true;
-    }
-    if (currentMonth >= 2 && currentMonth <= 6) {
-      return true;
-    }
-    return false;
+    return getPlantingSuggestions([crop], location, 1).some(sug => sug.isNow);
   };
 
   const openAddSeedModal = () => {
@@ -222,7 +213,7 @@ export const CropLibrary: React.FC<CropLibraryProps> = ({
             Horticultural Crop Library &amp; Seed Stash
           </h2>
           <p className="text-xs text-stone-600 dark:text-stone-300 mt-1">
-            Browse 70+ vegetable and herb guides, audit packet germination viability, and discover what you can plant right now with seeds you already own.
+            Browse {CROPS_DATA.length} vegetable, fruit and herb guides, audit packet germination viability, and discover what you can plant right now with seeds you already own.
           </p>
         </div>
 
@@ -237,7 +228,7 @@ export const CropLibrary: React.FC<CropLibraryProps> = ({
             }`}
           >
             <BookOpen className="w-3.5 h-3.5 text-emerald-700 dark:text-emerald-400" />
-            <span>Crop Guides (70+)</span>
+            <span>Crop Guides ({CROPS_DATA.length})</span>
           </button>
           <button
             type="button"
@@ -483,6 +474,7 @@ export const CropLibrary: React.FC<CropLibraryProps> = ({
       {/* Add / Edit Seed Modal */}
       {isSeedModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+          <DialogBehavior onClose={() => setIsSeedModalOpen(false)} />
           <div className="bg-white dark:bg-[#112117] border border-stone-200 dark:border-[#223d2e] rounded-2xl w-full max-w-md p-6 text-xs space-y-4 shadow-2xl">
             <div className="flex items-center justify-between border-b border-stone-200 dark:border-[#223d2e] pb-3">
               <h3 className="font-bold text-sm text-[#183a24] dark:text-white font-serif-botanical">
@@ -609,6 +601,7 @@ export const CropLibrary: React.FC<CropLibraryProps> = ({
       {/* Active Crop Detail Modal */}
       {activeCropDetail && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+          <DialogBehavior onClose={() => setActiveCropDetail(null)} />
           <div className="bg-white dark:bg-[#112117] border border-stone-200 dark:border-[#223d2e] rounded-2xl w-full max-w-lg p-6 text-xs space-y-4 max-h-[90vh] overflow-y-auto shadow-2xl">
             <div className="flex items-center justify-between border-b border-stone-200 dark:border-[#223d2e] pb-3">
               <div className="flex items-center gap-2">

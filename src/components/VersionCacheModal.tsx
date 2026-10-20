@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { DialogBehavior } from './DialogBehavior';
 import {
   APP_VERSION,
   BUILD_DATE,
@@ -131,6 +132,7 @@ export const VersionCacheModal: React.FC<VersionCacheModalProps> = ({
       aria-modal="true"
       aria-labelledby="version-modal-title"
     >
+      <DialogBehavior onClose={onClose} />
       <div className="bg-white dark:bg-[#111e16] text-stone-800 dark:text-[#ecfdf5] border border-stone-200 dark:border-[#243d2f] rounded-2xl w-full max-w-xl overflow-hidden shadow-2xl flex flex-col my-8 max-h-[92vh] transition-colors">
         {/* Header */}
         <div className="bg-[#f5f8f5] dark:bg-[#16271d] px-6 py-4 border-b border-[#d6e2d8] dark:border-[#243d2f] flex items-center justify-between">

@@ -114,12 +114,12 @@ export const CompanionEcology: React.FC = () => {
                 />
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <select
                   value={filterType}
                   onChange={e => setFilterType(e.target.value)}
                   aria-label="Filter companion combinations by relationship type"
-                  className="text-xs p-2 border border-stone-200 rounded-xl bg-stone-50"
+                  className="text-xs p-2 border border-stone-200 rounded-xl bg-stone-50 max-w-full min-w-0"
                 >
                   <option value="all">All Combinations</option>
                   <option value="beneficial">Beneficial Synergies Only</option>
@@ -130,7 +130,7 @@ export const CompanionEcology: React.FC = () => {
                   value={filterEvidence}
                   onChange={e => setFilterEvidence(e.target.value)}
                   aria-label="Filter companion pairs by scientific evidence level"
-                  className="text-xs p-2 border border-stone-200 rounded-xl bg-stone-50"
+                  className="text-xs p-2 border border-stone-200 rounded-xl bg-stone-50 max-w-full min-w-0"
                 >
                   <option value="all">All Evidence Levels</option>
                   <option value="peer-reviewed">High (Peer-Reviewed)</option>

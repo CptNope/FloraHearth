@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { GardenLocation, GardenSpace, GardenTask } from '../types/garden';
 import { getTenderCropsByBed } from '../services/frostTender';
+import { ForecastStatusNotice } from './ForecastStatusNotice';
 import {
   WeatherAlmanacData,
   WeatherLoreItem,
@@ -230,6 +231,8 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-12">
+      <ForecastStatusNotice data={data} onRetry={() => loadData(true)} />
+
       {/* 1. STATION HEADER & LOCATION CONTROLS */}
       <div className="bg-white dark:bg-[#112217] rounded-3xl p-5 sm:p-6 border border-stone-200 dark:border-[rgba(255,255,255,0.08)] shadow-xs transition-colors">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -581,6 +584,8 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
                     className={`p-2 rounded-xl ${
                       indices.frostWarning.level === 'none'
                         ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400'
+                        : indices.frostWarning.level === 'unknown'
+                        ? 'bg-amber-500/15 text-amber-800 dark:text-amber-300'
                         : 'bg-rose-500/20 text-rose-700 dark:text-rose-400'
                     }`}
                   >
@@ -591,7 +596,9 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
                       Frost &amp; Freeze Shield
                     </h4>
                     <span className="text-[11px] text-stone-500 font-mono">
-                      Tonight: {Math.round(indices.frostWarning.tonightMinTemp)}°F Low
+                      {indices.frostWarning.level === 'unknown'
+                        ? 'Tonight: no live forecast'
+                        : `Tonight: ${Math.round(indices.frostWarning.tonightMinTemp)}°F Low`}
                     </span>
                   </div>
                 </div>
@@ -601,6 +608,8 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
                       ? 'bg-rose-100 text-rose-900 border-rose-300 dark:bg-rose-900/60 dark:text-rose-200 dark:border-rose-700'
                       : indices.frostWarning.level === 'watch'
                       ? 'bg-amber-100 text-amber-900 border-amber-300 dark:bg-amber-900/60 dark:text-amber-200 dark:border-amber-700'
+                      : indices.frostWarning.level === 'unknown'
+                      ? 'bg-amber-100 text-amber-950 border-amber-300 dark:bg-amber-900/60 dark:text-amber-100 dark:border-amber-700'
                       : 'bg-emerald-100 text-emerald-900 border-emerald-300 dark:bg-emerald-900/40 dark:text-emerald-200 dark:border-emerald-700'
                   }`}
                 >
@@ -621,7 +630,7 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
                 </p>
 
                 {/* Weather -> Task Automation: only on a real frost or freeze-watch night */}
-                {indices.frostWarning.level !== 'none' && !data?.isMockOrFallback && (frostTenderCropsInBeds.length > 0 ? (
+                {indices.frostWarning.level !== 'none' && indices.frostWarning.level !== 'unknown' && !data?.isMockOrFallback && (frostTenderCropsInBeds.length > 0 ? (
                   <div className="pt-2 border-t border-rose-200/50 dark:border-rose-900/40 space-y-2">
                     <span className="text-[11px] font-bold text-rose-950 dark:text-rose-200 flex items-center gap-1.5">
                       <ShieldAlert className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />

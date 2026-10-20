@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { ForecastStatusNotice, forecastSourceLabel } from './ForecastStatusNotice';
 import { GardenLocation, GardenSpace, GardenTask, PantryItem } from '../types/garden';
 import { CROPS_DATA } from '../data/cropsData';
+import { getPlantingSuggestions } from '../services/bedSchedule';
 import {
   Sun,
   Moon,
@@ -62,11 +64,11 @@ export const Dashboard: React.FC<DashboardProps> = ({
     };
   }, [location.city, location.state, location.zipCode, location.latitude, location.longitude]);
 
-  // Determine what to plant now:
-  // In spring (Feb-May): cool season direct seeds & warm season indoor starts
-  // In summer (Jun-Aug): warm transplants, succession beans/squash, fall brassica seeds
-  // In fall (Sep-Nov): garlic, radishes, spinach, overwinter greens
-  const plantNowSuggestions = CROPS_DATA.slice(0, 4);
+  // What can actually be planted now, from each crop's timing and the user's frost dates
+  const plantNowSuggestions = getPlantingSuggestions(CROPS_DATA, location, 4);
+  const plantingNow = plantNowSuggestions.some(s => s.isNow);
+  const stepVerb = { 'seed-start': 'Start indoors', transplant: 'Transplant', 'direct-sow': 'Sow or plant' } as const;
+  const shortDate = (d: Date) => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
   const pendingTasks = (tasks || []).filter(t => !t.completed).slice(0, 4);
 
@@ -130,7 +132,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 Live Weather &amp; Farmer&apos;s Almanac Guide
               </h3>
               <p className="text-[11px] text-stone-500 dark:text-stone-400 font-mono">
-                {location.city}, {location.state} · Synchronized with Open-Meteo &amp; Lunar Calendar
+                {location.city}, {location.state} · {forecastSourceLabel(weatherData)}
               </p>
             </div>
           </div>
@@ -145,6 +147,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
           </button>
         </div>
 
+        <ForecastStatusNotice data={weatherData} />
+
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
           {/* Current Weather Snapshot (5 cols) */}
           <div className="md:col-span-5 flex items-center gap-4 p-3.5 bg-stone-50 dark:bg-[#172d1f] rounded-2xl border border-stone-200/80 dark:border-white/5">
@@ -154,23 +158,25 @@ export const Dashboard: React.FC<DashboardProps> = ({
             <div>
               <div className="flex items-baseline gap-2">
                 <span className="text-3xl font-extrabold text-[#112217] dark:text-[#f0fdf4] font-serif-botanical">
-                  {weatherData?.current.tempF ?? 68}°F
+                  {weatherData ? `${weatherData.current.tempF}°F` : '--'}
                 </span>
                 <span className="text-xs text-stone-500 dark:text-stone-400">
-                  {weatherData?.current.weatherDesc || 'Partly Sunny & Mild'}
+                  {weatherData?.current.weatherDesc || 'Loading…'}
                 </span>
               </div>
               <div className="flex items-center gap-2 text-[11px] font-mono text-stone-500 dark:text-stone-400 mt-0.5">
-                <span>Soil: {weatherData?.indices.soilGermination.soilTempF ?? 62}°F</span>
+                <span>Soil: {weatherData ? `${Math.round(weatherData.indices.soilGermination.soilTempF)}°F` : '--'}</span>
                 <span>·</span>
                 <span
                   className={
-                    weatherData?.indices.frostWarning.level !== 'none'
-                      ? 'text-rose-600 dark:text-rose-400 font-bold'
-                      : 'text-emerald-700 dark:text-emerald-400 font-bold'
+                    !weatherData || weatherData.indices.frostWarning.level === 'unknown'
+                      ? 'text-amber-800 dark:text-amber-300 font-bold'
+                      : weatherData.indices.frostWarning.level !== 'none'
+                      ? 'text-rose-700 dark:text-rose-400 font-bold'
+                      : 'text-emerald-800 dark:text-emerald-400 font-bold'
                   }
                 >
-                  {weatherData?.indices.frostWarning.badge || 'No Frost Expected'}
+                  {weatherData ? weatherData.indices.frostWarning.badge : 'Checking frost outlook…'}
                 </span>
               </div>
             </div>
@@ -234,10 +240,12 @@ export const Dashboard: React.FC<DashboardProps> = ({
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="font-bold text-base text-[#183a24] font-serif-botanical">
-                  What to Plant Now in Your Climate
+                  {plantingNow ? 'What to Plant Now in Your Climate' : 'Coming Up Next in Your Climate'}
                 </h3>
                 <p className="text-xs text-stone-500">
-                  Top performing crops tailored to your frost window and season length.
+                  {plantingNow
+                    ? `Planting windows open today for your frost dates (${location.lastSpringFrost} / ${location.firstFallFrost}).`
+                    : 'Nothing is in its planting window right now. These are the next windows to open.'}
                 </p>
               </div>
               <button
@@ -250,30 +258,32 @@ export const Dashboard: React.FC<DashboardProps> = ({
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {plantNowSuggestions.map(crop => (
-                <div
+              {plantNowSuggestions.map(({ crop, kind, window, isNow }) => (
+                <button
+                  type="button"
                   key={crop.id}
                   onClick={() => onNavigate('crops')}
-                  className="p-3 rounded-xl border border-stone-200 hover:border-emerald-500 hover:bg-[#fafbf9] transition-all cursor-pointer flex items-center justify-between group"
+                  aria-label={`${crop.name.split('(')[0].trim()}: ${stepVerb[kind]} ${isNow ? 'now, until' : 'from'} ${shortDate(isNow ? window.end : window.start)}. Open crop guides.`}
+                  className="text-left p-3 rounded-xl border border-stone-200 hover:border-emerald-500 hover:bg-[#fafbf9] transition-all cursor-pointer flex items-center justify-between group"
                 >
                   <div className="flex items-center gap-3">
-                    <span className="text-2xl p-2 bg-[#f4f7f4] rounded-xl group-hover:scale-105 transition-transform">
+                    <span className="text-2xl p-2 bg-[#f4f7f4] rounded-xl group-hover:scale-105 transition-transform" aria-hidden="true">
                       {crop.iconEmoji}
                     </span>
                     <div>
                       <h4 className="font-bold text-xs text-stone-900 group-hover:text-emerald-900">
                         {crop.name.split('(')[0]}
                       </h4>
-                      <p className="text-[11px] text-stone-500">
-                        {crop.sfgPerSquare}/sq ft · {crop.daysToMaturityRange[0]}-{crop.daysToMaturityRange[1]}d
+                      <p className="text-[11px] text-stone-600">
+                        {stepVerb[kind]} {isNow ? `now – ${shortDate(window.end)}` : `from ${shortDate(window.start)}`}
                       </p>
                     </div>
                   </div>
 
-                  <span className="text-[11px] font-semibold text-emerald-800 group-hover:underline">
+                  <span className="text-[11px] font-semibold text-emerald-800 group-hover:underline" aria-hidden="true">
                     View Guide
                   </span>
-                </div>
+                </button>
               ))}
             </div>
           </div>

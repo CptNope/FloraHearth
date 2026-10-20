@@ -749,7 +749,7 @@ export async function fetchWeatherAndAlmanac(
           // Recompute dynamic moon info for current exact moment
           cached.data.lunar = getLunarPlantingInfo(new Date());
           cached.data.dailyLore = getLoreOfTheDay(new Date());
-          return cached.data;
+          return { ...cached.data, forecastStatus: cached.data.isMockOrFallback ? 'estimate' : 'live' };
         }
       }
     } catch {
@@ -932,6 +932,7 @@ export async function fetchWeatherAndAlmanac(
       dailyLore,
       fetchedAt: new Date().toISOString(),
       isMockOrFallback: false,
+      forecastStatus: 'live',
     };
 
     // Save to Cache
@@ -951,8 +952,36 @@ export async function fetchWeatherAndAlmanac(
 
     return result;
   } catch (err) {
-    console.warn('Open-Meteo live request failed, generating fallback seasonal data:', err);
+    console.warn('Open-Meteo live request failed:', err);
+    const lastLive = readSameDayCachedForecast(coords);
+    if (lastLive) return lastLive;
     return generateFallbackAlmanacData(location, coords);
+  }
+}
+
+/**
+ * When the weather service can't be reached, today's last live forecast (up to
+ * 12 hours old, same local date, same area) is far more useful than an estimate.
+ */
+function readSameDayCachedForecast(coords: { lat: number; lng: number }): WeatherAlmanacData | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const cachedStr = localStorage.getItem(CACHE_STORAGE_KEY);
+    if (!cachedStr) return null;
+    const cached: StoredCache = JSON.parse(cachedStr);
+    if (cached.data.isMockOrFallback) return null;
+    const ageMs = Date.now() - cached.timestamp;
+    const sameArea = Math.abs(cached.lat - coords.lat) < 0.1 && Math.abs(cached.lng - coords.lng) < 0.1;
+    const sameDay = localDateStr(new Date(cached.timestamp)) === localDateStr();
+    if (!sameArea || !sameDay || ageMs > 12 * 60 * 60 * 1000) return null;
+    return {
+      ...cached.data,
+      lunar: getLunarPlantingInfo(new Date()),
+      dailyLore: getLoreOfTheDay(new Date()),
+      forecastStatus: 'cached',
+    };
+  } catch {
+    return null;
   }
 }
 
@@ -1065,6 +1094,18 @@ function generateFallbackAlmanacData(
     daily
   );
 
+  // Seasonal estimates must never read as an all-clear for frost.
+  indices.frostWarning = {
+    level: 'unknown',
+    badge: 'Frost outlook unavailable',
+    headline: 'No live forecast',
+    details:
+      'FloraHearth could not reach the weather service, so the temperatures shown are seasonal estimates for your zone, not a forecast for tonight.',
+    actionAdvice:
+      'Check a local forecast (for example weather.gov) before leaving tender plants uncovered tonight.',
+    tonightMinTemp: indices.frostWarning.tonightMinTemp,
+  };
+
   return {
     locationName: coords.name,
     latitude: coords.lat,
@@ -1079,5 +1120,6 @@ function generateFallbackAlmanacData(
     dailyLore: getLoreOfTheDay(now),
     fetchedAt: now.toISOString(),
     isMockOrFallback: true,
+    forecastStatus: 'estimate',
   };
 }

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { DialogBehavior } from './DialogBehavior';
 import { GardenLocation, UserPreferences, GrowingMethod, SunlightLevel, SoilType, WaterAccess } from '../types/garden';
 import { lookupLocation, US_REGIONAL_CLIMATES } from '../data/usClimates';
 import { CROPS_DATA } from '../data/cropsData';
@@ -112,6 +113,7 @@ export const SetupModal: React.FC<SetupModalProps> = ({
       aria-modal="true"
       aria-labelledby="setup-modal-title"
     >
+      <DialogBehavior onClose={onClose} />
       <div className="bg-[#fcfcf9] dark:bg-[#0e1912] border border-[#d6ddd6] dark:border-[#223d2e] rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl flex flex-col my-8 max-h-[90vh]">
         {/* Modal Header */}
         <div className="bg-[#1c3a27] dark:bg-[#14301f] text-white px-6 py-5 flex items-center justify-between">

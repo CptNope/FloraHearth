@@ -24,10 +24,11 @@ export const PANTRY_DEFAULTS: Record<CropPreservationMethod, PantryDefaults> = {
   'fermentation': { preservationType: 'fermented', unit: 'quart jars', storageLocation: 'Crisper', lbsPerUnit: 2, shelfLifeMonths: 6, label: 'Ferment' },
   'cold-storage': { preservationType: 'cured-storage', unit: 'lbs', storageLocation: 'Root Cellar', lbsPerUnit: 1, shelfLifeMonths: 4, label: 'Cold store' },
   'water-bath-canning': { preservationType: 'water-bath-canned', unit: 'quart jars', storageLocation: 'Pantry Shelf', lbsPerUnit: 2.5, shelfLifeMonths: 12, label: 'Water-bath can' },
+  'pickling': { preservationType: 'water-bath-canned', unit: 'pint jars', storageLocation: 'Pantry Shelf', lbsPerUnit: 1.5, shelfLifeMonths: 12, label: 'Pickle' },
   'pressure-canning': { preservationType: 'pressure-canned', unit: 'quart jars', storageLocation: 'Pantry Shelf', lbsPerUnit: 2.5, shelfLifeMonths: 12, label: 'Pressure can' },
 };
 
-const CANNING_METHODS: CropPreservationMethod[] = ['water-bath-canning', 'pressure-canning'];
+const CANNING_METHODS: CropPreservationMethod[] = ['water-bath-canning', 'pickling', 'pressure-canning'];
 
 export function isCanningMethod(method: CropPreservationMethod): boolean {
   return CANNING_METHODS.includes(method);
