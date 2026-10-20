@@ -488,8 +488,8 @@ export const SetupModal: React.FC<SetupModalProps> = ({
                       >
                         <span className="text-xl shrink-0">{crop.iconEmoji}</span>
                         <div className="overflow-hidden">
-                          <div className="text-xs truncate font-medium">{crop.name.split('(')[0]}</div>
-                          <div className="text-[10px] text-stone-500 truncate">{crop.difficulty} · {crop.sfgPerSquare}/sq ft</div>
+                          <div className="text-xs break-words font-medium">{crop.name.split('(')[0]}</div>
+                          <div className="text-[10px] text-stone-500 break-words">{crop.difficulty} · {crop.sfgPerSquare}/sq ft</div>
                         </div>
                         {isSelected && <Check className="w-3.5 h-3.5 ml-auto text-emerald-700 shrink-0" />}
                       </button>

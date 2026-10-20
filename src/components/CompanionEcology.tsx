@@ -154,14 +154,15 @@ export const CompanionEcology: React.FC = () => {
                     pair.relationship === 'beneficial' ? 'border-emerald-200/80' : 'border-rose-200/80'
                   }`}
                 >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="text-2xl">{cropA?.iconEmoji || '🌱'}</span>
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1 min-w-0">
+                      <span className="text-2xl" aria-hidden="true">{cropA?.iconEmoji || '🌱'}</span>
                       <span className="font-bold text-stone-900">{cropA?.name.split('(')[0] || pair.cropA}</span>
-                      <span className="text-stone-400 font-bold">
+                      <span className="text-stone-400 font-bold" aria-hidden="true">
                         {pair.relationship === 'beneficial' ? '+' : '≠'}
                       </span>
-                      <span className="text-2xl">{cropB?.iconEmoji || '🌱'}</span>
+                      <span className="sr-only">{pair.relationship === 'beneficial' ? 'grows well with' : 'conflicts with'}</span>
+                      <span className="text-2xl" aria-hidden="true">{cropB?.iconEmoji || '🌱'}</span>
                       <span className="font-bold text-stone-900">{cropB?.name.split('(')[0] || pair.cropB}</span>
                     </div>
 

@@ -538,8 +538,8 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
                   >
                     <span className="text-xl shrink-0">{crop.iconEmoji}</span>
                     <div className="overflow-hidden">
-                      <div className="text-xs truncate">{crop.name.split('(')[0]}</div>
-                      <div className="text-[10px] text-stone-500 dark:text-stone-400 truncate font-mono">
+                      <div className="text-xs break-words">{crop.name.split('(')[0]}</div>
+                      <div className="text-[10px] text-stone-500 dark:text-stone-400 break-words font-mono">
                         {crop.sfgPerSquare} / sq ft
                       </div>
                     </div>

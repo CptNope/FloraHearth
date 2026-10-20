@@ -504,7 +504,7 @@ export const HydroIndoorGuide: React.FC<HydroIndoorGuideProps> = ({
                           <td className="py-3 px-4 text-[11px] font-mono text-stone-500 dark:text-stone-400">
                             {rec.ammoniaPpm !== undefined ? `${rec.ammoniaPpm} / ${rec.nitritePpm || 0} / ${rec.nitratePpm || 0}` : '—'}
                           </td>
-                          <td className="py-3 px-4 max-w-xs truncate text-[11px] text-stone-500 dark:text-stone-400">
+                          <td className="py-3 px-4 max-w-xs break-words text-[11px] text-stone-500 dark:text-stone-400">
                             {rec.notes || '—'}
                           </td>
                           <td className="py-3 px-4 text-right">

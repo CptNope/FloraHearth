@@ -150,7 +150,7 @@ export const PestSoilHealth: React.FC<PestSoilHealthProps> = ({
               <div key={guide.id} className="bg-white border border-stone-200 rounded-2xl p-5 shadow-xs space-y-3 text-xs">
                 <div className="flex items-start justify-between">
                   <div>
-                    <h3 className="font-bold text-sm text-[#183a24]">{guide.name}</h3>
+                    <h2 className="font-bold text-sm text-[#183a24]">{guide.name}</h2>
                     <span className="text-[11px] text-stone-500">
                       Affects: {guide.cropsAffected.join(', ')}
                     </span>
@@ -198,7 +198,7 @@ export const PestSoilHealth: React.FC<PestSoilHealthProps> = ({
           {ECOLOGICAL_INSECTS.map(ins => (
             <div key={ins.name} className="bg-white border border-stone-200 rounded-2xl p-5 shadow-xs space-y-3 text-xs">
               <div className="flex items-center justify-between">
-                <h3 className="font-bold text-sm text-[#183a24]">{ins.name}</h3>
+                <h2 className="font-bold text-sm text-[#183a24]">{ins.name}</h2>
                 <span className="px-2 py-0.5 bg-emerald-100 text-emerald-900 font-semibold rounded-md text-[10px] capitalize">
                   {ins.type.replace('-', ' ')}
                 </span>

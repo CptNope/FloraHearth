@@ -259,7 +259,7 @@ export const VersionCacheModal: React.FC<VersionCacheModalProps> = ({
             ) : null}
 
             {metrics && metrics.cacheNames.length > 0 && (
-              <div className="mt-2 text-[11px] text-stone-500 dark:text-stone-400 bg-stone-50 dark:bg-[#0f1c15] p-2 rounded-lg font-mono truncate border border-stone-200 dark:border-transparent">
+              <div className="mt-2 text-[11px] text-stone-500 dark:text-stone-400 bg-stone-50 dark:bg-[#0f1c15] p-2 rounded-lg font-mono break-all border border-stone-200 dark:border-transparent">
                 Active: {metrics.cacheNames.join(', ')}
               </div>
             )}

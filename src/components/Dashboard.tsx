@@ -380,7 +380,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
               {pendingTasks.map(task => (
                 <div key={task.id} className="p-2.5 rounded-xl border border-stone-200 bg-stone-50/50 text-xs space-y-1">
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-stone-800 truncate">{task.title}</span>
+                    <span className="font-bold text-stone-800 break-words">{task.title}</span>
                   </div>
                   <div className="flex items-center justify-between text-[10px] text-stone-500 font-mono">
                     <span>Due: {task.dueDate}</span>
@@ -410,7 +410,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
               {pantryItems.slice(0, 3).map(p => (
                 <div key={p.id} className="p-2.5 rounded-xl border border-stone-200 bg-[#fbfbfa] flex items-center justify-between">
                   <div>
-                    <h4 className="font-bold text-stone-900">{p.cropName}</h4>
+                    <h3 className="font-bold text-stone-900">{p.cropName}</h3>
                     <span className="text-[10px] text-stone-500">
                       {p.storageLocation} · Use by {p.bestByDate}
                     </span>

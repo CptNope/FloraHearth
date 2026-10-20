@@ -379,9 +379,9 @@ export const PantryTracker: React.FC<PantryTrackerProps> = ({
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div className="overflow-hidden">
-                        <h3 className="font-bold text-stone-900 dark:text-white text-sm leading-tight truncate">
+                        <h2 className="font-bold text-stone-900 dark:text-white text-sm leading-tight break-words">
                           {item.cropName}
-                        </h3>
+                        </h2>
                         <span className="text-[10px] text-stone-500 dark:text-stone-400 font-mono">
                           Prep: {item.datePrepared}
                         </span>

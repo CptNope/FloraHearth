@@ -155,7 +155,7 @@ export const PreservationTracker: React.FC<PreservationTrackerProps> = ({
                 <div key={guide.crop} className="bg-white border border-stone-200 rounded-2xl p-5 shadow-xs space-y-3 text-xs">
                   <div className="flex items-start justify-between">
                     <div>
-                      <h3 className="font-bold text-sm text-[#183a24]">{guide.crop}</h3>
+                      <h2 className="font-bold text-sm text-[#183a24]">{guide.crop}</h2>
                       <span className="text-[11px] text-stone-500">{guide.nchfpReference}</span>
                     </div>
                     <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${

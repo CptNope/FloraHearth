@@ -429,7 +429,7 @@ export default function App() {
       />
 
       {/* Main App Content Viewport */}
-      <main id="main-content" tabIndex={-1} role="main" aria-label="Garden and pantry main content" className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8 pb-24 lg:pb-8 outline-hidden">
+      <main id="main-content" tabIndex={-1} role="main" aria-label="Garden and pantry main content" className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8 pb-[calc(6rem+env(safe-area-inset-bottom))] lg:pb-8 outline-hidden">
         <Suspense fallback={<TabLoading />}>
         {activeTab === 'dashboard' && (
           <Dashboard
