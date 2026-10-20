@@ -59,6 +59,14 @@ const afterWindow = (anchor: Date, w: [number, number]): Window => ({
   end: addDays(anchor, w[1] * 7),
 });
 
+/** "4–6 weeks before your first fall frost" / "0–4 weeks after ..." / "from 1 week before to 2 weeks after ..." */
+const relativeToFrost = ([a, b]: [number, number], frostName: string): string => {
+  const wk = (n: number) => `${n} week${n === 1 ? '' : 's'}`;
+  if (a >= 0) return `${a}–${b} weeks before your ${frostName}`;
+  if (b <= 0) return `${-b}–${-a} weeks after your ${frostName}`;
+  return `from ${wk(b)} before to ${wk(-a)} after your ${frostName}`;
+};
+
 const fmt = (d: Date) => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 const windowText = (w: Window) =>
   localDateStr(w.start) === localDateStr(w.end) ? fmt(w.start) : `${fmt(w.start)} – ${fmt(w.end)}`;
@@ -118,7 +126,7 @@ function fallPlan(crop: Crop, location: GardenLocation, year: number): CropPlan 
     season: 'fall',
     year,
     steps: [
-      { kind: 'direct-sow', window: plant, note: `Plant for a fall crop ${windowText(plant)}, ${fall[0]}–${fall[1]} weeks before your first fall frost (${location.firstFallFrost}).${overwinter}` },
+      { kind: 'direct-sow', window: plant, note: `Plant for a fall crop ${windowText(plant)}, ${relativeToFrost(fall, 'first fall frost')} (${location.firstFallFrost}).${overwinter}` },
       harvestStep(crop, plant),
     ],
   };
@@ -213,4 +221,42 @@ export function mergeBedTasks(existing: GardenTask[], generated: GardenTask[]): 
   });
   const added = Array.from(byId.values());
   return { tasks: [...merged, ...added], added: added.length, updated };
+}
+
+export interface PlantingSuggestion {
+  crop: Crop;
+  kind: 'seed-start' | 'transplant' | 'direct-sow';
+  window: Window;
+  /** true if the window is open today; false means it's the next one coming up */
+  isNow: boolean;
+}
+
+/**
+ * Crops whose seed-start, transplant or sowing window is open today, for the
+ * user's frost dates. Beginner-friendly crops and windows closing soonest come
+ * first. If nothing can be planted now (deep winter), returns the soonest
+ * upcoming windows instead, flagged isNow = false.
+ */
+export function getPlantingSuggestions(crops: Crop[], location: GardenLocation, limit = 4, today: Date = new Date()): PlantingSuggestion[] {
+  const todayStart = parseLocalDate(localDateStr(today));
+  const all: PlantingSuggestion[] = [];
+  crops.forEach(crop => {
+    const plan = planCrop(crop, location, today);
+    if (!plan) return;
+    plan.steps.forEach(step => {
+      if (step.kind === 'harvest') return;
+      if (step.window.end < todayStart) return;
+      all.push({ crop, kind: step.kind, window: step.window, isNow: step.window.start <= todayStart });
+    });
+  });
+
+  const difficultyRank = (c: Crop) => (c.difficulty === 'Beginner Friendly' ? 0 : c.difficulty === 'Moderate' ? 1 : 2);
+  const now = all.filter(s => s.isNow)
+    .sort((a, b) => difficultyRank(a.crop) - difficultyRank(b.crop) || a.window.end.getTime() - b.window.end.getTime());
+  const pick = (list: PlantingSuggestion[]) => {
+    const seen = new Set<string>();
+    return list.filter(s => (seen.has(s.crop.id) ? false : (seen.add(s.crop.id), true))).slice(0, limit);
+  };
+  if (now.length > 0) return pick(now);
+  return pick(all.sort((a, b) => a.window.start.getTime() - b.window.start.getTime()));
 }

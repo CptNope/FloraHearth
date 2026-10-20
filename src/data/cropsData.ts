@@ -544,7 +544,7 @@ export const CROPS_DATA: Crop[] = [
     soilPhMin: 6.0,
     soilPhMax: 7.0,
     soilPreferences: 'Loose, high-organic matter loam; mulch heavily with 3-4 inches of clean straw after autumn planting',
-    daysToMaturityRange: [210, 260],
+    daysToMaturityRange: [260, 290],
     difficulty: 'Beginner Friendly',
     containerSuitable: true,
     containerMinGallons: 4,
@@ -556,7 +556,9 @@ export const CROPS_DATA: Crop[] = [
       details: 'Alliums (garlic, onions, chives, leeks) contain thiosulfate which damages red blood cells (hemolytic anemia) in dogs and cats. Keep pets away from harvested cloves and raw allium plants.'
     },
     plantingTiming: {
-      fallPlantingWeeksBeforeFirstFrost: [4, 6], // Planted in autumn, overwinters for summer harvest
+      // Plant 0-4 weeks AFTER the first fall frost (negative = after), e.g. October in
+      // Massachusetts per UMass Extension; overwinters for a July-August harvest.
+      fallPlantingWeeksBeforeFirstFrost: [-4, 0],
       overwinteringSafe: true
     },
     companions: ['tomato', 'peppers', 'carrots', 'spinach', 'roses'],

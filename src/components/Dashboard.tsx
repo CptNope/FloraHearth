@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ForecastStatusNotice, forecastSourceLabel } from './ForecastStatusNotice';
 import { GardenLocation, GardenSpace, GardenTask, PantryItem } from '../types/garden';
 import { CROPS_DATA } from '../data/cropsData';
+import { getPlantingSuggestions } from '../services/bedSchedule';
 import {
   Sun,
   Moon,
@@ -63,11 +64,11 @@ export const Dashboard: React.FC<DashboardProps> = ({
     };
   }, [location.city, location.state, location.zipCode, location.latitude, location.longitude]);
 
-  // Determine what to plant now:
-  // In spring (Feb-May): cool season direct seeds & warm season indoor starts
-  // In summer (Jun-Aug): warm transplants, succession beans/squash, fall brassica seeds
-  // In fall (Sep-Nov): garlic, radishes, spinach, overwinter greens
-  const plantNowSuggestions = CROPS_DATA.slice(0, 4);
+  // What can actually be planted now, from each crop's timing and the user's frost dates
+  const plantNowSuggestions = getPlantingSuggestions(CROPS_DATA, location, 4);
+  const plantingNow = plantNowSuggestions.some(s => s.isNow);
+  const stepVerb = { 'seed-start': 'Start indoors', transplant: 'Transplant', 'direct-sow': 'Sow or plant' } as const;
+  const shortDate = (d: Date) => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
   const pendingTasks = (tasks || []).filter(t => !t.completed).slice(0, 4);
 
@@ -239,10 +240,12 @@ export const Dashboard: React.FC<DashboardProps> = ({
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="font-bold text-base text-[#183a24] font-serif-botanical">
-                  What to Plant Now in Your Climate
+                  {plantingNow ? 'What to Plant Now in Your Climate' : 'Coming Up Next in Your Climate'}
                 </h3>
                 <p className="text-xs text-stone-500">
-                  Top performing crops tailored to your frost window and season length.
+                  {plantingNow
+                    ? `Planting windows open today for your frost dates (${location.lastSpringFrost} / ${location.firstFallFrost}).`
+                    : 'Nothing is in its planting window right now. These are the next windows to open.'}
                 </p>
               </div>
               <button
@@ -255,30 +258,32 @@ export const Dashboard: React.FC<DashboardProps> = ({
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {plantNowSuggestions.map(crop => (
-                <div
+              {plantNowSuggestions.map(({ crop, kind, window, isNow }) => (
+                <button
+                  type="button"
                   key={crop.id}
                   onClick={() => onNavigate('crops')}
-                  className="p-3 rounded-xl border border-stone-200 hover:border-emerald-500 hover:bg-[#fafbf9] transition-all cursor-pointer flex items-center justify-between group"
+                  aria-label={`${crop.name.split('(')[0].trim()}: ${stepVerb[kind]} ${isNow ? 'now, until' : 'from'} ${shortDate(isNow ? window.end : window.start)}. Open crop guides.`}
+                  className="text-left p-3 rounded-xl border border-stone-200 hover:border-emerald-500 hover:bg-[#fafbf9] transition-all cursor-pointer flex items-center justify-between group"
                 >
                   <div className="flex items-center gap-3">
-                    <span className="text-2xl p-2 bg-[#f4f7f4] rounded-xl group-hover:scale-105 transition-transform">
+                    <span className="text-2xl p-2 bg-[#f4f7f4] rounded-xl group-hover:scale-105 transition-transform" aria-hidden="true">
                       {crop.iconEmoji}
                     </span>
                     <div>
                       <h4 className="font-bold text-xs text-stone-900 group-hover:text-emerald-900">
                         {crop.name.split('(')[0]}
                       </h4>
-                      <p className="text-[11px] text-stone-500">
-                        {crop.sfgPerSquare}/sq ft · {crop.daysToMaturityRange[0]}-{crop.daysToMaturityRange[1]}d
+                      <p className="text-[11px] text-stone-600">
+                        {stepVerb[kind]} {isNow ? `now – ${shortDate(window.end)}` : `from ${shortDate(window.start)}`}
                       </p>
                     </div>
                   </div>
 
-                  <span className="text-[11px] font-semibold text-emerald-800 group-hover:underline">
+                  <span className="text-[11px] font-semibold text-emerald-800 group-hover:underline" aria-hidden="true">
                     View Guide
                   </span>
-                </div>
+                </button>
               ))}
             </div>
           </div>
