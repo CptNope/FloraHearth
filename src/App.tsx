@@ -27,7 +27,8 @@ import {
   getSavedSoilTests, saveSoilTests,
   getSavedHydroTests, saveHydroTests,
   getSavedSeeds, saveSeeds,
-  isSetupComplete, setSetupComplete
+  isSetupComplete, setSetupComplete,
+  STORAGE_ERROR_EVENT, StorageErrorKind, requestPersistentStorage, hasUserSavedData, requestOpenBackup
 } from './services/storage';
 
 import { getInitialTheme, applyTheme, AppTheme, APP_VERSION, executeHardCacheReset } from './services/pwaVersionService';
@@ -50,7 +51,7 @@ import { TroubleshooterModal } from './components/TroubleshooterModal';
 import { VersionCacheModal } from './components/VersionCacheModal';
 import { WeatherAlmanac } from './components/WeatherAlmanac';
 import { ErrorBoundary } from './components/ErrorBoundary';
-import { RefreshCw, Sparkles, Layers, ShieldCheck } from 'lucide-react';
+import { RefreshCw, Sparkles, Layers, ShieldCheck, AlertTriangle, X } from 'lucide-react';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<string>('dashboard');
@@ -83,6 +84,22 @@ export default function App() {
     window.addEventListener('florahearth-sw-update-available', onUpdate);
     return () => window.removeEventListener('florahearth-sw-update-available', onUpdate);
   }, [theme]);
+
+  // Failed saves (storage full or blocked) must be visible, not silent
+  const [storageError, setStorageError] = useState<StorageErrorKind | null>(null);
+  useEffect(() => {
+    const onErr = (e: Event) => setStorageError((e as CustomEvent<{ kind: StorageErrorKind }>).detail.kind);
+    window.addEventListener(STORAGE_ERROR_EVENT, onErr);
+    return () => window.removeEventListener(STORAGE_ERROR_EVENT, onErr);
+  }, []);
+
+  // Installed apps hold a season of data: ask the browser not to evict it.
+  // (In a browser tab this is offered from Journal & ROI > Sync & Backup,
+  // because some browsers show a permission prompt.)
+  useEffect(() => {
+    const installed = window.matchMedia?.('(display-mode: standalone)').matches || (navigator as any).standalone === true;
+    if (installed && hasUserSavedData()) void requestPersistentStorage();
+  }, []);
 
   // Local reminders for tasks due today (at most once per day)
   useEffect(() => {
@@ -315,6 +332,33 @@ export default function App() {
             <RefreshCw className="w-3.5 h-3.5" aria-hidden="true" />
             <span>Update Now</span>
           </button>
+        </div>
+      )}
+
+      {storageError && (
+        <div role="alert" className="bg-rose-700 text-white px-4 py-2.5 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2 z-50">
+          <div className="flex items-start gap-2">
+            <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" aria-hidden="true" />
+            <span>
+              <strong>Your last change wasn&apos;t saved on this device.</strong>{' '}
+              {storageError === 'quota'
+                ? 'Browser storage for FloraHearth is full.'
+                : 'This browser is blocking storage (private browsing or site data turned off).'}{' '}
+              It will be lost when you close the app. Download a backup now.
+            </span>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              type="button"
+              onClick={() => { requestOpenBackup(); setActiveTab('journal'); }}
+              className="px-3 py-1 bg-white text-rose-900 font-bold rounded-lg hover:bg-rose-50"
+            >
+              Back up my data
+            </button>
+            <button type="button" onClick={() => setStorageError(null)} aria-label="Dismiss storage warning" className="p-1 rounded-lg hover:bg-white/15">
+              <X className="w-4 h-4" aria-hidden="true" />
+            </button>
+          </div>
         </div>
       )}
 

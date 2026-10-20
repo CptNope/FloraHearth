@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { DialogBehavior } from './DialogBehavior';
 import { JournalEntry, ExpenseRecord, PantryItem } from '../types/garden';
 import { CROPS_DATA, getCropById } from '../data/cropsData';
-import { exportAllDataJson, importAllDataJson, hasUserSavedData, validateBackupBundle, getBundleExportedAt } from '../services/storage';
+import { exportAllDataJson, importAllDataJson, hasUserSavedData, validateBackupBundle, getBundleExportedAt, consumeOpenBackupRequest, OPEN_BACKUP_EVENT, requestPersistentStorage, getPersistenceStatus } from '../services/storage';
 import { saveJournalPhoto, getJournalPhoto, deleteJournalPhoto } from '../services/imageStorage';
 import { PANTRY_DEFAULTS, CropPreservationMethod, getQuickPreserveMethods, getCanningMethods } from '../services/preservationMapping';
 import { localDateStr } from '../services/dates';
@@ -57,7 +57,16 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
   onAddPantryItem,
   onNavigateToTab,
 }) => {
-  const [activeTab, setActiveTab] = useState<'journal' | 'finances' | 'photos' | 'backup'>('journal');
+  const [activeTab, setActiveTab] = useState<'journal' | 'finances' | 'photos' | 'backup'>(() => (consumeOpenBackupRequest() ? 'backup' : 'journal'));
+  useEffect(() => {
+    const open = () => { consumeOpenBackupRequest(); setActiveTab('backup'); };
+    window.addEventListener(OPEN_BACKUP_EVENT, open);
+    return () => window.removeEventListener(OPEN_BACKUP_EVENT, open);
+  }, []);
+
+  // Persistent storage status for the Sync & Backup tab
+  const [persistStatus, setPersistStatus] = useState<'persisted' | 'not-persisted' | 'denied' | 'unsupported' | null>(null);
+  useEffect(() => { getPersistenceStatus().then(setPersistStatus); }, []);
 
   // New Journal Entry state
   const [entryTitle, setEntryTitle] = useState('');
@@ -1003,11 +1012,32 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
                 <span>Export Complete Garden Backup (.json)</span>
               </button>
 
-              <label className="flex items-center gap-2 px-4 py-2 bg-stone-100 hover:bg-stone-200/80 dark:bg-[#182c20] text-stone-800 dark:text-stone-200 font-semibold rounded-xl cursor-pointer transition-colors border border-stone-300 dark:border-[#223d2e]">
+              <label className="flex items-center gap-2 px-4 py-2 bg-stone-100 hover:bg-stone-200/80 dark:bg-[#182c20] text-stone-800 dark:text-stone-200 font-semibold rounded-xl cursor-pointer transition-colors border border-stone-300 dark:border-[#223d2e] focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-emerald-600">
                 <Upload className="w-4 h-4" />
                 <span>Restore Backup File</span>
-                <input type="file" accept=".json" onChange={handleImportJson} className="hidden" />
+                <input type="file" accept=".json" onChange={handleImportJson} className="sr-only" />
               </label>
+            </div>
+
+            <div className="pt-3 border-t border-stone-100 dark:border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <p className="text-stone-600 dark:text-stone-300" role="status">
+                {persistStatus === 'persisted' && <><strong className="text-emerald-800 dark:text-emerald-300">Protected:</strong> this browser won&apos;t clear FloraHearth&apos;s data to free up space.</>}
+                {persistStatus === 'not-persisted' && <><strong>Not protected:</strong> this browser may clear FloraHearth&apos;s data when the device runs low on space.</>}
+                {persistStatus === 'denied' && <><strong>Not protected:</strong> the browser declined. Installing FloraHearth to your home screen usually allows it; keep backups either way.</>}
+                {persistStatus === 'unsupported' && <>This browser can&apos;t protect site data from cleanup, so keep a backup file.</>}
+              </p>
+              {persistStatus === 'not-persisted' && (
+                <button
+                  type="button"
+                  onClick={async () => {
+                    const r = await requestPersistentStorage();
+                    setPersistStatus(r === 'persisted' ? 'persisted' : r === 'denied' ? 'denied' : 'unsupported');
+                  }}
+                  className="shrink-0 px-3 py-1.5 border border-[#234730] dark:border-emerald-500 text-[#183422] dark:text-emerald-200 font-semibold rounded-xl hover:bg-emerald-50 dark:hover:bg-emerald-950"
+                >
+                  Keep my data on this device
+                </button>
+              )}
             </div>
           </div>
 
