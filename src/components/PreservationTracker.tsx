@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { PantryItem, GardenLocation } from '../types/garden';
-import { SAFE_CANNING_GUIDES, getAltitudeAdjustedCanningTime, getAltitudeAdjustedPressurePsi, FREEZING_BLANCH_GUIDES, FERMENTATION_GUIDES, CURING_GUIDES } from '../data/preservationData';
+import { SAFE_CANNING_GUIDES, getAltitudeAdjustedCanningTime, getAltitudeAdjustedPressurePsi, getWeightedGaugePsi, FREEZING_BLANCH_GUIDES, FERMENTATION_GUIDES, CURING_GUIDES } from '../data/preservationData';
 import { ShieldCheck, AlertTriangle, Scale, Thermometer, Clock, Plus, BookOpen, ExternalLink, Mountain } from 'lucide-react';
 import { localDateStr } from '../services/dates';
 
@@ -141,10 +141,15 @@ export const PreservationTracker: React.FC<PreservationTrackerProps> = ({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {SAFE_CANNING_GUIDES.map(guide => {
-              const adjustedMinutes = getAltitudeAdjustedCanningTime(guide.baseProcessingTimeMin, elevation);
+              // Water-bath: altitude adds time. Pressure canning: altitude raises the
+              // pressure and the time stays the same (USDA Complete Guide).
               const adjustedPsi = guide.basePressurePsi
                 ? getAltitudeAdjustedPressurePsi(guide.basePressurePsi, elevation)
                 : null;
+              const adjustedMinutes = adjustedPsi
+                ? guide.baseProcessingTimeMin
+                : getAltitudeAdjustedCanningTime(guide.baseProcessingTimeMin, elevation);
+              const weightedGaugePsi = getWeightedGaugePsi(elevation);
 
               return (
                 <div key={guide.crop} className="bg-white border border-stone-200 rounded-2xl p-5 shadow-xs space-y-3 text-xs">
@@ -172,9 +177,9 @@ export const PreservationTracker: React.FC<PreservationTrackerProps> = ({
                     </div>
                     {adjustedPsi && (
                       <div className="flex justify-between font-semibold">
-                        <span className="text-stone-700">Required Dial Gauge Pressure:</span>
+                        <span className="text-stone-700">Required Pressure:</span>
                         <span className="text-rose-900 font-mono font-bold text-sm">
-                          {adjustedPsi} PSI (Weighted gauge: 15 PSI)
+                          {adjustedPsi} PSI dial · {weightedGaugePsi} lb weighted
                         </span>
                       </div>
                     )}

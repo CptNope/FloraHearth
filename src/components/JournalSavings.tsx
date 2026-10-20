@@ -512,12 +512,15 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
                   const crop = preservePromptHarvest.cropId ? getCropById(preservePromptHarvest.cropId) : null;
                   const canning = getCanningMethods(crop);
                   if (canning.includes('pressure-canning')) {
-                    return 'Log a frozen, dried or stored batch now. This is a low-acid crop: canning it requires a pressure canner, never a water bath.';
+                    return `Log a frozen, dried or stored batch now. This is a low-acid crop: canning it plain requires a pressure canner, never a water bath${canning.includes('pickling') ? ' (tested pickle recipes are the exception)' : ''}.`;
+                  }
+                  if (canning.includes('pickling') && !canning.includes('water-bath-canning')) {
+                    return 'Log a frozen, dried or stored batch now. This crop can only be water-bath canned as a tested pickle or relish recipe, not plain.';
                   }
                   if (canning.length > 0) {
                     return 'Log a frozen, dried or stored batch now, or follow a tested canning procedure first.';
                   }
-                  return 'Log a preserved batch straight to your pantry inventory.';
+                  return 'Log a preserved batch straight to your pantry inventory. There is no tested home-canning process for this crop.';
                 })()}
               </span>
             </div>
@@ -553,7 +556,7 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
                       onClick={() => { setPreservePromptHarvest(null); onNavigateToTab('preservation'); }}
                       className="flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-[#132219] border border-[#234730] dark:border-emerald-500 text-[#183422] dark:text-emerald-200 font-semibold rounded-xl hover:bg-emerald-50 dark:hover:bg-emerald-950 transition-colors"
                     >
-                      <span>{canning.includes('pressure-canning') ? 'Pressure-canning guide' : 'Canning guide'}</span>
+                      <span>{canning.includes('pressure-canning') ? 'Pressure-canning guide' : canning.includes('water-bath-canning') ? 'Canning guide' : 'Tested pickle recipes'}</span>
                       <ArrowRight className="w-3.5 h-3.5" />
                     </button>
                   )}
