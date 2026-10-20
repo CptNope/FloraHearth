@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import {
   GardenLocation,
   UserPreferences,
@@ -37,21 +37,32 @@ import { fetchWeatherAndAlmanac } from './services/weatherAlmanacService';
 import { getTenderCropsByBed } from './services/frostTender';
 import { Navigation } from './components/Navigation';
 import { Dashboard } from './components/Dashboard';
-import { GardenPlanner } from './components/GardenPlanner';
-import { CropLibrary } from './components/CropLibrary';
-import { CalendarTasks } from './components/CalendarTasks';
-import { CompanionEcology } from './components/CompanionEcology';
-import { PreservationTracker } from './components/PreservationTracker';
-import { PantryTracker } from './components/PantryTracker';
-import { PestSoilHealth } from './components/PestSoilHealth';
-import { HydroIndoorGuide } from './components/HydroIndoorGuide';
-import { JournalSavings } from './components/JournalSavings';
-import { SetupModal } from './components/SetupModal';
-import { TroubleshooterModal } from './components/TroubleshooterModal';
-import { VersionCacheModal } from './components/VersionCacheModal';
-import { WeatherAlmanac } from './components/WeatherAlmanac';
 import { ErrorBoundary } from './components/ErrorBoundary';
+
+// Tabs and dialogs load on first use (precached by the service worker for offline use)
+const GardenPlanner = lazy(() => import('./components/GardenPlanner').then(m => ({ default: m.GardenPlanner })));
+const CropLibrary = lazy(() => import('./components/CropLibrary').then(m => ({ default: m.CropLibrary })));
+const CalendarTasks = lazy(() => import('./components/CalendarTasks').then(m => ({ default: m.CalendarTasks })));
+const CompanionEcology = lazy(() => import('./components/CompanionEcology').then(m => ({ default: m.CompanionEcology })));
+const PreservationTracker = lazy(() => import('./components/PreservationTracker').then(m => ({ default: m.PreservationTracker })));
+const PantryTracker = lazy(() => import('./components/PantryTracker').then(m => ({ default: m.PantryTracker })));
+const PestSoilHealth = lazy(() => import('./components/PestSoilHealth').then(m => ({ default: m.PestSoilHealth })));
+const HydroIndoorGuide = lazy(() => import('./components/HydroIndoorGuide').then(m => ({ default: m.HydroIndoorGuide })));
+const JournalSavings = lazy(() => import('./components/JournalSavings').then(m => ({ default: m.JournalSavings })));
+const WeatherAlmanac = lazy(() => import('./components/WeatherAlmanac').then(m => ({ default: m.WeatherAlmanac })));
+const SetupModal = lazy(() => import('./components/SetupModal').then(m => ({ default: m.SetupModal })));
+const TroubleshooterModal = lazy(() => import('./components/TroubleshooterModal').then(m => ({ default: m.TroubleshooterModal })));
+const VersionCacheModal = lazy(() => import('./components/VersionCacheModal').then(m => ({ default: m.VersionCacheModal })));
 import { RefreshCw, Sparkles, Layers, ShieldCheck, AlertTriangle, X } from 'lucide-react';
+
+function TabLoading() {
+  return (
+    <div role="status" className="flex items-center justify-center min-h-[300px] text-xs text-stone-600 dark:text-stone-300 gap-2">
+      <span className="w-4 h-4 rounded-full border-2 border-emerald-500/30 border-t-emerald-600 animate-spin" aria-hidden="true" />
+      Loading…
+    </div>
+  );
+}
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<string>('dashboard');
@@ -376,6 +387,7 @@ export default function App() {
 
       {/* Main App Content Viewport */}
       <main id="main-content" tabIndex={-1} role="main" aria-label="Garden and pantry main content" className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8 pb-24 lg:pb-8 outline-hidden">
+        <Suspense fallback={<TabLoading />}>
         {activeTab === 'dashboard' && (
           <Dashboard
             location={location}
@@ -489,6 +501,7 @@ export default function App() {
             onNavigateToTab={setActiveTab}
           />
         )}
+        </Suspense>
       </main>
 
       {/* Footer with Version Control & Hard Cache Reset Link */}
@@ -515,26 +528,26 @@ export default function App() {
       </footer>
 
       {/* Setup Wizard Modal */}
-      <SetupModal
+      {isSetupOpen && <Suspense fallback={null}><SetupModal
         isOpen={isSetupOpen}
         onClose={() => setIsSetupOpen(false)}
         currentLocation={location}
         currentPreferences={preferences}
         onSave={handleUpdateLocationAndPrefs}
-      />
+      /></Suspense>}
 
       {/* Diagnostic Troubleshooter Modal */}
-      <TroubleshooterModal
+      {isTroubleshooterOpen && <Suspense fallback={null}><TroubleshooterModal
         isOpen={isTroubleshooterOpen}
         onClose={() => setIsTroubleshooterOpen(false)}
-      />
+      /></Suspense>}
 
       {/* PWA Version & Hard Cache Reset Modal */}
-      <VersionCacheModal
+      {isVersionModalOpen && <Suspense fallback={null}><VersionCacheModal
         isOpen={isVersionModalOpen}
         onClose={() => setIsVersionModalOpen(false)}
         onReloadRequested={handleReloadAllState}
-      />
+      /></Suspense>}
     </div>
     </ErrorBoundary>
   );

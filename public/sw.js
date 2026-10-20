@@ -11,7 +11,9 @@ const PRECACHE_ASSETS = [
   './apple-touch-icon.png',
   './pwa-192x192.png',
   './pwa-512x512.png',
-  './pwa-maskable-512x512.png'
+  './pwa-maskable-512x512.png',
+  // Hashed JS/CSS chunks, filled in at build time by vite.config.ts
+/* __BUILD_ASSETS__ */
 ];
 
 // Install: precache foundational shell
