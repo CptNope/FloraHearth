@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { DialogBehavior } from './DialogBehavior';
 import { Crop, SeedPacket, GardenLocation } from '../types/garden';
 import { CROPS_DATA, getCropById } from '../data/cropsData';
 import {
@@ -483,6 +484,7 @@ export const CropLibrary: React.FC<CropLibraryProps> = ({
       {/* Add / Edit Seed Modal */}
       {isSeedModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+          <DialogBehavior onClose={() => setIsSeedModalOpen(false)} />
           <div className="bg-white dark:bg-[#112117] border border-stone-200 dark:border-[#223d2e] rounded-2xl w-full max-w-md p-6 text-xs space-y-4 shadow-2xl">
             <div className="flex items-center justify-between border-b border-stone-200 dark:border-[#223d2e] pb-3">
               <h3 className="font-bold text-sm text-[#183a24] dark:text-white font-serif-botanical">
@@ -609,6 +611,7 @@ export const CropLibrary: React.FC<CropLibraryProps> = ({
       {/* Active Crop Detail Modal */}
       {activeCropDetail && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+          <DialogBehavior onClose={() => setActiveCropDetail(null)} />
           <div className="bg-white dark:bg-[#112117] border border-stone-200 dark:border-[#223d2e] rounded-2xl w-full max-w-lg p-6 text-xs space-y-4 max-h-[90vh] overflow-y-auto shadow-2xl">
             <div className="flex items-center justify-between border-b border-stone-200 dark:border-[#223d2e] pb-3">
               <div className="flex items-center gap-2">

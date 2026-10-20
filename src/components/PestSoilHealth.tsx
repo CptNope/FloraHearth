@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { DialogBehavior } from './DialogBehavior';
 import { SoilTestRecord } from '../types/garden';
 import { IPM_GUIDES, COMPOST_METHODS } from '../data/ipmSoilData';
 import { ECOLOGICAL_INSECTS } from '../data/companionData';
@@ -419,6 +420,7 @@ export const PestSoilHealth: React.FC<PestSoilHealthProps> = ({
       {/* Edit Soil Test Modal */}
       {isEditSoilOpen && editingSoilTest && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+          <DialogBehavior onClose={() => setIsEditSoilOpen(false)} />
           <div className="bg-white dark:bg-[#112117] border border-stone-200 dark:border-[#223d2e] rounded-2xl w-full max-w-md p-6 text-xs space-y-4 shadow-2xl">
             <div className="flex items-center justify-between border-b border-stone-200 dark:border-[#223d2e] pb-3">
               <h3 className="font-bold text-sm text-[#183a24] dark:text-white font-serif-botanical">Edit Soil Test Record</h3>

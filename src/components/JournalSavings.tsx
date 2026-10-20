@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { DialogBehavior } from './DialogBehavior';
 import { JournalEntry, ExpenseRecord, PantryItem } from '../types/garden';
 import { CROPS_DATA, getCropById } from '../data/cropsData';
 import { exportAllDataJson, importAllDataJson, hasUserSavedData, validateBackupBundle, getBundleExportedAt } from '../services/storage';
@@ -1086,6 +1087,7 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
       {/* Full Photo Modal */}
       {viewingPhotoUrl && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-xs p-4">
+          <DialogBehavior onClose={() => setViewingPhotoUrl(null)} label="Garden photo" />
           <div className="relative max-w-3xl w-full max-h-[90vh] flex flex-col items-center">
             <button
               type="button"
@@ -1102,6 +1104,7 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
       {/* Edit Journal Entry Modal */}
       {isEditJournalOpen && editingJournal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+          <DialogBehavior onClose={() => setIsEditJournalOpen(false)} />
           <div className="bg-white dark:bg-[#112117] border border-stone-200 dark:border-[#223d2e] rounded-2xl w-full max-w-md p-6 text-xs space-y-4 shadow-2xl">
             <div className="flex items-center justify-between border-b border-stone-200 dark:border-[#223d2e] pb-3">
               <h3 className="font-bold text-sm text-[#183a24] dark:text-white font-serif-botanical">Edit Journal Entry</h3>
@@ -1170,6 +1173,7 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
       {/* Edit Expense Modal */}
       {isEditExpenseOpen && editingExpense && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+          <DialogBehavior onClose={() => setIsEditExpenseOpen(false)} />
           <div className="bg-white dark:bg-[#112117] border border-stone-200 dark:border-[#223d2e] rounded-2xl w-full max-w-sm p-6 text-xs space-y-4 shadow-2xl">
             <div className="flex items-center justify-between border-b border-stone-200 dark:border-[#223d2e] pb-3">
               <h3 className="font-bold text-sm text-[#183a24] dark:text-white font-serif-botanical">Edit Expense</h3>

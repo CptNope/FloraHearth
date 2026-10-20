@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { DialogBehavior } from './DialogBehavior';
 import { GardenLocation, GardenTask } from '../types/garden';
 import { CROPS_DATA } from '../data/cropsData';
 import { Calendar, CheckCircle2, Circle, Clock, Printer, Plus, Sparkles, Filter, AlertCircle, Moon, Bell, BellRing } from 'lucide-react';
@@ -505,6 +506,7 @@ export const CalendarTasks: React.FC<CalendarTasksProps> = ({
           aria-modal="true"
           aria-labelledby="add-task-dialog-heading"
         >
+          <DialogBehavior onClose={() => setIsAddingTask(false)} />
           <form
             onSubmit={handleCreateCustomTask}
             className="bg-white border border-stone-200 rounded-2xl p-6 w-full max-w-md shadow-2xl space-y-4"

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { DialogBehavior } from './DialogBehavior';
 import { buildBedTasks, mergeBedTasks } from '../services/bedSchedule';
 import { GardenSpace, GridCell, Crop, PlantFamily, GrowingMethod, SunlightLevel, GardenLocation, GardenTask, BedSeasonRecord } from '../types/garden';
 import { CROPS_DATA, getCropById } from '../data/cropsData';
@@ -614,6 +615,7 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
       {/* Modal for Creating New Space */}
       {isCreatingSpace && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+          <DialogBehavior onClose={() => setIsCreatingSpace(false)} />
           <form
             onSubmit={handleCreateSpace}
             className="bg-white dark:bg-[#112117] border border-stone-200 dark:border-[#223d2e] rounded-2xl p-6 w-full max-w-md shadow-2xl space-y-4 text-xs"
@@ -695,6 +697,7 @@ export const GardenPlanner: React.FC<GardenPlannerProps> = ({
       {/* Modal for Archiving Season Layout */}
       {isArchiveModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+          <DialogBehavior onClose={() => setIsArchiveModalOpen(false)} />
           <form
             onSubmit={handleArchiveCurrentSeason}
             className="bg-white dark:bg-[#112117] border border-stone-200 dark:border-[#223d2e] rounded-2xl p-6 w-full max-w-sm shadow-2xl space-y-4 text-xs"

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { DialogBehavior } from './DialogBehavior';
 import { HydroWaterRecord } from '../types/garden';
 import { HYDROPONIC_SPECS } from '../data/ipmSoilData';
 import { Lightbulb, Waves, Fish, Thermometer, ShieldAlert, Plus, Edit2, Trash2, X, Check, Activity, AlertTriangle, TrendingUp } from 'lucide-react';
@@ -681,6 +682,7 @@ export const HydroIndoorGuide: React.FC<HydroIndoorGuideProps> = ({
       {/* Log / Edit Water Reading Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+          <DialogBehavior onClose={() => setIsModalOpen(false)} />
           <div className="bg-white dark:bg-[#112117] border border-stone-200 dark:border-[#223d2e] rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl space-y-4 p-6 text-xs">
             <div className="flex items-center justify-between border-b border-stone-200 dark:border-[#223d2e] pb-3">
               <h3 className="font-bold text-sm text-[#183a24] dark:text-white font-serif-botanical">
