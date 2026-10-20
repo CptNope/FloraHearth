@@ -70,6 +70,7 @@ export default function App() {
   // every tab id is linkable. Unknown values fall back to the Dashboard.
   const [activeTab, setActiveTabState] = useState<string>(() => tabFromLocation());
   const focusHeadingOnChange = useRef(false);
+  const outgoingHeading = useRef<Element | null>(null);
 
   // Changing tabs: push a history entry (Back/Forward work, reload keeps the tab)
   const activeTabRef = useRef(activeTab);
@@ -77,12 +78,17 @@ export default function App() {
   const setActiveTab = useCallback((tab: string) => {
     if (!isKnownTab(tab) || tab === activeTabRef.current) return;
     focusHeadingOnChange.current = true;
+    outgoingHeading.current = document.querySelector('#main-content h1');
     try { window.history.pushState({ tab }, '', urlForTab(tab)); } catch { /* sandboxed iframe */ }
     setActiveTabState(tab);
   }, []);
 
   useEffect(() => {
-    const onPop = () => { focusHeadingOnChange.current = true; setActiveTabState(tabFromLocation()); };
+    const onPop = () => {
+      focusHeadingOnChange.current = true;
+      outgoingHeading.current = document.querySelector('#main-content h1');
+      setActiveTabState(tabFromLocation());
+    };
     window.addEventListener('popstate', onPop);
     return () => window.removeEventListener('popstate', onPop);
   }, []);
@@ -98,8 +104,10 @@ export default function App() {
     let raf = 0;
     const focusHeading = () => {
       // Tabs load lazily: wait (up to ~2s) for the tab's <h1> to render
+      // ignore the outgoing tab's heading, which can still be on screen for a frame
       const h1 = document.querySelector<HTMLElement>('#main-content h1');
-      if (h1) {
+      if (h1 && h1 !== outgoingHeading.current) {
+        outgoingHeading.current = null;
         if (!h1.hasAttribute('tabindex')) h1.setAttribute('tabindex', '-1');
         h1.focus({ preventScroll: true });
       } else if (frames++ < 120) {

@@ -270,16 +270,16 @@ export const CalendarTasks: React.FC<CalendarTasksProps> = ({
 
       {/* Farmer's Almanac Lunar Planting Guide Strip */}
       <div className="bg-emerald-950/5 dark:bg-emerald-950/30 border border-emerald-500/25 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
-        <div className="flex items-center gap-3">
-          <span className="text-3xl select-none shrink-0" role="img" aria-label="moon">
+        <div className="flex items-center gap-3 min-w-0">
+          <span className="text-3xl select-none shrink-0" aria-hidden="true">
             {lunarToday.phaseEmoji}
           </span>
           <div className="space-y-0.5">
-            <div className="flex items-center gap-2 font-mono text-xs text-emerald-800 dark:text-emerald-400 font-bold">
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 font-mono text-xs text-emerald-800 dark:text-emerald-400 font-bold">
               <span>Almanac Moon: {lunarToday.phase} ({lunarToday.illuminationPct}% illuminated)</span>
-              <span>·</span>
+              <span aria-hidden="true">·</span>
               <span>Sign: {lunarToday.zodiacSign} ({lunarToday.element})</span>
-              <span>·</span>
+              <span aria-hidden="true">·</span>
               <span className="text-stone-500 dark:text-stone-400 font-normal">{lunarToday.fertility}</span>
             </div>
             <p className="text-stone-800 dark:text-stone-200">
@@ -289,8 +289,8 @@ export const CalendarTasks: React.FC<CalendarTasksProps> = ({
           </div>
         </div>
 
-        <div className="text-xs font-mono text-emerald-800 dark:text-emerald-400 font-semibold shrink-0 bg-white dark:bg-[#14261b] px-3 py-1.5 rounded-xl border border-emerald-500/20 shadow-2xs">
-          Best Chore: {lunarToday.almanacChoreToday.slice(0, 50)}...
+        <div className="text-xs font-mono text-emerald-800 dark:text-emerald-400 font-semibold sm:max-w-xs bg-white dark:bg-[#14261b] px-3 py-1.5 rounded-xl border border-emerald-500/20 shadow-2xs">
+          Best Chore: {lunarToday.almanacChoreToday}
         </div>
       </div>
 

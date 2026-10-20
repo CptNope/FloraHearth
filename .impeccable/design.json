@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-20T16:00:52+00:00",
+  "generatedAt": "2026-10-20T16:16:45+00:00",
   "title": "Design System: FloraHearth",
   "extensions": {
     "colorMeta": {
@@ -324,6 +324,51 @@
           "#e5f2ea"
         ]
       },
+      "lichen-soft": {
+        "role": "neutral",
+        "displayName": "Lichen Soft",
+        "canonical": "oklch(50.7% 0.032 156.6)",
+        "tonalRamp": [
+          "#010f06",
+          "#17291e",
+          "#324539",
+          "#4f6356",
+          "#6f8376",
+          "#8fa597",
+          "#b4cbbc",
+          "#e9f1eb"
+        ]
+      },
+      "lichen-deep": {
+        "role": "neutral",
+        "displayName": "Lichen Deep",
+        "canonical": "oklch(40.0% 0.039 154.0)",
+        "tonalRamp": [
+          "#001004",
+          "#142a1b",
+          "#2f4636",
+          "#4d6454",
+          "#6c8473",
+          "#8ca693",
+          "#b1ccb9",
+          "#e8f1ea"
+        ]
+      },
+      "mist-soft": {
+        "role": "neutral",
+        "displayName": "Mist Soft",
+        "canonical": "oklch(74.8% 0.039 156.2)",
+        "tonalRamp": [
+          "#001005",
+          "#132a1c",
+          "#2e4637",
+          "#4c6454",
+          "#6b8574",
+          "#8ba694",
+          "#b1ccba",
+          "#e8f1eb"
+        ]
+      },
       "caution-wash": {
         "role": "tertiary",
         "displayName": "Caution Wash",
@@ -354,6 +399,21 @@
           "#ffe6d6"
         ]
       },
+      "caution-amber": {
+        "role": "tertiary",
+        "displayName": "Caution Amber",
+        "canonical": "oklch(55.5% 0.146 49.0)",
+        "tonalRamp": [
+          "#310000",
+          "#540000",
+          "#771800",
+          "#9b3c00",
+          "#c05e1c",
+          "#e58044",
+          "#ffa66b",
+          "#ffe5d1"
+        ]
+      },
       "frost-alert": {
         "role": "tertiary",
         "displayName": "Frost Alert",
@@ -368,6 +428,226 @@
           "#ff969b",
           "#ffe0e0"
         ]
+      },
+      "new-shoot-pale": {
+        "role": "secondary",
+        "displayName": "New Shoot Pale",
+        "canonical": "oklch(84.5% 0.130 165.0)",
+        "tonalRamp": [
+          "#001700",
+          "#003412",
+          "#00532d",
+          "#00734b",
+          "#00956a",
+          "#37b78a",
+          "#65dfaf",
+          "#d3f9e7"
+        ]
+      },
+      "caution-glow": {
+        "role": "tertiary",
+        "displayName": "Caution Glow",
+        "canonical": "oklch(83.7% 0.164 84.4)",
+        "tonalRamp": [
+          "#260000",
+          "#451100",
+          "#653100",
+          "#865100",
+          "#a97200",
+          "#cc9400",
+          "#f4ba26",
+          "#ffecc4"
+        ]
+      },
+      "frost-glow": {
+        "role": "tertiary",
+        "displayName": "Frost Glow",
+        "canonical": "oklch(71.9% 0.169 13.4)",
+        "tonalRamp": [
+          "#350000",
+          "#5a000b",
+          "#7e0026",
+          "#a42742",
+          "#ca4c61",
+          "#f06f81",
+          "#ff95a6",
+          "#ffe0e3"
+        ]
+      },
+      "frost-pale": {
+        "role": "tertiary",
+        "displayName": "Frost Pale",
+        "canonical": "oklch(81.0% 0.106 11.6)",
+        "tonalRamp": [
+          "#290002",
+          "#4a0016",
+          "#6c2231",
+          "#8f414e",
+          "#b3616d",
+          "#d7828d",
+          "#ffa7b2",
+          "#ffe5e8"
+        ]
+      },
+      "teal-glow": {
+        "role": "tertiary",
+        "displayName": "Teal Glow",
+        "canonical": "oklch(85.5% 0.125 181.1)",
+        "tonalRamp": [
+          "#00170e",
+          "#003428",
+          "#005344",
+          "#007362",
+          "#009482",
+          "#09b7a3",
+          "#50dec9",
+          "#d0f9f0"
+        ]
+      },
+      "heirloom-glow": {
+        "role": "tertiary",
+        "displayName": "Heirloom Glow",
+        "canonical": "oklch(72.2% 0.177 305.5)",
+        "tonalRamp": [
+          "#1d003e",
+          "#38005f",
+          "#551b81",
+          "#743ea4",
+          "#9460c8",
+          "#b781ed",
+          "#dda7ff",
+          "#f7e6ff"
+        ]
+      },
+      "indigo-glow": {
+        "role": "tertiary",
+        "displayName": "Indigo Glow",
+        "canonical": "oklch(78.5% 0.104 274.7)",
+        "tonalRamp": [
+          "#060035",
+          "#181a55",
+          "#313876",
+          "#4d5798",
+          "#6b78bb",
+          "#8b99df",
+          "#b0bfff",
+          "#e7edff"
+        ]
+      },
+      "sky-glow": {
+        "role": "tertiary",
+        "displayName": "Sky Glow",
+        "canonical": "oklch(82.8% 0.101 230.3)",
+        "tonalRamp": [
+          "#000c2d",
+          "#00294b",
+          "#00476a",
+          "#00678c",
+          "#2d88ae",
+          "#53aad1",
+          "#7bd1f9",
+          "#d7f4ff"
+        ]
+      },
+      "caution-wash-night": {
+        "role": "tertiary",
+        "displayName": "Caution Wash Night",
+        "canonical": "rgba(245, 158, 11, 0.14)"
+      },
+      "caution-edge-night": {
+        "role": "tertiary",
+        "displayName": "Caution Edge Night",
+        "canonical": "rgba(245, 158, 11, 0.3)"
+      },
+      "frost-wash-night": {
+        "role": "tertiary",
+        "displayName": "Frost Wash Night",
+        "canonical": "rgba(244, 63, 94, 0.14)"
+      },
+      "frost-edge-night": {
+        "role": "tertiary",
+        "displayName": "Frost Edge Night",
+        "canonical": "rgba(244, 63, 94, 0.3)"
+      },
+      "teal-wash-night": {
+        "role": "tertiary",
+        "displayName": "Teal Wash Night",
+        "canonical": "rgba(20, 184, 166, 0.14)"
+      },
+      "teal-edge-night": {
+        "role": "tertiary",
+        "displayName": "Teal Edge Night",
+        "canonical": "rgba(20, 184, 166, 0.3)"
+      },
+      "heirloom-wash-night": {
+        "role": "tertiary",
+        "displayName": "Heirloom Wash Night",
+        "canonical": "rgba(168, 85, 247, 0.14)"
+      },
+      "heirloom-edge-night": {
+        "role": "tertiary",
+        "displayName": "Heirloom Edge Night",
+        "canonical": "rgba(168, 85, 247, 0.3)"
+      },
+      "indigo-wash-night": {
+        "role": "tertiary",
+        "displayName": "Indigo Wash Night",
+        "canonical": "rgba(99, 102, 241, 0.14)"
+      },
+      "indigo-edge-night": {
+        "role": "tertiary",
+        "displayName": "Indigo Edge Night",
+        "canonical": "rgba(99, 102, 241, 0.3)"
+      },
+      "selection-paper": {
+        "role": "neutral",
+        "displayName": "Selection Paper",
+        "canonical": "oklch(87.9% 0.061 156.6)",
+        "tonalRamp": [
+          "#001202",
+          "#012c17",
+          "#214932",
+          "#3f684f",
+          "#5f896e",
+          "#7faa8f",
+          "#a4d1b4",
+          "#e4f3e9"
+        ]
+      },
+      "selection-night": {
+        "role": "neutral",
+        "displayName": "Selection Night",
+        "canonical": "oklch(48.4% 0.097 158.9)",
+        "tonalRamp": [
+          "#001500",
+          "#003111",
+          "#004e2c",
+          "#1e6e49",
+          "#438f68",
+          "#66b188",
+          "#8bd8ad",
+          "#dcf6e6"
+        ]
+      },
+      "scrollbar-thumb": {
+        "role": "neutral",
+        "displayName": "Scrollbar Thumb",
+        "canonical": "rgba(120, 150, 130, 0.35)"
+      },
+      "scrollbar-thumb-hover": {
+        "role": "neutral",
+        "displayName": "Scrollbar Thumb Hover",
+        "canonical": "rgba(120, 150, 130, 0.55)"
+      },
+      "shadow-ink": {
+        "role": "neutral",
+        "displayName": "Shadow Ink",
+        "canonical": "rgba(0, 0, 0, 0.4)"
+      },
+      "shadow-ink-deep": {
+        "role": "neutral",
+        "displayName": "Shadow Ink Deep",
+        "canonical": "rgba(0, 0, 0, 0.5)"
       }
     },
     "typographyMeta": {
@@ -398,6 +678,10 @@
       "data": {
         "displayName": "Data",
         "purpose": "Temperatures, dates, ppm, prices; tabular numerals."
+      },
+      "input-touch": {
+        "displayName": "Input (touch)",
+        "purpose": "Form fields on touch screens at 16px so iOS never zooms on focus."
       }
     },
     "shadows": [
@@ -410,6 +694,16 @@
         "name": "dialog",
         "value": "0 25px 50px -12px rgb(0 0 0 / 0.25)",
         "purpose": "Modal dialogs only (Tailwind shadow-2xl)."
+      },
+      {
+        "name": "nav-lift",
+        "value": "0 10px 25px -5px rgba(0, 0, 0, 0.4)",
+        "purpose": "Active navigation pill in dark mode (shadow-ink)."
+      },
+      {
+        "name": "card-hover-night",
+        "value": "0 4px 20px -2px rgba(0, 0, 0, 0.5)",
+        "purpose": "Dark card hover depth (shadow-ink-deep)."
       }
     ],
     "motion": [

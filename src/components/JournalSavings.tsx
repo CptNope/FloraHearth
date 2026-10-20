@@ -552,7 +552,7 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
             <button
               type="button"
               onClick={() => setPreservePromptHarvest(null)}
-              className="px-3 py-1.5 text-stone-700 dark:text-stone-200 hover:bg-amber-100 dark:hover:bg-amber-900/50 rounded-xl font-medium"
+              className="px-3 py-1.5 text-amber-950 dark:text-amber-100 hover:bg-amber-100 dark:hover:bg-amber-900/50 rounded-xl font-medium"
             >
               Skip
             </button>
@@ -709,7 +709,7 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
                   type="file"
                   accept="image/*"
                   onChange={handlePhotoSelect}
-                  className="text-xs file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 dark:file:bg-[#182c20] file:text-emerald-800 dark:file:text-emerald-300 hover:file:bg-emerald-100"
+                  className="w-full max-w-full min-w-0 text-xs file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 dark:file:bg-[#182c20] file:text-emerald-800 dark:file:text-emerald-300 hover:file:bg-emerald-100"
                 />
                 {entryPhotoPreview && (
                   <div className="mt-2 relative rounded-xl overflow-hidden border border-stone-200 dark:border-[#223d2e] h-28 bg-stone-100 dark:bg-[#182c20]">

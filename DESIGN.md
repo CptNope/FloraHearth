@@ -24,9 +24,37 @@ colors:
   mist-heading: "#f3f7f4"
   mist-body: "#cad8ce"
   lichen-caption: "#8cb099"
+  lichen-soft: "#576b5e"
+  lichen-deep: "#374e3e"
+  mist-soft: "#9ab5a3"
   caution-wash: "#fef3c7"
   caution-ink: "#92400e"
+  caution-amber: "#b45309"
   frost-alert: "#c70036"
+  new-shoot-pale: "#6ee7b7"
+  caution-glow: "#fbbf24"
+  frost-glow: "#fb7185"
+  frost-pale: "#fda4af"
+  teal-glow: "#5eead4"
+  heirloom-glow: "#c084fc"
+  indigo-glow: "#a5b4fc"
+  sky-glow: "#7dd3fc"
+  caution-wash-night: "rgba(245, 158, 11, 0.14)"
+  caution-edge-night: "rgba(245, 158, 11, 0.3)"
+  frost-wash-night: "rgba(244, 63, 94, 0.14)"
+  frost-edge-night: "rgba(244, 63, 94, 0.3)"
+  teal-wash-night: "rgba(20, 184, 166, 0.14)"
+  teal-edge-night: "rgba(20, 184, 166, 0.3)"
+  heirloom-wash-night: "rgba(168, 85, 247, 0.14)"
+  heirloom-edge-night: "rgba(168, 85, 247, 0.3)"
+  indigo-wash-night: "rgba(99, 102, 241, 0.14)"
+  indigo-edge-night: "rgba(99, 102, 241, 0.3)"
+  selection-paper: "#b7e4c7"
+  selection-night: "#1f6f4a"
+  scrollbar-thumb: "rgba(120, 150, 130, 0.35)"
+  scrollbar-thumb-hover: "rgba(120, 150, 130, 0.55)"
+  shadow-ink: "rgba(0, 0, 0, 0.4)"
+  shadow-ink-deep: "rgba(0, 0, 0, 0.5)"
 typography:
   display:
     fontFamily: "Newsreader, Georgia, serif"
@@ -61,6 +89,11 @@ typography:
     fontWeight: 700
     lineHeight: 1.45
     letterSpacing: "0.05em"
+  input-touch:
+    fontFamily: "Plus Jakarta Sans, system-ui, sans-serif"
+    fontSize: "1rem"
+    fontWeight: 400
+    lineHeight: 1.5
   data:
     fontFamily: "JetBrains Mono, monospace"
     fontSize: "0.8125rem"
@@ -156,6 +189,8 @@ A restrained conifer-and-paper palette: two greens for action, a family of sage 
 ### Tertiary
 - **Caution Wash / Caution Ink** (`caution-wash`, `caution-ink`): amber for advisories, frost watches, sun and heat, estimates, and anything that needs a second look.
 - **Frost Alert** (`frost-alert`): rose for frost and freeze warnings, destructive actions and conflicts (antagonistic companions, low viability).
+- **Caution Amber** (`caution-amber`): amber text on light surfaces where the wash would be too faint.
+- **Night status shades:** on dark surfaces the status colours brighten so they keep AA contrast: **Caution Glow**, **Frost Glow** and **New Shoot Pale** for text, with matching translucent washes and edges (`*-wash-night`, `*-edge-night`) behind them. **Teal Glow** marks hydroponics and apothecary content, **Heirloom Glow** heirloom and fruit content, and **Indigo Glow** and **Sky Glow** informational notes such as blanching tables and biological controls. Hover states on dark use the pale steps (`new-shoot-pale`, `frost-pale`).
 
 ### Neutral
 - **Herbarium Paper** (`herbarium-paper`): the light canvas behind everything.
@@ -166,7 +201,11 @@ A restrained conifer-and-paper palette: two greens for action, a family of sage 
 - **Obsidian Loam** (`obsidian-loam`): the dark canvas.
 - **Spruce Card / Spruce Wash / Spruce Press** (`spruce-card`, `spruce-wash`, `spruce-press`): dark cards, subtle surfaces and hover/active surfaces.
 - **Night Hairline** (`night-hairline`): borders and dividers in dark mode.
-- **Mist Heading / Mist Body / Lichen Caption** (`mist-heading`, `mist-body`, `lichen-caption`): the three dark-mode text steps.
+- **Mist Heading / Mist Body / Lichen Caption** (`mist-heading`, `mist-body`, `lichen-caption`): the three dark-mode text steps, with **Mist Soft** (`mist-soft`) for de-emphasised dark text.
+- **Lichen Soft / Lichen Deep** (`lichen-soft`, `lichen-deep`): light-mode caption greys (they replace Tailwind's stone-400/500, which fail AA on white).
+- **Selection Paper / Selection Night** (`selection-paper`, `selection-night`): text selection in light and dark mode.
+- **Scrollbar Thumb** (`scrollbar-thumb`, `scrollbar-thumb-hover`): the sage scrollbar in both themes.
+- **Shadow Ink** (`shadow-ink`, `shadow-ink-deep`): the only shadow colours: the active nav pill lift and dark card hover depth.
 
 ### Named Rules
 **The Green Means Go Rule.** Hemlock Ink and New Shoot mark things the user can act on, or confirmed good news. Never use them as decoration or as a section background.
@@ -191,6 +230,7 @@ A restrained conifer-and-paper palette: two greens for action, a family of sage 
 - **Body Secondary** (500, 0.8125rem, 1.5): table cells, captions, secondary UI text. This is the most common size.
 - **Label** (700, 0.75rem, 0.05em, uppercase): specimen-style labels, badges, table headers. 12px is the floor for any text.
 - **Data** (600, 0.8125rem, tabular numerals): temperatures, dates, ppm, prices, quantities.
+- **Input (touch)** (400, 1rem, 1.5): form fields on touch screens, so iOS never zooms on focus.
 
 ### Named Rules
 **The Specimen Label Rule.** Monospace is for labels and measured data only. Plant and bed names are never monospace; they are serif.

@@ -447,7 +447,7 @@ export const CropLibrary: React.FC<CropLibraryProps> = ({
                 className="relative bg-white dark:bg-[#132219] border border-stone-200 dark:border-[#223d2e] rounded-2xl p-4 shadow-xs hover:border-emerald-600 focus-within:border-emerald-600 focus-within:ring-2 focus-within:ring-emerald-600/40 transition-colors space-y-3 flex flex-col justify-between"
               >
                 <div className="space-y-2">
-                  <div className="flex items-start justify-between">
+                  <div className="flex flex-wrap items-start justify-between gap-2">
                     <span className="text-3xl" aria-hidden="true">{crop.iconEmoji}</span>
                     <span className="px-2 py-0.5 rounded-md text-2xs font-mono bg-stone-100 dark:bg-[#182c20] text-stone-600 dark:text-stone-300">
                       {crop.family}

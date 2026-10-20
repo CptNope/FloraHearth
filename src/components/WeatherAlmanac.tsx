@@ -432,7 +432,7 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
           {/* Main Weather Metric Box (4 cols) */}
           <div className="lg:col-span-5 bg-white dark:bg-[#112217] rounded-3xl p-6 border border-stone-200 dark:border-[rgba(255,255,255,0.08)] shadow-xs flex flex-col justify-between space-y-6 transition-colors">
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-wrap items-center justify-between gap-2">
                 <span className="text-xs font-mono font-bold text-emerald-800 dark:text-emerald-400 tracking-wider uppercase">
                   Current Observations
                 </span>
@@ -535,7 +535,7 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
           <div className="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* 1. Soil Temperature & Germination */}
             <div className="bg-white dark:bg-[#112217] rounded-3xl p-5 border border-stone-200 dark:border-[rgba(255,255,255,0.08)] shadow-xs space-y-3 transition-colors">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                   <span className="p-2 bg-amber-500/10 text-amber-700 dark:text-amber-400 rounded-xl">
                     <Thermometer className="w-4 h-4" />
@@ -578,7 +578,7 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
                   : 'bg-white dark:bg-[#112217] border-stone-200 dark:border-[rgba(255,255,255,0.08)]'
               }`}
             >
-              <div className="flex items-center justify-between">
+              <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                   <span
                     className={`p-2 rounded-xl ${
@@ -689,7 +689,7 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
 
             {/* 3. Spraying Window (Neem & Organic Teas) */}
             <div className="bg-white dark:bg-[#112217] rounded-3xl p-5 border border-stone-200 dark:border-[rgba(255,255,255,0.08)] shadow-xs space-y-3 transition-colors">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                   <span className="p-2 bg-teal-500/10 text-teal-700 dark:text-teal-400 rounded-xl">
                     <Wind className="w-4 h-4" />
@@ -721,7 +721,7 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
 
             {/* 4. Bed Workability & Soil Moisture */}
             <div className="bg-white dark:bg-[#112217] rounded-3xl p-5 border border-stone-200 dark:border-[rgba(255,255,255,0.08)] shadow-xs space-y-3 transition-colors">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                   <span className="p-2 bg-blue-500/10 text-blue-700 dark:text-blue-400 rounded-xl">
                     <Droplets className="w-4 h-4" />
@@ -751,7 +751,7 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
       {/* 4. 24-HOUR HOURLY AGRICULTURAL STRIP */}
       {hourly.length > 0 && (
         <div className="bg-white dark:bg-[#112217] rounded-3xl p-5 sm:p-6 border border-stone-200 dark:border-[rgba(255,255,255,0.08)] shadow-xs space-y-4 transition-colors">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
               <h3 className="font-bold text-sm sm:text-base text-[#112217] dark:text-[#ecfdf5] font-serif-botanical">
                 24-Hour Garden Forecast Trend
@@ -835,7 +835,7 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
                 }`}
               >
                 <div>
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
                     <span className="font-bold text-xs text-stone-900 dark:text-stone-100">
                       {d.dayName}
                     </span>
@@ -969,7 +969,7 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
                   : 'bg-stone-50/50 dark:bg-[#122218] border-stone-200/60 dark:border-white/5 opacity-80'
               }`}
             >
-              <div className="flex items-center justify-between">
+              <div className="flex flex-wrap items-center justify-between gap-2">
                 <span className="font-bold text-stone-900 dark:text-stone-100">
                   {item.dayOfWeek}, {item.formattedDate}
                 </span>
@@ -980,7 +980,7 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
                 {item.sign} ({item.element})
               </div>
 
-              <div className="text-2xs font-medium text-emerald-800 dark:text-emerald-300 line-clamp-2">
+              <div className="text-2xs font-medium text-emerald-800 dark:text-emerald-300">
                 {item.bestFor.map((b) => b.replace(/-/g, ' ')).join(', ')}
               </div>
             </div>
@@ -1053,7 +1053,7 @@ export const WeatherAlmanac: React.FC<WeatherAlmanacProps> = ({
                 key={item.id}
                 className="p-3.5 bg-stone-50 dark:bg-[#172d1f] rounded-2xl border border-stone-200/80 dark:border-white/5 space-y-1.5"
               >
-                <div className="flex items-center justify-between">
+                <div className="flex flex-wrap items-center justify-between gap-2">
                   <h4 className="font-bold text-xs text-stone-900 dark:text-stone-100 font-serif-botanical">
                     &ldquo;{item.saying}&rdquo;
                   </h4>

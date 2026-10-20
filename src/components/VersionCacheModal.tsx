@@ -213,7 +213,7 @@ export const VersionCacheModal: React.FC<VersionCacheModalProps> = ({
                 <button
                   type="button"
                   onClick={handleInstallClick}
-                  className="px-2.5 py-1 rounded-md bg-emerald-700 text-white dark:bg-emerald-500 dark:text-stone-950 font-bold hover:bg-emerald-800 dark:hover:bg-emerald-400 transition-colors text-xs flex items-center gap-1"
+                  className="px-2.5 py-1 rounded-md bg-emerald-700 text-white dark:bg-emerald-500 dark:text-emerald-950 font-bold hover:bg-emerald-800 dark:hover:bg-emerald-400 transition-colors text-xs flex items-center gap-1"
                 >
                   <Download className="w-3 h-3" />
                   <span>Install App</span>
