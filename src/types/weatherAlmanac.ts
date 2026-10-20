@@ -94,7 +94,8 @@ export interface CurrentConditions {
 
 export interface AgriculturalIndices {
   frostWarning: {
-    level: 'none' | 'watch' | 'frost' | 'hard-freeze';
+    /** 'unknown' when there is no live forecast (offline estimate): never treat as safe. */
+    level: 'none' | 'watch' | 'frost' | 'hard-freeze' | 'unknown';
     badge: string;
     headline: string;
     details: string;
@@ -176,5 +177,12 @@ export interface WeatherAlmanacData {
   bestDays: BestAlmanacDay[];
   dailyLore: WeatherLoreItem;
   fetchedAt: string;
+  /** True for seasonal estimates generated when no forecast could be fetched. */
   isMockOrFallback: boolean;
+  /**
+   * live: fetched just now (or within the 25 min cache)
+   * cached: the weather service could not be reached; this is today's last live forecast
+   * estimate: no forecast available; values are seasonal estimates for the zone
+   */
+  forecastStatus: 'live' | 'cached' | 'estimate';
 }

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { ForecastStatusNotice, forecastSourceLabel } from './ForecastStatusNotice';
 import { GardenLocation, GardenSpace, GardenTask, PantryItem } from '../types/garden';
 import { CROPS_DATA } from '../data/cropsData';
 import {
@@ -130,7 +131,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 Live Weather &amp; Farmer&apos;s Almanac Guide
               </h3>
               <p className="text-[11px] text-stone-500 dark:text-stone-400 font-mono">
-                {location.city}, {location.state} · Synchronized with Open-Meteo &amp; Lunar Calendar
+                {location.city}, {location.state} · {forecastSourceLabel(weatherData)}
               </p>
             </div>
           </div>
@@ -145,6 +146,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
           </button>
         </div>
 
+        <ForecastStatusNotice data={weatherData} />
+
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
           {/* Current Weather Snapshot (5 cols) */}
           <div className="md:col-span-5 flex items-center gap-4 p-3.5 bg-stone-50 dark:bg-[#172d1f] rounded-2xl border border-stone-200/80 dark:border-white/5">
@@ -154,23 +157,25 @@ export const Dashboard: React.FC<DashboardProps> = ({
             <div>
               <div className="flex items-baseline gap-2">
                 <span className="text-3xl font-extrabold text-[#112217] dark:text-[#f0fdf4] font-serif-botanical">
-                  {weatherData?.current.tempF ?? 68}°F
+                  {weatherData ? `${weatherData.current.tempF}°F` : '--'}
                 </span>
                 <span className="text-xs text-stone-500 dark:text-stone-400">
-                  {weatherData?.current.weatherDesc || 'Partly Sunny & Mild'}
+                  {weatherData?.current.weatherDesc || 'Loading…'}
                 </span>
               </div>
               <div className="flex items-center gap-2 text-[11px] font-mono text-stone-500 dark:text-stone-400 mt-0.5">
-                <span>Soil: {weatherData?.indices.soilGermination.soilTempF ?? 62}°F</span>
+                <span>Soil: {weatherData ? `${Math.round(weatherData.indices.soilGermination.soilTempF)}°F` : '--'}</span>
                 <span>·</span>
                 <span
                   className={
-                    weatherData?.indices.frostWarning.level !== 'none'
-                      ? 'text-rose-600 dark:text-rose-400 font-bold'
-                      : 'text-emerald-700 dark:text-emerald-400 font-bold'
+                    !weatherData || weatherData.indices.frostWarning.level === 'unknown'
+                      ? 'text-amber-800 dark:text-amber-300 font-bold'
+                      : weatherData.indices.frostWarning.level !== 'none'
+                      ? 'text-rose-700 dark:text-rose-400 font-bold'
+                      : 'text-emerald-800 dark:text-emerald-400 font-bold'
                   }
                 >
-                  {weatherData?.indices.frostWarning.badge || 'No Frost Expected'}
+                  {weatherData ? weatherData.indices.frostWarning.badge : 'Checking frost outlook…'}
                 </span>
               </div>
             </div>
