@@ -247,9 +247,9 @@ export const PantryTracker: React.FC<PantryTrackerProps> = ({
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-stone-200 dark:border-[#223d2e]">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-[#183a24] dark:text-[#e4efe7] font-serif-botanical">
+          <h1 className="text-2xl font-bold tracking-tight text-[#183a24] dark:text-[#e4efe7] font-serif-botanical">
             Pantry Inventory, Food Security &amp; Batch Tracker
-          </h2>
+          </h1>
           <p className="text-xs text-stone-600 dark:text-stone-300 mt-1">
             Track preserved pantry stores, log jar usage, audit expiration dates, and see how long your preserved produce will last.
           </p>
@@ -276,7 +276,7 @@ export const PantryTracker: React.FC<PantryTrackerProps> = ({
             <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />
             <span>Pantry Alerts</span>
             {expiringSoonItems.length > 0 && (
-              <span className="px-1.5 py-0.2 bg-amber-500 text-white rounded-full text-[10px] font-bold">
+              <span className="px-1.5 py-0.5 bg-amber-300 text-amber-950 dark:bg-amber-400 dark:text-amber-950 rounded-full text-2xs font-bold">
                 {expiringSoonItems.length}
               </span>
             )}
@@ -320,7 +320,7 @@ export const PantryTracker: React.FC<PantryTrackerProps> = ({
             <Sparkles className="w-5 h-5" />
           </span>
           <div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
               <span className="font-mono text-xs font-bold uppercase text-emerald-800 dark:text-emerald-400">
                 Preserved Produce on Hand:
               </span>
@@ -379,14 +379,14 @@ export const PantryTracker: React.FC<PantryTrackerProps> = ({
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div className="overflow-hidden">
-                        <h4 className="font-bold text-stone-900 dark:text-white text-sm leading-tight truncate">
+                        <h2 className="font-bold text-stone-900 dark:text-white text-sm leading-tight break-words">
                           {item.cropName}
-                        </h4>
-                        <span className="text-[10px] text-stone-500 dark:text-stone-400 font-mono">
+                        </h2>
+                        <span className="text-2xs text-stone-500 dark:text-stone-400 font-mono">
                           Prep: {item.datePrepared}
                         </span>
                       </div>
-                      <span className="px-2 py-0.5 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 rounded-md font-mono text-[10px] font-semibold shrink-0">
+                      <span className="px-2 py-0.5 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 rounded-md font-mono text-2xs font-semibold shrink-0">
                         {item.preservationType}
                       </span>
                     </div>
@@ -407,14 +407,14 @@ export const PantryTracker: React.FC<PantryTrackerProps> = ({
                         onClick={() => handleUseJar(item)}
                         title="Use 1 jar / decrement count"
                         aria-label={`Use 1 ${item.unit} of ${item.cropName}`}
-                        className="flex items-center gap-1 px-2.5 py-1 text-[11px] font-semibold bg-white dark:bg-[#122118] border border-stone-300 dark:border-[#223d2e] hover:border-emerald-600 dark:hover:border-emerald-500 text-stone-700 dark:text-stone-200 hover:text-emerald-800 rounded-lg transition-colors shadow-2xs"
+                        className="flex items-center gap-1 px-2.5 py-1 text-xs font-semibold bg-white dark:bg-[#122118] border border-stone-300 dark:border-[#223d2e] hover:border-emerald-600 dark:hover:border-emerald-500 text-stone-700 dark:text-stone-200 hover:text-emerald-800 rounded-lg transition-colors shadow-2xs"
                       >
                         <MinusCircle className="w-3.5 h-3.5 text-emerald-700 dark:text-emerald-400" />
                         <span>Used 1</span>
                       </button>
                     </div>
 
-                    <div className="space-y-1 text-[11px] text-stone-600 dark:text-stone-300 pt-1">
+                    <div className="space-y-1 text-xs text-stone-600 dark:text-stone-300 pt-1">
                       <div className="flex justify-between">
                         <span>Storage:</span>
                         <strong className="text-stone-800 dark:text-stone-200">{item.storageLocation}</strong>
@@ -433,7 +433,7 @@ export const PantryTracker: React.FC<PantryTrackerProps> = ({
                     </div>
 
                     {item.notes && (
-                      <p className="text-[11px] text-stone-500 dark:text-stone-400 italic line-clamp-2">
+                      <p className="text-xs text-stone-500 dark:text-stone-400 italic font-serif-botanical line-clamp-2">
                         {item.notes}
                       </p>
                     )}
@@ -476,9 +476,9 @@ export const PantryTracker: React.FC<PantryTrackerProps> = ({
             <div className="flex items-center gap-2 border-b border-stone-200 dark:border-[#223d2e] pb-3">
               <AlertTriangle className="w-5 h-5 text-amber-500" />
               <div>
-                <h3 className="font-bold text-sm text-[#183a24] dark:text-white font-serif-botanical">
+                <h2 className="font-bold text-sm text-[#183a24] dark:text-white font-serif-botanical">
                   Pantry Freshness &amp; Expiration Audit (30-Day Window)
-                </h3>
+                </h2>
                 <p className="text-xs text-stone-500 dark:text-stone-400">
                   Prioritize consuming or freezing batches approaching their optimal safe quality window.
                 </p>
@@ -501,7 +501,7 @@ export const PantryTracker: React.FC<PantryTrackerProps> = ({
                           <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${isExpired ? 'bg-rose-500' : isUrgent ? 'bg-amber-500' : 'bg-emerald-500'}`} />
                           <div>
                             <strong className="text-stone-900 dark:text-white">{item.cropName}</strong>
-                            <div className="text-[11px] text-stone-500 dark:text-stone-400">
+                            <div className="text-xs text-stone-500 dark:text-stone-400">
                               {item.quantity} {item.unit} · {item.storageLocation} ({item.preservationType})
                             </div>
                           </div>
@@ -512,7 +512,7 @@ export const PantryTracker: React.FC<PantryTrackerProps> = ({
                             <span className="font-mono text-stone-700 dark:text-stone-300 block">
                               Best by: {item.bestByDate}
                             </span>
-                            <span className={`text-[10px] font-bold ${isExpired ? 'text-rose-600' : isUrgent ? 'text-amber-600' : 'text-emerald-700'}`}>
+                            <span className={`text-2xs font-bold ${isExpired ? 'text-rose-600' : isUrgent ? 'text-amber-600' : 'text-emerald-700'}`}>
                               {isExpired ? 'EXPIRED' : `${item.daysUntilExpiry} days remaining`}
                             </span>
                           </div>
@@ -539,10 +539,10 @@ export const PantryTracker: React.FC<PantryTrackerProps> = ({
         <div className="space-y-5">
           <div className="bg-white dark:bg-[#132219] border border-stone-200 dark:border-[#223d2e] rounded-2xl p-5 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4">
             <div>
-              <h3 className="font-bold text-sm text-[#183a24] dark:text-white flex items-center gap-2">
+              <h2 className="font-bold text-sm text-[#183a24] dark:text-white flex items-center gap-2">
                 <Users className="w-4 h-4 text-emerald-800 dark:text-emerald-400" />
                 How Much Should I Plant for My Family?
-              </h3>
+              </h2>
               <p className="text-xs text-stone-600 dark:text-stone-300 mt-0.5">
                 Adjust household size to compute required plant counts for fresh summer eating versus full winter pantry food security.
               </p>
@@ -565,28 +565,28 @@ export const PantryTracker: React.FC<PantryTrackerProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {familyPlanningBenchmarks.map(item => (
               <div key={item.crop} className="bg-white dark:bg-[#132219] border border-stone-200 dark:border-[#223d2e] rounded-2xl p-4 shadow-2xs space-y-3 text-xs">
-                <h4 className="font-bold text-sm text-[#183a24] dark:text-white">{item.crop}</h4>
+                <h3 className="font-bold text-sm text-[#183a24] dark:text-white">{item.crop}</h3>
 
                 <div className="grid grid-cols-2 gap-2 text-center">
                   <div className="bg-[#f6f8f6] dark:bg-[#182c20] p-2.5 rounded-xl border border-stone-200 dark:border-[#223d2e]">
-                    <span className="text-[10px] text-stone-500 dark:text-stone-400 block">Fresh Eating Only</span>
+                    <span className="text-2xs text-stone-500 dark:text-stone-400 block">Fresh Eating Only</span>
                     <span className="text-lg font-extrabold text-[#183a24] dark:text-white font-mono">
                       {Math.ceil(item.calculatedFresh)}
                     </span>
-                    <span className="text-[10px] text-stone-400 block">plants</span>
+                    <span className="text-2xs text-stone-400 block">plants</span>
                   </div>
 
                   <div className="bg-[#f0f5f1] dark:bg-[#12291c] p-2.5 rounded-xl border border-emerald-200 dark:border-emerald-800">
-                    <span className="text-[10px] text-emerald-900 dark:text-emerald-300 block font-semibold">Fresh + Winter Canning</span>
+                    <span className="text-2xs text-emerald-900 dark:text-emerald-300 block font-semibold">Fresh + Winter Canning</span>
                     <span className="text-lg font-extrabold text-emerald-800 dark:text-emerald-400 font-mono">
                       {Math.ceil(item.calculatedPreserve)}
                     </span>
-                    <span className="text-[10px] text-emerald-700 dark:text-emerald-300 block">plants</span>
+                    <span className="text-2xs text-emerald-700 dark:text-emerald-300 block">plants</span>
                   </div>
                 </div>
 
-                <div className="text-[11px] text-stone-600 dark:text-stone-300 pt-1 border-t border-stone-100 dark:border-[#223d2e]">
-                  <span className="text-stone-400 block text-[10px]">Extension Yield Assumption:</span>
+                <div className="text-xs text-stone-600 dark:text-stone-300 pt-1 border-t border-stone-100 dark:border-[#223d2e]">
+                  <span className="text-stone-400 block text-2xs">Extension Yield Assumption:</span>
                   {item.yieldNotes}
                 </div>
               </div>
@@ -601,21 +601,21 @@ export const PantryTracker: React.FC<PantryTrackerProps> = ({
           {harvestMealIdeas.map(meal => (
             <div key={meal.title} className="bg-white dark:bg-[#132219] border border-stone-200 dark:border-[#223d2e] rounded-2xl p-5 shadow-xs space-y-3 text-xs">
               <div className="flex items-center justify-between">
-                <span className="px-2 py-0.5 bg-stone-100 dark:bg-[#182c20] text-stone-600 dark:text-stone-300 rounded-md font-medium text-[10px]">
+                <span className="px-2 py-0.5 bg-stone-100 dark:bg-[#182c20] text-stone-600 dark:text-stone-300 rounded-md font-medium text-2xs">
                   {meal.season}
                 </span>
-                <span className="text-stone-400 font-mono text-[11px]">{meal.prepTime}</span>
+                <span className="text-stone-400 font-mono text-xs">{meal.prepTime}</span>
               </div>
 
-              <h4 className="font-bold text-sm text-[#183a24] dark:text-white">{meal.title}</h4>
-              <p className="text-stone-600 dark:text-stone-300 leading-relaxed text-[11px]">{meal.description}</p>
+              <h3 className="font-bold text-sm text-[#183a24] dark:text-white">{meal.title}</h3>
+              <p className="text-stone-600 dark:text-stone-300 leading-relaxed text-xs">{meal.description}</p>
 
               <div className="pt-2 border-t border-stone-100 dark:border-[#223d2e] space-y-1">
-                <div className="text-[11px]">
+                <div className="text-xs">
                   <strong className="text-emerald-900 dark:text-emerald-300">From the Garden:</strong>{' '}
                   <span className="text-stone-700 dark:text-stone-300">{meal.primaryIngredients.join(', ')}</span>
                 </div>
-                <div className="text-[11px]">
+                <div className="text-xs">
                   <strong className="text-stone-700 dark:text-stone-300">Pantry Staples Needed:</strong>{' '}
                   <span className="text-stone-500 dark:text-stone-400">{meal.pantryAdds.join(', ')}</span>
                 </div>
@@ -629,10 +629,10 @@ export const PantryTracker: React.FC<PantryTrackerProps> = ({
       {activeTab === 'shopping' && (
         <div className="bg-white dark:bg-[#132219] border border-stone-200 dark:border-[#223d2e] rounded-2xl p-6 shadow-xs max-w-xl mx-auto space-y-4 text-xs">
           <div>
-            <h3 className="font-bold text-sm text-[#183a24] dark:text-white font-serif-botanical flex items-center gap-2">
+            <h2 className="font-bold text-sm text-[#183a24] dark:text-white font-serif-botanical flex items-center gap-2">
               <ShoppingCart className="w-4 h-4 text-emerald-800 dark:text-emerald-400" />
               Essential Food Preservation Supply Checklist
-            </h3>
+            </h2>
             <p className="text-stone-600 dark:text-stone-300 mt-0.5">
               Ensure you have tested supplies ready before your peak harvest flushes arrive.
             </p>
@@ -661,13 +661,13 @@ export const PantryTracker: React.FC<PantryTrackerProps> = ({
 
       {/* Edit / Add Modal */}
       {isEditModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
           <DialogBehavior onClose={() => setIsEditModalOpen(false)} />
           <div className="bg-white dark:bg-[#112117] border border-stone-200 dark:border-[#223d2e] rounded-2xl w-full max-w-md overflow-hidden shadow-2xl p-6 text-xs space-y-4">
             <div className="flex items-center justify-between border-b border-stone-200 dark:border-[#223d2e] pb-3">
-              <h3 className="font-bold text-sm text-[#183a24] dark:text-white font-serif-botanical">
+              <h2 className="font-bold text-sm text-[#183a24] dark:text-white font-serif-botanical">
                 {editingItem ? 'Edit Pantry Batch' : 'Add Pantry Item'}
-              </h3>
+              </h2>
               <button
                 type="button"
                 onClick={() => setIsEditModalOpen(false)}

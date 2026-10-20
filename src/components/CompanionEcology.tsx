@@ -33,9 +33,9 @@ export const CompanionEcology: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-stone-200">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-[#183a24] font-serif-botanical">
+          <h1 className="text-2xl font-bold tracking-tight text-[#183a24] font-serif-botanical">
             Companion Planting &amp; Garden Ecology
-          </h2>
+          </h1>
           <p className="text-xs text-stone-600 mt-1">
             Separating peer-reviewed agricultural science (spatial shading, nitrogen fixation, braconid wasp reservoirs) from traditional folklore.
           </p>
@@ -154,19 +154,20 @@ export const CompanionEcology: React.FC = () => {
                     pair.relationship === 'beneficial' ? 'border-emerald-200/80' : 'border-rose-200/80'
                   }`}
                 >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="text-2xl">{cropA?.iconEmoji || '🌱'}</span>
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1 min-w-0">
+                      <span className="text-2xl" aria-hidden="true">{cropA?.iconEmoji || '🌱'}</span>
                       <span className="font-bold text-stone-900">{cropA?.name.split('(')[0] || pair.cropA}</span>
-                      <span className="text-stone-400 font-bold">
+                      <span className="text-stone-400 font-bold" aria-hidden="true">
                         {pair.relationship === 'beneficial' ? '+' : '≠'}
                       </span>
-                      <span className="text-2xl">{cropB?.iconEmoji || '🌱'}</span>
+                      <span className="sr-only">{pair.relationship === 'beneficial' ? 'grows well with' : 'conflicts with'}</span>
+                      <span className="text-2xl" aria-hidden="true">{cropB?.iconEmoji || '🌱'}</span>
                       <span className="font-bold text-stone-900">{cropB?.name.split('(')[0] || pair.cropB}</span>
                     </div>
 
                     <span
-                      className={`px-2 py-0.5 rounded-md font-mono text-[10px] font-bold uppercase ${
+                      className={`px-2 py-0.5 rounded-md font-mono text-2xs font-bold uppercase ${
                         pair.relationship === 'beneficial'
                           ? 'bg-emerald-100 text-emerald-900'
                           : 'bg-rose-100 text-rose-900'
@@ -177,19 +178,19 @@ export const CompanionEcology: React.FC = () => {
                   </div>
 
                   <div className="bg-[#faf9f5] p-3 rounded-xl border border-stone-200/60 space-y-1">
-                    <div className="flex items-center justify-between text-[11px]">
+                    <div className="flex items-center justify-between text-xs">
                       <span className="text-stone-500 font-medium">Ecological Mechanism:</span>
                       <span className="font-semibold text-stone-800 capitalize">
                         {pair.mechanism.replace('-', ' ')}
                       </span>
                     </div>
-                    <div className="flex items-center justify-between text-[11px]">
+                    <div className="flex items-center justify-between text-xs">
                       <span className="text-stone-500 font-medium">Evidence Rigor:</span>
                       <span className="font-mono text-emerald-800 font-semibold">{pair.scientificEvidence}</span>
                     </div>
                   </div>
 
-                  <p className="text-stone-600 leading-relaxed text-[11px] pt-1">
+                  <p className="text-stone-600 leading-relaxed text-xs pt-1">
                     {pair.notes}
                   </p>
                 </div>
@@ -204,23 +205,23 @@ export const CompanionEcology: React.FC = () => {
           {ECOLOGICAL_INSECTS.map(ins => (
             <div key={ins.name} className="bg-white border border-stone-200 rounded-2xl p-5 shadow-xs space-y-3 text-xs">
               <div className="flex items-center justify-between">
-                <h4 className="font-bold text-sm text-[#183a24]">{ins.name}</h4>
-                <span className="px-2 py-0.5 bg-emerald-100 text-emerald-900 font-semibold rounded-md text-[10px] capitalize">
+                <h3 className="font-bold text-sm text-[#183a24]">{ins.name}</h3>
+                <span className="px-2 py-0.5 bg-emerald-100 text-emerald-900 font-semibold rounded-md text-2xs capitalize">
                   {ins.type.replace('-', ' ')}
                 </span>
               </div>
 
-              <div className="space-y-1 text-[11px]">
+              <div className="space-y-1 text-xs">
                 <strong className="text-stone-800">Target Pests Controlled:</strong>
                 <p className="text-stone-600">{ins.targetPests.join(', ')}</p>
               </div>
 
-              <div className="space-y-1 text-[11px]">
+              <div className="space-y-1 text-xs">
                 <strong className="text-emerald-900">Preferred Nectar &amp; Habitat Flowers:</strong>
                 <p className="text-stone-700">{ins.preferredFlowers.join(', ')}</p>
               </div>
 
-              <div className="p-2.5 bg-[#f6f8f6] border border-stone-200 rounded-xl text-stone-600 text-[11px] leading-relaxed">
+              <div className="p-2.5 bg-[#f6f8f6] border border-stone-200 rounded-xl text-stone-600 text-xs leading-relaxed">
                 <strong>Ecology Note:</strong> {ins.habitatTips}
               </div>
             </div>
@@ -231,9 +232,9 @@ export const CompanionEcology: React.FC = () => {
       {activeTab === 'pollination' && (
         <div className="bg-white border border-stone-200 rounded-2xl p-6 shadow-xs space-y-5 text-xs">
           <div>
-            <h3 className="font-bold text-base text-[#183a24] font-serif-botanical">
+            <h2 className="font-bold text-base text-[#183a24] font-serif-botanical">
               Crop Pollination Biology &amp; Hand Pollination Guide
-            </h3>
+            </h2>
             <p className="text-stone-600 mt-0.5">
               Distinguishing true pollination failure from heat-induced pollen sterility, and knowing when protective row netting must be opened.
             </p>
@@ -241,22 +242,22 @@ export const CompanionEcology: React.FC = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="p-4 bg-stone-50 rounded-xl border border-stone-200 space-y-1.5">
-              <h4 className="font-bold text-stone-900">1. Self-Pollinating Crops</h4>
-              <p className="text-[11px] text-stone-600">
+              <h3 className="font-bold text-stone-900">1. Self-Pollinating Crops</h3>
+              <p className="text-xs text-stone-600">
                 <strong>Tomatoes, Peppers, Beans, Peas.</strong> Each blossom contains both male (anthers) and female (pistil) parts. Wind vibration or bumblebee sonic buzzing is sufficient to set fruit. Protective insect netting does NOT prevent pollination.
               </p>
             </div>
 
             <div className="p-4 bg-stone-50 rounded-xl border border-stone-200 space-y-1.5">
-              <h4 className="font-bold text-stone-900">2. Insect-Dependent Crops</h4>
-              <p className="text-[11px] text-stone-600">
+              <h3 className="font-bold text-stone-900">2. Insect-Dependent Crops</h3>
+              <p className="text-xs text-stone-600">
                 <strong>Cucumbers, Squash, Melons, Pumpkins.</strong> Produce separate male and female flowers. Bees must transfer sticky pollen from male blooms to the female bloom (identified by the miniature baby fruit at the base). <strong>Row covers MUST be removed once female blossoms open!</strong>
               </p>
             </div>
 
             <div className="p-4 bg-stone-50 rounded-xl border border-stone-200 space-y-1.5">
-              <h4 className="font-bold text-stone-900">3. Hand Pollination Technique</h4>
-              <p className="text-[11px] text-stone-600">
+              <h3 className="font-bold text-stone-900">3. Hand Pollination Technique</h3>
+              <p className="text-xs text-stone-600">
                 For squash in screened greenhouses or low-pollinator areas: In early morning, pick an open male flower, peel off petals to expose the pollen-dusted anther, and gently swab it inside the center stigma of open female blossoms.
               </p>
             </div>

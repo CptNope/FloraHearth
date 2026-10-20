@@ -128,9 +128,9 @@ export const HydroIndoorGuide: React.FC<HydroIndoorGuideProps> = ({
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-stone-200 dark:border-[#223d2e]">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-[#183a24] dark:text-[#e4efe7] font-serif-botanical">
+          <h1 className="text-2xl font-bold tracking-tight text-[#183a24] dark:text-[#e4efe7] font-serif-botanical">
             Indoor Grow Lights, Hydroponics &amp; Water Logs
-          </h2>
+          </h1>
           <p className="text-xs text-stone-600 dark:text-stone-300 mt-1">
             Log reservoir pH/EC/PPM, calculate Daily Light Integrals (DLI), and manage aquaponic nitrogen cycling.
           </p>
@@ -194,51 +194,51 @@ export const HydroIndoorGuide: React.FC<HydroIndoorGuideProps> = ({
           {/* Quick Metrics Bar */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="bg-white dark:bg-[#132219] p-4 rounded-2xl border border-stone-200 dark:border-[#223d2e] shadow-xs">
-              <span className="text-[11px] font-semibold text-stone-500 dark:text-stone-400 block">Latest pH Reading</span>
+              <span className="text-xs font-semibold text-stone-500 dark:text-stone-400 block">Latest pH Reading</span>
               <div className="flex items-baseline gap-2 mt-1">
                 <span className="text-2xl font-extrabold text-[#183a24] dark:text-white font-mono">
                   {latestRecord ? latestRecord.ph.toFixed(1) : '6.0'}
                 </span>
-                <span className={`text-[10px] px-2 py-0.5 rounded-md border font-mono ${latestRecord ? getPhStatus(latestRecord.ph).color : ''}`}>
+                <span className={`text-2xs px-2 py-0.5 rounded-md border font-mono ${latestRecord ? getPhStatus(latestRecord.ph).color : ''}`}>
                   {latestRecord ? getPhStatus(latestRecord.ph).label.split('(')[0] : 'Optimal'}
                 </span>
               </div>
-              <p className="text-[10px] text-stone-400 mt-1">Target range: 5.5 – 6.5</p>
+              <p className="text-2xs text-stone-400 mt-1">Target range: 5.5 – 6.5</p>
             </div>
 
             <div className="bg-white dark:bg-[#132219] p-4 rounded-2xl border border-stone-200 dark:border-[#223d2e] shadow-xs">
-              <span className="text-[11px] font-semibold text-stone-500 dark:text-stone-400 block">Nutrient EC / Concentration</span>
+              <span className="text-xs font-semibold text-stone-500 dark:text-stone-400 block">Nutrient EC / Concentration</span>
               <div className="flex items-baseline gap-2 mt-1">
                 <span className="text-2xl font-extrabold text-[#183a24] dark:text-white font-mono">
                   {latestRecord ? `${latestRecord.ecPpm} PPM` : '950 PPM'}
                 </span>
-                <span className="text-[10px] font-mono text-emerald-800 dark:text-emerald-300 font-semibold">
+                <span className="text-2xs font-mono text-emerald-800 dark:text-emerald-300 font-semibold">
                   (~{latestRecord ? (latestRecord.ecPpm / 500).toFixed(1) : '1.9'} mS/cm)
                 </span>
               </div>
-              <p className="text-[10px] text-stone-400 mt-1">Greens: 600-1000 | Fruiting: 1200-1800</p>
+              <p className="text-2xs text-stone-400 mt-1">Greens: 600-1000 | Fruiting: 1200-1800</p>
             </div>
 
             <div className="bg-white dark:bg-[#132219] p-4 rounded-2xl border border-stone-200 dark:border-[#223d2e] shadow-xs">
-              <span className="text-[11px] font-semibold text-stone-500 dark:text-stone-400 block">Water Temp &amp; Dissolved O2</span>
+              <span className="text-xs font-semibold text-stone-500 dark:text-stone-400 block">Water Temp &amp; Dissolved O2</span>
               <div className="flex items-baseline gap-2 mt-1">
                 <span className="text-2xl font-extrabold text-[#183a24] dark:text-white font-mono">
                   {latestRecord ? `${latestRecord.waterTempF}°F` : '68°F'}
                 </span>
-                <span className={`text-[10px] font-semibold ${latestRecord ? getTempStatus(latestRecord.waterTempF).color : ''}`}>
+                <span className={`text-2xs font-semibold ${latestRecord ? getTempStatus(latestRecord.waterTempF).color : ''}`}>
                   {latestRecord ? getTempStatus(latestRecord.waterTempF).label : 'Ideal'}
                 </span>
               </div>
-              <p className="text-[10px] text-stone-400 mt-1">Keep under 74°F to stop Pythium rot</p>
+              <p className="text-2xs text-stone-400 mt-1">Keep under 74°F to stop Pythium rot</p>
             </div>
           </div>
 
           {/* Action Bar */}
           <div className="flex items-center justify-between">
-            <h3 className="font-bold text-sm text-[#183a24] dark:text-white font-serif-botanical flex items-center gap-2">
+            <h2 className="font-bold text-sm text-[#183a24] dark:text-white font-serif-botanical flex items-center gap-2">
               <TrendingUp className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
               Hydroponic &amp; Reservoir Reading History
-            </h3>
+            </h2>
             <button
               type="button"
               onClick={openAddModal}
@@ -267,7 +267,7 @@ export const HydroIndoorGuide: React.FC<HydroIndoorGuideProps> = ({
                     {chartSystems.map(sys => <option key={sys} value={sys}>{SYSTEM_LABELS[sys] || sys}</option>)}
                   </select>
                 )}
-                <div className="flex items-center gap-4 text-[11px] font-mono">
+                <div className="flex items-center gap-4 text-xs font-mono">
                   <div className="flex items-center gap-1.5">
                     <span className="w-3 h-3 rounded-full bg-emerald-500 inline-block" />
                     <span className="text-stone-600 dark:text-stone-300">pH Level (5.5-6.5 Ideal)</span>
@@ -345,7 +345,7 @@ export const HydroIndoorGuide: React.FC<HydroIndoorGuideProps> = ({
                         <text
                           x={padding.left + 6}
                           y={optimalPhTop + 11}
-                          fontSize="9"
+                          fontSize="11"
                           fill="#059669"
                           fontFamily="monospace"
                           fontWeight="bold"
@@ -354,14 +354,14 @@ export const HydroIndoorGuide: React.FC<HydroIndoorGuideProps> = ({
                         </text>
 
                         {/* Y-axis labels for pH (Left) */}
-                        <text x={padding.left - 6} y={getYForPh(7.0) + 3} fontSize="9" textAnchor="end" fill="#6b7280" fontFamily="monospace">7.0</text>
-                        <text x={padding.left - 6} y={getYForPh(6.0) + 3} fontSize="9" textAnchor="end" fill="#059669" fontFamily="monospace" fontWeight="bold">6.0</text>
-                        <text x={padding.left - 6} y={getYForPh(5.0) + 3} fontSize="9" textAnchor="end" fill="#6b7280" fontFamily="monospace">5.0</text>
+                        <text x={padding.left - 6} y={getYForPh(7.0) + 3} fontSize="11" textAnchor="end" fill="#6b7280" fontFamily="monospace">7.0</text>
+                        <text x={padding.left - 6} y={getYForPh(6.0) + 3} fontSize="11" textAnchor="end" fill="#059669" fontFamily="monospace" fontWeight="bold">6.0</text>
+                        <text x={padding.left - 6} y={getYForPh(5.0) + 3} fontSize="11" textAnchor="end" fill="#6b7280" fontFamily="monospace">5.0</text>
 
                         {/* Y-axis labels for PPM (Right) */}
-                        <text x={padding.left + chartW + 6} y={getYForPpm(1600) + 3} fontSize="9" textAnchor="start" fill="#d97706" fontFamily="monospace">1600p</text>
-                        <text x={padding.left + chartW + 6} y={getYForPpm(1000) + 3} fontSize="9" textAnchor="start" fill="#d97706" fontFamily="monospace">1000p</text>
-                        <text x={padding.left + chartW + 6} y={getYForPpm(600) + 3} fontSize="9" textAnchor="start" fill="#d97706" fontFamily="monospace">600p</text>
+                        <text x={padding.left + chartW + 6} y={getYForPpm(1600) + 3} fontSize="11" textAnchor="start" fill="#d97706" fontFamily="monospace">1600p</text>
+                        <text x={padding.left + chartW + 6} y={getYForPpm(1000) + 3} fontSize="11" textAnchor="start" fill="#d97706" fontFamily="monospace">1000p</text>
+                        <text x={padding.left + chartW + 6} y={getYForPpm(600) + 3} fontSize="11" textAnchor="start" fill="#d97706" fontFamily="monospace">600p</text>
 
                         {/* Polylines if >= 2 points */}
                         {sorted.length > 1 && (
@@ -417,7 +417,7 @@ export const HydroIndoorGuide: React.FC<HydroIndoorGuideProps> = ({
                               <text
                                 x={x}
                                 y={yPh - 7}
-                                fontSize="9"
+                                fontSize="11"
                                 textAnchor="middle"
                                 fill="#10b981"
                                 fontFamily="monospace"
@@ -429,7 +429,7 @@ export const HydroIndoorGuide: React.FC<HydroIndoorGuideProps> = ({
                               <text
                                 x={x}
                                 y={height - 5}
-                                fontSize="9"
+                                fontSize="11"
                                 textAnchor="middle"
                                 fill="#6b7280"
                                 fontFamily="monospace"
@@ -464,7 +464,7 @@ export const HydroIndoorGuide: React.FC<HydroIndoorGuideProps> = ({
             <div className="bg-white dark:bg-[#132219] border border-stone-200 dark:border-[#223d2e] rounded-2xl overflow-hidden shadow-xs">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
-                  <thead className="bg-stone-50 dark:bg-[#182c20] text-stone-600 dark:text-stone-300 uppercase text-[10px] font-mono border-b border-stone-200 dark:border-[#223d2e]">
+                  <thead className="bg-stone-50 dark:bg-[#182c20] text-stone-600 dark:text-stone-300 uppercase text-2xs font-mono border-b border-stone-200 dark:border-[#223d2e]">
                     <tr>
                       <th className="py-3 px-4">Date</th>
                       <th className="py-3 px-4">System</th>
@@ -484,12 +484,12 @@ export const HydroIndoorGuide: React.FC<HydroIndoorGuideProps> = ({
                         <tr key={rec.id} className="hover:bg-stone-50/70 dark:hover:bg-[#182c20]/50 transition-colors">
                           <td className="py-3 px-4 font-mono font-semibold">{rec.date}</td>
                           <td className="py-3 px-4">
-                            <span className="uppercase text-[10px] px-2 py-0.5 rounded-md font-mono bg-stone-100 dark:bg-[#182c20] text-stone-700 dark:text-stone-300">
+                            <span className="uppercase text-2xs px-2 py-0.5 rounded-md font-mono bg-stone-100 dark:bg-[#182c20] text-stone-700 dark:text-stone-300">
                               {rec.systemType}
                             </span>
                           </td>
                           <td className="py-3 px-4">
-                            <span className={`inline-block px-2 py-0.5 rounded-md border font-mono font-bold text-[11px] ${phStatus.color}`}>
+                            <span className={`inline-block px-2 py-0.5 rounded-md border font-mono font-bold text-xs ${phStatus.color}`}>
                               {rec.ph.toFixed(1)}
                             </span>
                           </td>
@@ -501,10 +501,10 @@ export const HydroIndoorGuide: React.FC<HydroIndoorGuideProps> = ({
                               {rec.waterTempF}°F
                             </span>
                           </td>
-                          <td className="py-3 px-4 text-[11px] font-mono text-stone-500 dark:text-stone-400">
+                          <td className="py-3 px-4 text-xs font-mono text-stone-500 dark:text-stone-400">
                             {rec.ammoniaPpm !== undefined ? `${rec.ammoniaPpm} / ${rec.nitritePpm || 0} / ${rec.nitratePpm || 0}` : '—'}
                           </td>
-                          <td className="py-3 px-4 max-w-xs truncate text-[11px] text-stone-500 dark:text-stone-400">
+                          <td className="py-3 px-4 max-w-xs break-words text-xs text-stone-500 dark:text-stone-400">
                             {rec.notes || '—'}
                           </td>
                           <td className="py-3 px-4 text-right">
@@ -547,10 +547,10 @@ export const HydroIndoorGuide: React.FC<HydroIndoorGuideProps> = ({
         <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
             <div className="md:col-span-5 bg-white dark:bg-[#132219] border border-stone-200 dark:border-[#223d2e] rounded-2xl p-5 shadow-xs space-y-4 text-xs">
-              <h3 className="font-bold text-sm text-[#183a24] dark:text-white font-serif-botanical flex items-center gap-2">
+              <h2 className="font-bold text-sm text-[#183a24] dark:text-white font-serif-botanical flex items-center gap-2">
                 <Lightbulb className="w-4 h-4 text-amber-600" aria-hidden="true" />
                 Daily Light Integral (DLI) Calculator
-              </h3>
+              </h2>
               <p className="text-stone-600 dark:text-stone-300 leading-relaxed">
                 Plants respond to total photons received per 24 hours (DLI in mol/m²/day), not just instantaneous wattage.
               </p>
@@ -570,7 +570,7 @@ export const HydroIndoorGuide: React.FC<HydroIndoorGuideProps> = ({
                   aria-label="PPFD at canopy height"
                   className="w-full accent-amber-600"
                 />
-                <div className="flex justify-between text-[10px] text-stone-400">
+                <div className="flex justify-between text-2xs text-stone-400">
                   <span>100 (Seedlings)</span>
                   <span>400 (Greens/Herbs)</span>
                   <span>800+ (Tomatoes)</span>
@@ -595,7 +595,7 @@ export const HydroIndoorGuide: React.FC<HydroIndoorGuideProps> = ({
               </div>
 
               <div className="bg-[#f2f7f3] dark:bg-[#182c20] p-4 rounded-xl border border-emerald-200 dark:border-emerald-800 text-center space-y-1">
-                <span className="text-[11px] text-stone-600 dark:text-stone-400 block uppercase font-mono">Delivered Daily Light Integral</span>
+                <span className="text-xs text-stone-600 dark:text-stone-400 block uppercase font-mono">Delivered Daily Light Integral</span>
                 <div className="text-3xl font-extrabold text-[#183a24] dark:text-[#34d399] font-mono">
                   {calculatedDli} <span className="text-sm font-normal text-stone-500">mol/m²/day</span>
                 </div>
@@ -603,9 +603,9 @@ export const HydroIndoorGuide: React.FC<HydroIndoorGuideProps> = ({
             </div>
 
             <div className="md:col-span-7 bg-white dark:bg-[#132219] border border-stone-200 dark:border-[#223d2e] rounded-2xl p-5 shadow-xs space-y-3 text-xs">
-              <h3 className="font-bold text-sm text-[#183a24] dark:text-white font-serif-botanical">
+              <h2 className="font-bold text-sm text-[#183a24] dark:text-white font-serif-botanical">
                 Target DLI Requirements by Crop
-              </h3>
+              </h2>
               <div className="space-y-2">
                 {[
                   { name: 'Microgreens & Seedlings', dli: '6 - 10 mol', desc: 'Low light requirements; prevent leggy stretching.' },
@@ -617,7 +617,7 @@ export const HydroIndoorGuide: React.FC<HydroIndoorGuideProps> = ({
                   <div key={item.name} className="p-3 bg-stone-50 dark:bg-[#182c20] rounded-xl flex items-center justify-between gap-4 border border-stone-200/60 dark:border-[#223d2e]">
                     <div>
                       <strong className="text-stone-900 dark:text-stone-100 block">{item.name}</strong>
-                      <span className="text-[11px] text-stone-500 dark:text-stone-400">{item.desc}</span>
+                      <span className="text-xs text-stone-500 dark:text-stone-400">{item.desc}</span>
                     </div>
                     <span className="px-2.5 py-1 bg-white dark:bg-[#111e16] border border-stone-200 dark:border-[#223d2e] rounded-lg font-mono font-bold text-emerald-800 dark:text-emerald-400 whitespace-nowrap text-xs">
                       {item.dli}
@@ -637,12 +637,12 @@ export const HydroIndoorGuide: React.FC<HydroIndoorGuideProps> = ({
             {HYDROPONIC_SPECS.map(spec => (
               <div key={spec.systemType} className="bg-white dark:bg-[#132219] border border-stone-200 dark:border-[#223d2e] rounded-2xl p-4 shadow-xs space-y-3 text-xs">
                 <div className="flex items-center justify-between">
-                  <h4 className="font-bold text-sm text-[#183a24] dark:text-white font-serif-botanical">{spec.systemType}</h4>
-                  <span className="px-2 py-0.5 bg-stone-100 dark:bg-[#182c20] text-stone-700 dark:text-stone-300 rounded font-mono text-[10px]">
+                  <h3 className="font-bold text-sm text-[#183a24] dark:text-white font-serif-botanical">{spec.systemType}</h3>
+                  <span className="px-2 py-0.5 bg-stone-100 dark:bg-[#182c20] text-stone-700 dark:text-stone-300 rounded font-mono text-2xs">
                     {spec.bestCrops[0]}
                   </span>
                 </div>
-                <div className="space-y-1.5 font-mono text-[11px] bg-stone-50 dark:bg-[#182c20] p-2.5 rounded-xl border border-stone-200/60 dark:border-[#223d2e]">
+                <div className="space-y-1.5 font-mono text-xs bg-stone-50 dark:bg-[#182c20] p-2.5 rounded-xl border border-stone-200/60 dark:border-[#223d2e]">
                   <div className="flex justify-between">
                     <span className="text-stone-500 dark:text-stone-400">Target pH:</span>
                     <strong className="text-emerald-800 dark:text-emerald-400">{spec.targetPh}</strong>
@@ -656,7 +656,7 @@ export const HydroIndoorGuide: React.FC<HydroIndoorGuideProps> = ({
                     <strong className="text-stone-800 dark:text-stone-200">{spec.waterTempF}</strong>
                   </div>
                 </div>
-                <div className="text-[11px] text-stone-500 dark:text-stone-400 pt-2 border-t border-stone-100 dark:border-[#223d2e]">
+                <div className="text-xs text-stone-500 dark:text-stone-400 pt-2 border-t border-stone-100 dark:border-[#223d2e]">
                   {spec.prosAndCons}
                 </div>
               </div>
@@ -673,9 +673,9 @@ export const HydroIndoorGuide: React.FC<HydroIndoorGuideProps> = ({
               <Fish className="w-5 h-5" />
             </span>
             <div>
-              <h3 className="font-bold text-base text-[#183a24] dark:text-white font-serif-botanical">
+              <h2 className="font-bold text-base text-[#183a24] dark:text-white font-serif-botanical">
                 Aquaponics Nitrogen Cycle &amp; Biological Equilibrium
-              </h3>
+              </h2>
               <p className="text-stone-600 dark:text-stone-300 mt-0.5">
                 Combines aquaculture (fish) and hydroponics (plants) via a 2-stage biological bacterial biofilter.
               </p>
@@ -685,19 +685,19 @@ export const HydroIndoorGuide: React.FC<HydroIndoorGuideProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-center">
             <div className="p-3.5 bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900/50 rounded-xl space-y-1">
               <span className="font-mono font-bold text-rose-900 dark:text-rose-300 text-xs">1. Fish Waste (Ammonia)</span>
-              <p className="text-[11px] text-rose-950 dark:text-rose-200">
+              <p className="text-xs text-rose-950 dark:text-rose-200">
                 Total ammonia nitrogen (NH3 / NH4+). Toxic to fish at levels above 0.5 ppm.
               </p>
             </div>
             <div className="p-3.5 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50 rounded-xl space-y-1">
               <span className="font-mono font-bold text-amber-900 dark:text-amber-300 text-xs">2. Nitrosomonas Bacteria</span>
-              <p className="text-[11px] text-amber-950 dark:text-amber-200">
+              <p className="text-xs text-amber-950 dark:text-amber-200">
                 Converts ammonia into Nitrite (NO2-). Toxic to fish above 0.25 ppm.
               </p>
             </div>
             <div className="p-3.5 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/50 rounded-xl space-y-1">
               <span className="font-mono font-bold text-emerald-900 dark:text-emerald-300 text-xs">3. Nitrobacter Bacteria</span>
-              <p className="text-[11px] text-emerald-950 dark:text-emerald-200">
+              <p className="text-xs text-emerald-950 dark:text-emerald-200">
                 Converts nitrite into Nitrate (NO3-). Completely harmless to fish and primary plant food!
               </p>
             </div>
@@ -707,13 +707,13 @@ export const HydroIndoorGuide: React.FC<HydroIndoorGuideProps> = ({
 
       {/* Log / Edit Water Reading Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
           <DialogBehavior onClose={() => setIsModalOpen(false)} />
           <div className="bg-white dark:bg-[#112117] border border-stone-200 dark:border-[#223d2e] rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl space-y-4 p-6 text-xs">
             <div className="flex items-center justify-between border-b border-stone-200 dark:border-[#223d2e] pb-3">
-              <h3 className="font-bold text-sm text-[#183a24] dark:text-white font-serif-botanical">
+              <h2 className="font-bold text-sm text-[#183a24] dark:text-white font-serif-botanical">
                 {editingRecord ? 'Edit Hydro Water Reading' : 'Log Reservoir Water Reading'}
-              </h3>
+              </h2>
               <button
                 type="button"
                 onClick={() => setIsModalOpen(false)}

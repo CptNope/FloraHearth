@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useEffect, lazy, Suspense } from 'react';
+import React, { useState, useEffect, useCallback, useRef, lazy, Suspense } from 'react';
 import {
   GardenLocation,
   UserPreferences,
@@ -38,6 +38,7 @@ import { getTenderCropsByBed } from './services/frostTender';
 import { Navigation } from './components/Navigation';
 import { Dashboard } from './components/Dashboard';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { tabFromLocation, urlForTab, isKnownTab, titleForTab } from './services/tabRouting';
 
 // Tabs and dialogs load on first use (precached by the service worker for offline use)
 const GardenPlanner = lazy(() => import('./components/GardenPlanner').then(m => ({ default: m.GardenPlanner })));
@@ -65,12 +66,57 @@ function TabLoading() {
 }
 
 export default function App() {
-  // Honor the documented PWA shortcuts and JAT-OS deep links (?tab=planner/crops/calendar).
-  // Unknown tab values fall back to Dashboard rather than rendering an empty app.
-  const [activeTab, setActiveTab] = useState<string>(() => {
-    const requested = new URLSearchParams(window.location.search).get('tab');
-    return requested && ['planner', 'crops', 'calendar'].includes(requested) ? requested : 'dashboard';
-  });
+  // Honor the documented PWA shortcuts and JAT-OS deep links (?tab=planner/crops/calendar);
+  // every tab id is linkable. Unknown values fall back to the Dashboard.
+  const [activeTab, setActiveTabState] = useState<string>(() => tabFromLocation());
+  const focusHeadingOnChange = useRef(false);
+  const outgoingHeading = useRef<Element | null>(null);
+
+  // Changing tabs: push a history entry (Back/Forward work, reload keeps the tab)
+  const activeTabRef = useRef(activeTab);
+  activeTabRef.current = activeTab;
+  const setActiveTab = useCallback((tab: string) => {
+    if (!isKnownTab(tab) || tab === activeTabRef.current) return;
+    focusHeadingOnChange.current = true;
+    outgoingHeading.current = document.querySelector('#main-content h1');
+    try { window.history.pushState({ tab }, '', urlForTab(tab)); } catch { /* sandboxed iframe */ }
+    setActiveTabState(tab);
+  }, []);
+
+  useEffect(() => {
+    const onPop = () => {
+      focusHeadingOnChange.current = true;
+      outgoingHeading.current = document.querySelector('#main-content h1');
+      setActiveTabState(tabFromLocation());
+    };
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, []);
+
+  // Each tab gets its own document title, and keyboard / screen-reader users
+  // land on the new tab's heading instead of staying on the nav button.
+  useEffect(() => {
+    document.title = titleForTab(activeTab);
+    if (!focusHeadingOnChange.current) return;
+    focusHeadingOnChange.current = false;
+    window.scrollTo({ top: 0 });
+    let frames = 0;
+    let raf = 0;
+    const focusHeading = () => {
+      // Tabs load lazily: wait (up to ~2s) for the tab's <h1> to render
+      // ignore the outgoing tab's heading, which can still be on screen for a frame
+      const h1 = document.querySelector<HTMLElement>('#main-content h1');
+      if (h1 && h1 !== outgoingHeading.current) {
+        outgoingHeading.current = null;
+        if (!h1.hasAttribute('tabindex')) h1.setAttribute('tabindex', '-1');
+        h1.focus({ preventScroll: true });
+      } else if (frames++ < 120) {
+        raf = requestAnimationFrame(focusHeading);
+      }
+    };
+    raf = requestAnimationFrame(focusHeading);
+    return () => cancelAnimationFrame(raf);
+  }, [activeTab]);
   const [location, setLocation] = useState<GardenLocation>(getSavedLocation);
   const [preferences, setPreferences] = useState<UserPreferences>(getSavedPreferences);
   const [spaces, setSpaces] = useState<GardenSpace[]>(getSavedSpaces);
@@ -333,7 +379,7 @@ export default function App() {
         <div
           role="status"
           aria-live="polite"
-          className="bg-emerald-600 dark:bg-emerald-700 text-white px-4 py-2 text-xs font-medium flex items-center justify-between gap-3 shadow-md z-50 animate-fadeIn"
+          className="bg-emerald-700 dark:bg-emerald-800 text-white px-4 py-2 text-xs font-medium flex items-center justify-between gap-3 shadow-md z-50 animate-fadeIn"
         >
           <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-emerald-200 shrink-0" aria-hidden="true" />
@@ -391,7 +437,7 @@ export default function App() {
       />
 
       {/* Main App Content Viewport */}
-      <main id="main-content" tabIndex={-1} role="main" aria-label="Garden and pantry main content" className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8 pb-24 lg:pb-8 outline-hidden">
+      <main id="main-content" tabIndex={-1} role="main" aria-label="Garden and pantry main content" className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8 pb-[calc(6rem+env(safe-area-inset-bottom))] lg:pb-8 outline-hidden">
         <Suspense fallback={<TabLoading />}>
         {activeTab === 'dashboard' && (
           <Dashboard
@@ -521,13 +567,13 @@ export default function App() {
           <button
             type="button"
             onClick={() => setIsVersionModalOpen(true)}
-            className="inline-flex items-center gap-1 font-mono text-[11px] px-2 py-0.5 rounded-md bg-stone-100 dark:bg-[#182b21] text-emerald-700 dark:text-emerald-400 border border-stone-200/80 dark:border-[#243d2f] hover:underline"
+            className="inline-flex items-center gap-1 font-mono text-xs px-2 py-0.5 rounded-md bg-stone-100 dark:bg-[#182b21] text-emerald-700 dark:text-emerald-400 border border-stone-200/80 dark:border-[#243d2f] hover:underline"
           >
             <Layers className="w-3 h-3" />
             <span>v{APP_VERSION} (PWA Cache Control)</span>
           </button>
         </div>
-        <p className="text-[11px] text-stone-400 dark:text-stone-400 max-w-2xl mx-auto">
+        <p className="text-xs text-stone-400 dark:text-stone-400 max-w-2xl mx-auto">
           Built for offline PWA installation and GitHub Pages deployment. Data synthesized from USDA ARS, National Center for Home Food Preservation (NCHFP), and University Cooperative Extension Services.
         </p>
       </footer>

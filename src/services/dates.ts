@@ -40,3 +40,18 @@ export function daysUntil(dateStr: string, from: Date = new Date()): number {
   const today = parseLocalDate(localDateStr(from)).getTime();
   return Math.round((target - today) / 86_400_000);
 }
+
+// Formatters are expensive to construct (toLocaleDateString builds one per
+// call), so build each once and reuse it.
+const SHORT = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' });
+const SHORT_WITH_YEAR = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+/** "Mar 12" */
+export function formatShortDate(d: Date): string {
+  return SHORT.format(d);
+}
+
+/** "Mar 12, 2027" */
+export function formatShortDateYear(d: Date): string {
+  return SHORT_WITH_YEAR.format(d);
+}

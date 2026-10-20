@@ -112,12 +112,12 @@ export const Navigation: React.FC<NavigationProps> = ({
   // "bottom" bar to the top of the screen on phones.
   return (
     <>
-    <header className="sticky top-0 z-40 bg-[#f5f7f5]/95 dark:bg-[#0f1712]/95 backdrop-blur-md border-b border-[#d6e2d8] dark:border-[rgba(255,255,255,0.08)] transition-colors">
+    <header className="sticky top-0 z-40 pt-[env(safe-area-inset-top)] bg-[#f5f7f5] dark:bg-[#0f1712] border-b border-[#d6e2d8] dark:border-[rgba(255,255,255,0.08)] transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         {/* Main top bar */}
-        <div className="flex items-center justify-between h-16 gap-2">
+        <div className="flex flex-wrap items-center justify-between min-h-16 gap-x-2 gap-y-1 py-2">
           {/* Brand Logo & Name */}
-          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3 min-w-0">
             <button
               type="button"
               onClick={() => onSelectTab('dashboard')}
@@ -131,7 +131,7 @@ export const Navigation: React.FC<NavigationProps> = ({
                 <span className="font-extrabold text-lg tracking-tight text-[#122017] dark:text-[#f3f7f4] font-serif-botanical block leading-none">
                   FloraHearth
                 </span>
-                <span className="text-[10px] text-[#56705d] dark:text-[#7e9987] font-mono tracking-wider uppercase">
+                <span className="max-[359px]:hidden text-2xs text-[#56705d] dark:text-[#7e9987] font-mono tracking-wider uppercase">
                   US Garden &amp; Pantry
                 </span>
               </div>
@@ -147,7 +147,7 @@ export const Navigation: React.FC<NavigationProps> = ({
             >
               <span className="text-emerald-800 dark:text-[#34d399] font-bold">Zone {location.usdaZone}</span>
               <span className="text-stone-300 dark:text-stone-600" aria-hidden="true">·</span>
-              <span className="truncate max-w-[120px]">{location.city}, {location.state}</span>
+              <span className="break-words">{location.city}, {location.state}</span>
               <Settings className="w-3 h-3 text-[#7e9987] ml-0.5" aria-hidden="true" />
             </button>
 
@@ -169,7 +169,7 @@ export const Navigation: React.FC<NavigationProps> = ({
           </div>
 
           {/* Right Action Controls */}
-          <div className="flex items-center gap-1.5 sm:gap-2">
+          <div className="flex flex-wrap items-center justify-end gap-1.5 sm:gap-2 ml-auto">
             {/* Plant Doctor / Troubleshooter trigger */}
             {onOpenTroubleshooter && (
               <button
@@ -192,8 +192,8 @@ export const Navigation: React.FC<NavigationProps> = ({
               className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono font-medium rounded-lg border transition-colors bg-[#edf2ee] hover:bg-[#e2ece3] text-[#183e25] border-[#d6e2d8] dark:bg-[#18271e] dark:hover:bg-[#1f3427] dark:text-[#34d399] dark:border-[rgba(16,185,129,0.3)]"
               title="Version Control, Hard Cache Reset & Storage Diagnostics"
             >
-              <Layers className="w-3.5 h-3.5 text-emerald-600 dark:text-[#34d399]" aria-hidden="true" />
-              <span>v{APP_VERSION}</span>
+              <Layers className="w-3.5 h-3.5 text-emerald-700 dark:text-[#34d399]" aria-hidden="true" />
+              <span className="hidden sm:inline">v{APP_VERSION}</span>
             </button>
 
             {/* Dark / Light Mode Toggle Button */}
@@ -211,13 +211,13 @@ export const Navigation: React.FC<NavigationProps> = ({
               )}
             </button>
 
-            {/* All Views Menu Button (Toggles full categorized navigation drawer) */}
+            {/* All Views Menu Button (desktop; phones use the same button in the bottom bar) */}
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-expanded={mobileMenuOpen}
               aria-label={mobileMenuOpen ? 'Close all views menu' : 'Open all views menu'}
-              className={`flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold rounded-xl border transition-all ${
+              className={`hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-semibold rounded-xl border transition-all ${
                 mobileMenuOpen
                   ? 'bg-[#183e25] text-white dark:bg-[#10b981] dark:text-[#06150d] border-transparent shadow-xs'
                   : 'bg-[#edf2ee] dark:bg-[#18271e] text-[#183e25] dark:text-[#34d399] border-[#d6e2d8] dark:border-[rgba(255,255,255,0.08)] hover:bg-[#e2ece3] dark:hover:bg-[#1f3427]'
@@ -317,7 +317,7 @@ export const Navigation: React.FC<NavigationProps> = ({
                               <span>{item.label}</span>
                               <ChevronRight className="w-3.5 h-3.5 opacity-50 shrink-0" aria-hidden="true" />
                             </div>
-                            <p className={`text-[11px] truncate leading-normal mt-0.5 ${isActive ? 'text-emerald-100 dark:text-[#06150d]/80' : 'text-stone-500 dark:text-stone-400'}`}>
+                            <p className={`text-xs break-words leading-normal mt-0.5 ${isActive ? 'text-emerald-100 dark:text-[#06150d]/80' : 'text-stone-500 dark:text-stone-400'}`}>
                               {item.desc}
                             </p>
                           </div>
@@ -343,7 +343,7 @@ export const Navigation: React.FC<NavigationProps> = ({
                 <Settings className="w-4 h-4 text-emerald-700 dark:text-[#34d399] shrink-0" aria-hidden="true" />
                 <div className="overflow-hidden">
                   <div className="text-xs font-semibold text-stone-800 dark:text-white">Garden &amp; Zone Setup</div>
-                  <div className="text-[11px] text-stone-500 dark:text-stone-400 truncate">Zone {location.usdaZone} · {location.city}, {location.state}</div>
+                  <div className="text-xs text-stone-500 dark:text-stone-400 break-words">Zone {location.usdaZone} · {location.city}, {location.state}</div>
                 </div>
               </button>
 
@@ -360,7 +360,7 @@ export const Navigation: React.FC<NavigationProps> = ({
                   <HelpCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0" aria-hidden="true" />
                   <div className="overflow-hidden">
                     <div className="text-xs font-semibold text-amber-950 dark:text-amber-200">Plant Doctor Troubleshooter</div>
-                    <div className="text-[11px] text-amber-800/80 dark:text-amber-300/80 truncate">Interactive heat stress &amp; yellow leaf diagnosis</div>
+                    <div className="text-xs text-amber-800/80 dark:text-amber-300/80 break-words">Interactive heat stress &amp; yellow leaf diagnosis</div>
                   </div>
                 </button>
               )}
@@ -377,7 +377,7 @@ export const Navigation: React.FC<NavigationProps> = ({
                 <Layers className="w-4 h-4 text-emerald-700 dark:text-[#34d399] shrink-0" aria-hidden="true" />
                 <div className="overflow-hidden">
                   <div className="text-xs font-semibold text-stone-800 dark:text-white">PWA Storage &amp; Cache</div>
-                  <div className="text-[11px] text-stone-500 dark:text-stone-400 truncate">Version {APP_VERSION} · Hard Cache Reset</div>
+                  <div className="text-xs text-stone-500 dark:text-stone-400 break-words">Version {APP_VERSION} · Hard Cache Reset</div>
                 </div>
               </button>
 
@@ -394,7 +394,7 @@ export const Navigation: React.FC<NavigationProps> = ({
                 )}
                 <div>
                   <div className="text-xs font-semibold text-stone-800 dark:text-white">Display Theme</div>
-                  <div className="text-[11px] text-stone-500 dark:text-stone-400">
+                  <div className="text-xs text-stone-500 dark:text-stone-400">
                     Currently {theme === 'dark' ? 'Dark Mode' : 'Light Mode'}
                   </div>
                 </div>
@@ -409,7 +409,7 @@ export const Navigation: React.FC<NavigationProps> = ({
     {/* Mobile Persistent Bottom Bar (Always in reach of user's thumb) */}
     <nav
       aria-label="Mobile quick navigation"
-      className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-[#0c1610]/95 backdrop-blur-md border-t border-stone-200 dark:border-[#243d2f] flex items-center justify-around py-2 px-1 text-[10px] shadow-lg"
+      className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-[#0c1610] border-t border-stone-200 dark:border-[#243d2f] flex items-center justify-around pt-1.5 pb-[max(0.375rem,env(safe-area-inset-bottom))] px-1 text-2xs shadow-lg"
     >
       {mobileBottomItems.map(item => {
         const Icon = item.icon;

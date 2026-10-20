@@ -127,7 +127,7 @@ export const VersionCacheModal: React.FC<VersionCacheModalProps> = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-xs p-4 overflow-y-auto"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 overflow-y-auto"
       role="dialog"
       aria-modal="true"
       aria-labelledby="version-modal-title"
@@ -142,10 +142,10 @@ export const VersionCacheModal: React.FC<VersionCacheModalProps> = ({
             </span>
             <div>
               <div className="flex items-center gap-2">
-                <h3 id="version-modal-title" className="text-base font-bold tracking-tight text-[#122017] dark:text-white font-serif-botanical">
+                <h2 id="version-modal-title" className="text-base font-bold tracking-tight text-[#122017] dark:text-white font-serif-botanical">
                   PWA Version &amp; Cache Control
-                </h3>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-100 dark:bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-500/30">
+                </h2>
+                <span className="px-2 py-0.5 rounded-full text-2xs font-mono font-bold bg-emerald-100 dark:bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-500/30">
                   v{APP_VERSION}
                 </span>
               </div>
@@ -170,7 +170,7 @@ export const VersionCacheModal: React.FC<VersionCacheModalProps> = ({
           <div className="bg-[#f8faf8] dark:bg-[#16261d] border border-stone-200 dark:border-[#274333] rounded-xl p-4 space-y-3">
             <div className="flex items-center justify-between">
               <div>
-                <span className="text-[11px] text-stone-500 dark:text-stone-400 uppercase tracking-wider font-mono block">Release Information</span>
+                <span className="text-xs text-stone-500 dark:text-stone-400 uppercase tracking-wider font-mono block">Release Information</span>
                 <span className="text-sm font-bold text-stone-900 dark:text-white font-mono">FloraHearth v{APP_VERSION}</span>
                 <span className="text-xs text-stone-500 dark:text-stone-400 ml-2">({BUILD_DATE})</span>
               </div>
@@ -213,7 +213,7 @@ export const VersionCacheModal: React.FC<VersionCacheModalProps> = ({
                 <button
                   type="button"
                   onClick={handleInstallClick}
-                  className="px-2.5 py-1 rounded-md bg-emerald-600 text-white dark:bg-emerald-500 dark:text-stone-950 font-bold hover:bg-emerald-700 dark:hover:bg-emerald-400 transition-colors text-xs flex items-center gap-1"
+                  className="px-2.5 py-1 rounded-md bg-emerald-700 text-white dark:bg-emerald-500 dark:text-emerald-950 font-bold hover:bg-emerald-800 dark:hover:bg-emerald-400 transition-colors text-xs flex items-center gap-1"
                 >
                   <Download className="w-3 h-3" />
                   <span>Install App</span>
@@ -224,10 +224,10 @@ export const VersionCacheModal: React.FC<VersionCacheModalProps> = ({
 
           {/* Cache & Storage Diagnostics */}
           <div>
-            <h4 className="text-xs font-bold text-stone-900 dark:text-white uppercase tracking-wider mb-2 flex items-center gap-1.5">
+            <h3 className="text-xs font-bold text-stone-900 dark:text-white uppercase tracking-wider mb-2 flex items-center gap-1.5">
               <HardDrive className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
               <span>Client Cache &amp; Storage Metrics</span>
-            </h4>
+            </h3>
 
             {isLoading ? (
               <div className="p-4 text-center text-stone-500 dark:text-stone-400 bg-stone-50 dark:bg-[#15271d] rounded-xl border border-stone-200 dark:border-[#274333]">
@@ -236,21 +236,21 @@ export const VersionCacheModal: React.FC<VersionCacheModalProps> = ({
             ) : metrics ? (
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                 <div className="bg-stone-50 dark:bg-[#16271e] border border-stone-200 dark:border-[#274333] p-3 rounded-xl">
-                  <span className="text-[10px] text-stone-500 dark:text-stone-400 block">Cache Buckets</span>
+                  <span className="text-2xs text-stone-500 dark:text-stone-400 block">Cache Buckets</span>
                   <span className="text-base font-bold text-stone-900 dark:text-white font-mono">{metrics.cachesCount}</span>
                 </div>
                 <div className="bg-stone-50 dark:bg-[#16271e] border border-stone-200 dark:border-[#274333] p-3 rounded-xl">
-                  <span className="text-[10px] text-stone-500 dark:text-stone-400 block">Storage Used</span>
+                  <span className="text-2xs text-stone-500 dark:text-stone-400 block">Storage Used</span>
                   <span className="text-base font-bold text-emerald-700 dark:text-emerald-300 font-mono">
                     {metrics.estimatedMb > 0 ? `${metrics.estimatedMb} MB` : '< 1 MB'}
                   </span>
                 </div>
                 <div className="bg-stone-50 dark:bg-[#16271e] border border-stone-200 dark:border-[#274333] p-3 rounded-xl">
-                  <span className="text-[10px] text-stone-500 dark:text-stone-400 block">Saved Records</span>
+                  <span className="text-2xs text-stone-500 dark:text-stone-400 block">Saved Records</span>
                   <span className="text-base font-bold text-stone-900 dark:text-white font-mono">{metrics.localStorageKeysCount} keys</span>
                 </div>
                 <div className="bg-stone-50 dark:bg-[#16271e] border border-stone-200 dark:border-[#274333] p-3 rounded-xl">
-                  <span className="text-[10px] text-stone-500 dark:text-stone-400 block">Service Worker</span>
+                  <span className="text-2xs text-stone-500 dark:text-stone-400 block">Service Worker</span>
                   <span className={`text-xs font-bold font-mono ${metrics.serviceWorkerActive ? 'text-emerald-700 dark:text-emerald-400' : 'text-amber-700 dark:text-amber-400'}`}>
                     {metrics.serviceWorkerActive ? 'ACTIVE' : 'INACTIVE'}
                   </span>
@@ -259,7 +259,7 @@ export const VersionCacheModal: React.FC<VersionCacheModalProps> = ({
             ) : null}
 
             {metrics && metrics.cacheNames.length > 0 && (
-              <div className="mt-2 text-[11px] text-stone-500 dark:text-stone-400 bg-stone-50 dark:bg-[#0f1c15] p-2 rounded-lg font-mono truncate border border-stone-200 dark:border-transparent">
+              <div className="mt-2 text-xs text-stone-500 dark:text-stone-400 bg-stone-50 dark:bg-[#0f1c15] p-2 rounded-lg font-mono break-all border border-stone-200 dark:border-transparent">
                 Active: {metrics.cacheNames.join(', ')}
               </div>
             )}
@@ -270,8 +270,8 @@ export const VersionCacheModal: React.FC<VersionCacheModalProps> = ({
             <div className="flex items-start gap-2.5">
               <RefreshCw className="w-5 h-5 text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
               <div>
-                <h4 className="font-bold text-stone-900 dark:text-white text-sm">Hard Cache Reset &amp; Force Refresh</h4>
-                <p className="text-[11px] text-stone-600 dark:text-stone-300 mt-0.5 leading-relaxed">
+                <h3 className="font-bold text-stone-900 dark:text-white text-sm">Hard Cache Reset &amp; Force Refresh</h3>
+                <p className="text-xs text-stone-600 dark:text-stone-300 mt-0.5 leading-relaxed">
                   Deletes all cached service worker assets, unregisters stale background workers, and forces your browser to pull the latest production code bundle from the server.
                 </p>
               </div>
@@ -292,7 +292,7 @@ export const VersionCacheModal: React.FC<VersionCacheModalProps> = ({
                   Preserve my garden beds, plant logs, and pantry items (Recommended)
                 </span>
               </label>
-              <p className="text-[10px] text-stone-500 dark:text-stone-400 pl-5">
+              <p className="text-2xs text-stone-500 dark:text-stone-400 pl-5">
                 If checked, your data is backed up into memory, caches are purged, and your garden records are safely preserved across the reload.
               </p>
             </div>
@@ -304,14 +304,14 @@ export const VersionCacheModal: React.FC<VersionCacheModalProps> = ({
                   <AlertTriangle className="w-4 h-4 shrink-0 text-rose-600 dark:text-rose-400" />
                   <span>Warning: Permanent Data Erasure</span>
                 </div>
-                <p className="text-[11px] leading-relaxed">
+                <p className="text-xs leading-relaxed">
                   You have unchecked &quot;Preserve my garden records&quot;. Executing this will permanently erase all custom beds, journal entries, pantry inventory, and soil test logs.
                 </p>
                 <div className="flex items-center gap-2 pt-1">
                   <button
                     type="button"
                     onClick={handleExecuteReset}
-                    className="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-lg text-xs transition-colors shadow-xs"
+                    className="px-3 py-1.5 bg-rose-700 hover:bg-rose-800 text-white font-bold rounded-lg text-xs transition-colors shadow-xs"
                   >
                     I Understand, Wipe All &amp; Reset
                   </button>
@@ -365,7 +365,7 @@ export const VersionCacheModal: React.FC<VersionCacheModalProps> = ({
               <Github className="w-4 h-4 text-stone-600 dark:text-stone-300" />
               <span>Ready for GitHub Pages Hosting</span>
             </div>
-            <p className="text-[11px] text-stone-500 dark:text-stone-400 leading-relaxed">
+            <p className="text-xs text-stone-500 dark:text-stone-400 leading-relaxed">
               This applet is fully configured for GitHub Pages with relative base path (<code className="text-emerald-700 dark:text-emerald-300 font-mono">base: &apos;./&apos;</code>), automated SPA 404 redirection (<code className="text-emerald-700 dark:text-emerald-300 font-mono">404.html</code>), and a ready-to-run GitHub Actions workflow (<code className="text-emerald-700 dark:text-emerald-300 font-mono">.github/workflows/deploy.yml</code>).
             </p>
           </div>

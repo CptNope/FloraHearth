@@ -470,9 +470,9 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-stone-200 dark:border-[#223d2e]">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-[#183a24] dark:text-[#e4efe7] font-serif-botanical">
+          <h1 className="text-2xl font-bold tracking-tight text-[#183a24] dark:text-[#e4efe7] font-serif-botanical">
             Garden Journal, Per-Crop ROI &amp; Cloud Sync
-          </h2>
+          </h1>
           <p className="text-xs text-stone-600 dark:text-stone-300 mt-1">
             Log crop harvests, calculate real grocery savings per variety, attach plant photos (IndexedDB), and backup data safely.
           </p>
@@ -552,7 +552,7 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
             <button
               type="button"
               onClick={() => setPreservePromptHarvest(null)}
-              className="px-3 py-1.5 text-stone-700 dark:text-stone-200 hover:bg-amber-100 dark:hover:bg-amber-900/50 rounded-xl font-medium"
+              className="px-3 py-1.5 text-amber-950 dark:text-amber-100 hover:bg-amber-100 dark:hover:bg-amber-900/50 rounded-xl font-medium"
             >
               Skip
             </button>
@@ -594,10 +594,10 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Left: New Entry Form */}
           <div className="lg:col-span-5 bg-white dark:bg-[#132219] border border-stone-200 dark:border-[#223d2e] rounded-2xl p-5 shadow-xs space-y-4 text-xs h-fit">
-            <h3 className="font-bold text-sm text-[#183a24] dark:text-white font-serif-botanical flex items-center gap-2">
+            <h2 className="font-bold text-sm text-[#183a24] dark:text-white font-serif-botanical flex items-center gap-2">
               <Plus className="w-4 h-4 text-emerald-800 dark:text-emerald-400" />
               New Garden Journal Entry
-            </h3>
+            </h2>
 
             <form onSubmit={handleSaveJournal} className="space-y-3">
               <div>
@@ -699,7 +699,7 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
                     <button
                       type="button"
                       onClick={() => { setEntryPhotoFile(null); setEntryPhotoPreview(null); }}
-                      className="text-[10px] text-rose-600 underline"
+                      className="text-2xs text-rose-600 underline"
                     >
                       Remove
                     </button>
@@ -709,11 +709,11 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
                   type="file"
                   accept="image/*"
                   onChange={handlePhotoSelect}
-                  className="text-xs file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 dark:file:bg-[#182c20] file:text-emerald-800 dark:file:text-emerald-300 hover:file:bg-emerald-100"
+                  className="w-full max-w-full min-w-0 text-xs file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 dark:file:bg-[#182c20] file:text-emerald-800 dark:file:text-emerald-300 hover:file:bg-emerald-100"
                 />
                 {entryPhotoPreview && (
                   <div className="mt-2 relative rounded-xl overflow-hidden border border-stone-200 dark:border-[#223d2e] h-28 bg-stone-100 dark:bg-[#182c20]">
-                    <img src={entryPhotoPreview} alt="Preview" className="w-full h-full object-cover" />
+                    <img src={entryPhotoPreview} alt="Selected photo preview" decoding="async" className="w-full h-full object-cover" />
                   </div>
                 )}
               </div>
@@ -741,17 +741,17 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
                     <div className="flex items-start justify-between gap-3">
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="font-mono text-stone-500 dark:text-stone-400 text-[11px] flex items-center gap-1">
+                          <span className="font-mono text-stone-500 dark:text-stone-400 text-xs flex items-center gap-1">
                             <Calendar className="w-3 h-3 text-stone-400" />
                             {entry.date}
                           </span>
-                          <span className="px-2 py-0.5 rounded-md font-mono text-[10px] uppercase font-bold bg-stone-100 dark:bg-[#182c20] text-stone-700 dark:text-stone-300">
+                          <span className="px-2 py-0.5 rounded-md font-mono text-2xs uppercase font-bold bg-stone-100 dark:bg-[#182c20] text-stone-700 dark:text-stone-300">
                             {entry.category}
                           </span>
                         </div>
-                        <h4 className="font-bold text-sm text-[#183a24] dark:text-white mt-1">
+                        <h3 className="font-bold text-sm text-[#183a24] dark:text-white mt-1">
                           {entry.title}
-                        </h4>
+                        </h3>
                       </div>
 
                       <div className="flex items-center gap-1 shrink-0">
@@ -786,7 +786,7 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
                           <span className="font-mono font-bold text-sm">{entry.yieldLbs} lbs</span>
                           {entry.cropName && <span>({entry.cropName})</span>}
                         </div>
-                        <span className="font-mono text-[11px] font-bold">
+                        <span className="font-mono text-xs font-bold">
                           ~${((entry.yieldLbs) * (entry.cropId ? (getCropById(entry.cropId)?.retailGroceryValuePerLb || 3.80) : 3.80)).toFixed(2)} retail value
                         </span>
                       </div>
@@ -800,8 +800,8 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
                           onClick={() => setViewingPhotoUrl(photoUrl)}
                           className="relative group rounded-xl overflow-hidden border border-stone-200 dark:border-[#223d2e] max-h-48 block"
                         >
-                          <img src={photoUrl} alt="Plant photo" className="w-full h-44 object-cover group-hover:scale-105 transition-transform" />
-                          <div className="absolute bottom-2 right-2 px-2 py-0.5 bg-black/70 text-white rounded-md text-[10px] font-mono flex items-center gap-1">
+                          <img src={photoUrl} alt={`Photo: ${entry.title}`} loading="lazy" decoding="async" className="w-full h-44 object-cover group-hover:scale-105 transition-transform" />
+                          <div className="absolute bottom-2 right-2 px-2 py-0.5 bg-black/70 text-white rounded-md text-2xs font-mono flex items-center gap-1">
                             <ImageIcon className="w-3 h-3" />
                             <span>Click to enlarge</span>
                           </div>
@@ -813,7 +813,7 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
                       <div className="flex flex-wrap items-center gap-1.5 pt-1">
                         <Tag className="w-3 h-3 text-stone-400" />
                         {entry.tags.map(t => (
-                          <span key={t} className="px-2 py-0.5 rounded-md bg-stone-100 dark:bg-[#182c20] text-stone-600 dark:text-stone-300 text-[10px]">
+                          <span key={t} className="px-2 py-0.5 rounded-md bg-stone-100 dark:bg-[#182c20] text-stone-600 dark:text-stone-300 text-2xs">
                             #{t}
                           </span>
                         ))}
@@ -833,27 +833,27 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
           {/* Summary Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="bg-white dark:bg-[#132219] p-4 rounded-2xl border border-stone-200 dark:border-[#223d2e] shadow-xs">
-              <span className="text-[11px] font-semibold text-stone-500 dark:text-stone-400 block">Total Garden Expenses</span>
+              <span className="text-xs font-semibold text-stone-500 dark:text-stone-400 block">Total Garden Expenses</span>
               <div className="text-2xl font-extrabold text-rose-700 dark:text-rose-400 font-mono mt-1">
                 ${totalSpent.toFixed(2)}
               </div>
-              <p className="text-[10px] text-stone-400 mt-0.5">Seeds, soil amendments, compost &amp; equipment</p>
+              <p className="text-2xs text-stone-400 mt-0.5">Seeds, soil amendments, compost &amp; equipment</p>
             </div>
 
             <div className="bg-white dark:bg-[#132219] p-4 rounded-2xl border border-stone-200 dark:border-[#223d2e] shadow-xs">
-              <span className="text-[11px] font-semibold text-stone-500 dark:text-stone-400 block">Harvest Retail Grocery Value</span>
+              <span className="text-xs font-semibold text-stone-500 dark:text-stone-400 block">Harvest Retail Grocery Value</span>
               <div className="text-2xl font-extrabold text-[#183a24] dark:text-[#34d399] font-mono mt-1">
                 ${totalRealisticGroceryValue.toFixed(2)}
               </div>
-              <p className="text-[10px] text-stone-400 mt-0.5">{totalHarvestLbs.toFixed(1)} lbs harvested across all crops</p>
+              <p className="text-2xs text-stone-400 mt-0.5">{totalHarvestLbs.toFixed(1)} lbs harvested across all crops</p>
             </div>
 
             <div className="bg-white dark:bg-[#132219] p-4 rounded-2xl border border-stone-200 dark:border-[#223d2e] shadow-xs">
-              <span className="text-[11px] font-semibold text-stone-500 dark:text-stone-400 block">Net Household ROI</span>
+              <span className="text-xs font-semibold text-stone-500 dark:text-stone-400 block">Net Household ROI</span>
               <div className={`text-2xl font-extrabold font-mono mt-1 ${netSavings >= 0 ? 'text-emerald-700 dark:text-emerald-400' : 'text-amber-700'}`}>
                 {netSavings >= 0 ? `+$${netSavings.toFixed(2)}` : `-$${Math.abs(netSavings).toFixed(2)}`}
               </div>
-              <p className="text-[10px] text-stone-400 mt-0.5">
+              <p className="text-2xs text-stone-400 mt-0.5">
                 {netSavings >= 0 ? 'Garden has paid for itself!' : 'Yields will amortize setup costs over subsequent seasons.'}
               </p>
             </div>
@@ -861,20 +861,20 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
 
           {/* Per-Crop Payoff Breakdown */}
           <div className="bg-white dark:bg-[#132219] border border-stone-200 dark:border-[#223d2e] rounded-2xl p-5 shadow-xs space-y-4 text-xs">
-            <h3 className="font-bold text-sm text-[#183a24] dark:text-white font-serif-botanical flex items-center gap-2">
+            <h2 className="font-bold text-sm text-[#183a24] dark:text-white font-serif-botanical flex items-center gap-2">
               <TrendingUp className="w-4 h-4 text-emerald-800 dark:text-emerald-400" />
               Which Crops Actually Pay Off? (Per-Crop Financial Breakdown)
-            </h3>
+            </h2>
             <p className="text-stone-600 dark:text-stone-300">
               High-markup crops (fresh culinary herbs at $14.99/lb, heirloom slicing tomatoes at $4.50/lb, and berries at $7.99/lb) yield the fastest return on investment compared to standard root crops.
             </p>
 
             {Object.keys(cropHarvestMap).length === 0 ? (
-              <p className="text-stone-400 italic">No crop harvests logged yet. Log harvest weights to see per-crop financial returns.</p>
+              <p className="text-stone-400 italic font-serif-botanical">No crop harvests logged yet. Log harvest weights to see per-crop financial returns.</p>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-left">
-                  <thead className="bg-stone-50 dark:bg-[#182c20] text-stone-600 dark:text-stone-300 text-[10px] uppercase font-mono border-b border-stone-200 dark:border-[#223d2e]">
+                  <thead className="bg-stone-50 dark:bg-[#182c20] text-stone-600 dark:text-stone-300 text-2xs uppercase font-mono border-b border-stone-200 dark:border-[#223d2e]">
                     <tr>
                       <th className="py-2.5 px-3">Crop Name</th>
                       <th className="py-2.5 px-3">Harvested (lbs)</th>
@@ -907,7 +907,7 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
           {/* Expenses Log & Add Form */}
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
             <div className="md:col-span-5 bg-white dark:bg-[#132219] border border-stone-200 dark:border-[#223d2e] rounded-2xl p-5 shadow-xs space-y-3 text-xs">
-              <h4 className="font-bold text-sm text-[#183a24] dark:text-white">Log Garden Expense</h4>
+              <h3 className="font-bold text-sm text-[#183a24] dark:text-white">Log Garden Expense</h3>
               <form onSubmit={handleSaveExpense} className="space-y-3">
                 <div>
                   <label className="block font-semibold text-stone-700 dark:text-stone-300 mb-1">Item Description</label>
@@ -962,13 +962,13 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
             </div>
 
             <div className="md:col-span-7 bg-white dark:bg-[#132219] border border-stone-200 dark:border-[#223d2e] rounded-2xl p-5 shadow-xs space-y-3 text-xs">
-              <h4 className="font-bold text-sm text-[#183a24] dark:text-white">Expense History ({expenses.length})</h4>
+              <h3 className="font-bold text-sm text-[#183a24] dark:text-white">Expense History ({expenses.length})</h3>
               <div className="divide-y divide-stone-100 dark:divide-[#223d2e] max-h-72 overflow-y-auto">
                 {expenses.map(exp => (
                   <div key={exp.id} className="py-2.5 flex items-center justify-between gap-3">
                     <div>
                       <strong className="text-stone-800 dark:text-stone-200 block">{exp.itemDescription}</strong>
-                      <span className="text-[10px] text-stone-400 font-mono">{exp.date} · {exp.category}</span>
+                      <span className="text-2xs text-stone-400 font-mono">{exp.date} · {exp.category}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="font-mono font-bold text-stone-900 dark:text-white">${exp.cost.toFixed(2)}</span>
@@ -1006,10 +1006,10 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
         <div className="space-y-6 max-w-3xl mx-auto">
           {/* JSON Export/Import */}
           <div className="bg-white dark:bg-[#132219] border border-stone-200 dark:border-[#223d2e] rounded-2xl p-6 shadow-xs space-y-4 text-xs">
-            <h3 className="font-bold text-base text-[#183a24] dark:text-white font-serif-botanical flex items-center gap-2">
+            <h2 className="font-bold text-base text-[#183a24] dark:text-white font-serif-botanical flex items-center gap-2">
               <Download className="w-4 h-4 text-emerald-800 dark:text-emerald-400" />
               Local JSON Export &amp; Restore
-            </h3>
+            </h2>
             <p className="text-stone-600 dark:text-stone-300">
               Download a complete JSON snapshot of your beds, planting schedule, pantry jars, soil tests, hydro readings, expenses and journal photos. Safari and mobile browsers can clear localStorage on storage cleanup; keeping a backup file safeguards your season of data.
             </p>
@@ -1058,9 +1058,9 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
             <div className="flex items-center gap-2">
               <Server className="w-5 h-5 text-amber-600" />
               <div>
-                <h3 className="font-bold text-base text-[#183a24] dark:text-white font-serif-botanical">
+                <h2 className="font-bold text-base text-[#183a24] dark:text-white font-serif-botanical">
                   Cloudflare Worker + D1 Remote Sync (Optional)
-                </h3>
+                </h2>
                 <p className="text-stone-600 dark:text-stone-300 mt-0.5">
                   Sync your garden data across devices through your own Cloudflare Worker, which stores one backup in Cloudflare D1. A ready-to-deploy Worker is in the repo under <code>worker/</code>. Data travels as plain JSON over HTTPS, so keep the sync token secret. Journal photos stay on each device and are not synced (they are included in the downloaded backup file).
                 </p>
@@ -1117,7 +1117,7 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
               </div>
 
               {cfSyncStatus && (
-                <div className="p-3 bg-stone-50 dark:bg-[#182c20] rounded-xl border border-stone-200 dark:border-[#223d2e] text-[11px] font-mono text-stone-700 dark:text-stone-300">
+                <div className="p-3 bg-stone-50 dark:bg-[#182c20] rounded-xl border border-stone-200 dark:border-[#223d2e] text-xs font-mono text-stone-700 dark:text-stone-300">
                   {cfSyncStatus}
                 </div>
               )}
@@ -1128,7 +1128,7 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
 
       {/* Full Photo Modal */}
       {viewingPhotoUrl && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-xs p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4">
           <DialogBehavior onClose={() => setViewingPhotoUrl(null)} label="Garden photo" />
           <div className="relative max-w-3xl w-full max-h-[90vh] flex flex-col items-center">
             <button
@@ -1138,18 +1138,18 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
             >
               <X className="w-6 h-6" />
             </button>
-            <img src={viewingPhotoUrl} alt="Plant journal full" className="max-w-full max-h-[85vh] rounded-2xl object-contain shadow-2xl" />
+            <img src={viewingPhotoUrl} alt="Garden journal photo, full size" decoding="async" className="max-w-full max-h-[85vh] rounded-2xl object-contain shadow-2xl" />
           </div>
         </div>
       )}
 
       {/* Edit Journal Entry Modal */}
       {isEditJournalOpen && editingJournal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
           <DialogBehavior onClose={() => setIsEditJournalOpen(false)} />
           <div className="bg-white dark:bg-[#112117] border border-stone-200 dark:border-[#223d2e] rounded-2xl w-full max-w-md p-6 text-xs space-y-4 shadow-2xl">
             <div className="flex items-center justify-between border-b border-stone-200 dark:border-[#223d2e] pb-3">
-              <h3 className="font-bold text-sm text-[#183a24] dark:text-white font-serif-botanical">Edit Journal Entry</h3>
+              <h2 className="font-bold text-sm text-[#183a24] dark:text-white font-serif-botanical">Edit Journal Entry</h2>
               <button type="button" onClick={() => setIsEditJournalOpen(false)}>
                 <X className="w-4 h-4 text-stone-400" />
               </button>
@@ -1214,11 +1214,11 @@ export const JournalSavings: React.FC<JournalSavingsProps> = ({
 
       {/* Edit Expense Modal */}
       {isEditExpenseOpen && editingExpense && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
           <DialogBehavior onClose={() => setIsEditExpenseOpen(false)} />
           <div className="bg-white dark:bg-[#112117] border border-stone-200 dark:border-[#223d2e] rounded-2xl w-full max-w-sm p-6 text-xs space-y-4 shadow-2xl">
             <div className="flex items-center justify-between border-b border-stone-200 dark:border-[#223d2e] pb-3">
-              <h3 className="font-bold text-sm text-[#183a24] dark:text-white font-serif-botanical">Edit Expense</h3>
+              <h2 className="font-bold text-sm text-[#183a24] dark:text-white font-serif-botanical">Edit Expense</h2>
               <button type="button" onClick={() => setIsEditExpenseOpen(false)}>
                 <X className="w-4 h-4 text-stone-400" />
               </button>

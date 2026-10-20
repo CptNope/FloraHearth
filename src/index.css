@@ -2,6 +2,20 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* Type role scale (typeset pass). Replaces 9/10/11/12/14px one-offs:
+   2xs  12px  labels, badges, metadata (the floor)
+   xs   13px  secondary UI text, table cells, captions
+   sm   15px  body copy, guidance, form text
+   base 16px  emphasized body, inputs on touch screens            */
+@theme {
+  --text-2xs: 0.75rem;
+  --text-2xs--line-height: 1.45;
+  --text-xs: 0.8125rem;
+  --text-xs--line-height: 1.5;
+  --text-sm: 0.9375rem;
+  --text-sm--line-height: 1.55;
+}
+
 @layer base {
   :root {
     --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
@@ -111,6 +125,12 @@ textarea:focus-visible,
   color: #b45309; /* 5.17:1 contrast against white */
 }
 
+/* Tab headings receive programmatic focus on tab change (so screen readers
+   announce the new view); they are not controls, so no focus ring. */
+#main-content h1[tabindex="-1"]:focus {
+  outline: none !important;
+}
+
 /* WCAG 2.5.8 Target Size (Minimum): every control is at least 24x24 CSS px.
    Icon-only edit/delete buttons, filter chips and text-style buttons were 16-23px. */
 button,
@@ -122,13 +142,126 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="
   min-width: 24px;
 }
 
-/* WCAG 2.3.3 Reduced Motion: Respect system preferences */
+/* Touch screens: 44x44px targets (WCAG 2.5.5 AAA / Apple & Android guidance).
+   Phones are FloraHearth's main device, used one-handed in the garden. */
+@media (pointer: coarse) {
+  button,
+  [role="button"],
+  [role="tab"],
+  summary,
+  select,
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="hidden"]):not([type="file"]) {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  input[type="checkbox"],
+  input[type="radio"] {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+  input[type="file"] {
+    min-height: 44px;
+  }
+}
+
+/* Landscape phones with a notch: keep content out from under it */
+body {
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+/* Motion
+   FloraHearth is an operational tool: motion only acknowledges actions and
+   signals state. Colour/opacity transitions give feedback; the one arrival
+   animation is the "new version available" banner. */
+@keyframes fh-arrive {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes fh-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes fh-breathe {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+.animate-fadeIn {
+  animation: fh-arrive 280ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Browser surfaces: selection, caret, native controls, scrollbars, links */
+::selection {
+  background: #b7e4c7;
+  color: #102417;
+}
+.dark ::selection {
+  background: #1f6f4a;
+  color: #f3f7f4;
+}
+:root {
+  accent-color: #047857;
+  caret-color: #047857;
+  scrollbar-color: #b2c7b7 transparent;
+}
+:root.dark {
+  accent-color: #34d399;
+  caret-color: #34d399;
+  scrollbar-color: #2a4535 transparent;
+}
+a {
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: from-font;
+}
+.underline {
+  text-underline-offset: 0.2em;
+}
+
+/* Reading measure: ~65 characters per line (62ch: Plus Jakarta letters average narrower than the "0" that ch measures) */
+main p:not([class*="text-center"]) {
+  max-inline-size: 62ch;
+}
+
+/* Tabular data: aligned digits in tables and readings */
+table, .font-mono {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Touch screens: inputs at 16px so iOS Safari doesn't zoom on focus */
+@media (pointer: coarse) {
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  select,
+  textarea {
+    font-size: 1rem !important;
+  }
+}
+
+/* WCAG 2.3.3 Reduced Motion: fewer and gentler, not none.
+   Spatial movement (rotation, scaling, sliding) is removed; colour and
+   opacity feedback stays, and loading spinners pulse instead of spinning
+   so busy states still read as busy. */
 @media (prefers-reduced-motion: reduce) {
   *, ::before, ::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+    /* keep feedback transitions, drop transform/size animation */
+    transition-property: color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, opacity, box-shadow !important;
+  }
+  .animate-spin {
+    animation: fh-breathe 1.8s ease-in-out infinite !important;
+  }
+  .animate-fadeIn {
+    animation: fh-fade-in 150ms ease-out both !important;
+  }
+  [class*="hover:scale-"]:hover,
+  .group:hover [class*="group-hover:scale-"],
+  [class*="hover:rotate-"]:hover,
+  [class*="hover:-rotate-"]:hover,
+  [class*="hover:-translate-"]:hover,
+  [class*="hover:translate-"]:hover {
+    transform: none !important;
+    scale: none !important;
+    rotate: none !important;
+    translate: none !important;
   }
 }
 
@@ -205,7 +338,7 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="
     margin: 0 !important;
     padding: 0 !important;
     box-shadow: none !important;
-    border: 1px solid #ccc !important;
+    border: 1px solid #d6e2d8 !important;
   }
 }
 

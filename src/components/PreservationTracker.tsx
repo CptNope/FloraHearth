@@ -66,9 +66,9 @@ export const PreservationTracker: React.FC<PreservationTrackerProps> = ({
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-stone-200">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-[#183a24] font-serif-botanical">
+          <h1 className="text-2xl font-bold tracking-tight text-[#183a24] font-serif-botanical">
             Safe Home Food Preservation Center
-          </h2>
+          </h1>
           <p className="text-xs text-stone-600 mt-1">
             Authoritative procedures grounded in the USDA Complete Guide to Home Canning &amp; National Center for Home Food Preservation (NCHFP).
           </p>
@@ -155,10 +155,10 @@ export const PreservationTracker: React.FC<PreservationTrackerProps> = ({
                 <div key={guide.crop} className="bg-white border border-stone-200 rounded-2xl p-5 shadow-xs space-y-3 text-xs">
                   <div className="flex items-start justify-between">
                     <div>
-                      <h4 className="font-bold text-sm text-[#183a24]">{guide.crop}</h4>
-                      <span className="text-[11px] text-stone-500">{guide.nchfpReference}</span>
+                      <h2 className="font-bold text-sm text-[#183a24]">{guide.crop}</h2>
+                      <span className="text-xs text-stone-500">{guide.nchfpReference}</span>
                     </div>
-                    <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${
+                    <span className={`px-2 py-0.5 rounded-md text-2xs font-bold ${
                       guide.foodType === 'high-acid'
                         ? 'bg-emerald-100 text-emerald-900'
                         : 'bg-rose-100 text-rose-900'
@@ -183,26 +183,26 @@ export const PreservationTracker: React.FC<PreservationTrackerProps> = ({
                         </span>
                       </div>
                     )}
-                    <div className="text-[10px] text-stone-500 pt-1">
+                    <div className="text-2xs text-stone-500 pt-1">
                       Jar sizes: {guide.jarSizes}
                     </div>
                   </div>
 
                   {/* Critical Warning */}
-                  <div className="p-2.5 bg-rose-50 border border-rose-200 rounded-lg text-rose-950 text-[11px] leading-tight">
+                  <div className="p-2.5 bg-rose-50 border border-rose-200 rounded-lg text-rose-950 text-xs leading-tight">
                     <strong>Safety Mandate:</strong> {guide.safetyWarnings}
                   </div>
 
                   {guide.acidificationRequired && (
-                    <div className="p-2.5 bg-amber-50 border border-amber-200 rounded-lg text-amber-950 text-[11px] leading-tight">
+                    <div className="p-2.5 bg-amber-50 border border-amber-200 rounded-lg text-amber-950 text-xs leading-tight">
                       <strong>Acidification:</strong> {guide.acidificationRequired}
                     </div>
                   )}
 
                   {/* Steps */}
                   <div className="space-y-1">
-                    <span className="font-bold text-stone-800 text-[11px]">Validated Procedure:</span>
-                    <ol className="list-decimal pl-4 space-y-1 text-stone-600 text-[11px]">
+                    <span className="font-bold text-stone-800 text-xs">Validated Procedure:</span>
+                    <ol className="list-decimal pl-4 space-y-1 text-stone-600 text-xs">
                       {guide.steps.map((st, i) => (
                         <li key={i}>{st}</li>
                       ))}
@@ -221,10 +221,10 @@ export const PreservationTracker: React.FC<PreservationTrackerProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
             {/* Calculator Card */}
             <div className="md:col-span-5 bg-white border border-stone-200 rounded-2xl p-5 shadow-xs space-y-4 text-xs">
-              <h3 className="font-bold text-sm text-[#183a24] font-serif-botanical flex items-center gap-2">
+              <h2 className="font-bold text-sm text-[#183a24] font-serif-botanical flex items-center gap-2">
                 <Scale className="w-4 h-4 text-emerald-800" />
                 Lacto-Fermentation Salt Ratio Calculator
-              </h3>
+              </h2>
               <p className="text-stone-600">
                 Lactic acid bacteria (LAB) require accurate salinity (2.0% - 2.5% for dry-salted cabbage; 3.5% - 5% for cucumber water brines) to suppress rot-causing molds.
               </p>
@@ -242,7 +242,7 @@ export const PreservationTracker: React.FC<PreservationTrackerProps> = ({
                   onChange={e => setFermentWeightGrams(parseFloat(e.target.value) || 0)}
                   className="w-full p-2 border border-stone-300 rounded-xl font-mono text-sm"
                 />
-                <span className="text-[10px] text-stone-400">
+                <span className="text-2xs text-stone-400">
                   Tip: 1 average head of green cabbage is ~900-1,200 grams.
                 </span>
               </div>
@@ -273,7 +273,7 @@ export const PreservationTracker: React.FC<PreservationTrackerProps> = ({
                 </div>
               </div>
 
-              <div className="text-[11px] text-amber-800 bg-amber-50 p-2.5 rounded-lg border border-amber-200">
+              <div className="text-xs text-amber-800 bg-amber-50 p-2.5 rounded-lg border border-amber-200">
                 <strong>Salt Rule:</strong> Use non-iodized pure pickling or kosher salt without anti-caking agents. Table salt additives cloud brine and impede bacterial fermentation.
               </div>
             </div>
@@ -282,13 +282,13 @@ export const PreservationTracker: React.FC<PreservationTrackerProps> = ({
             <div className="md:col-span-7 space-y-4">
               {FERMENTATION_GUIDES.map(f => (
                 <div key={f.item} className="bg-white border border-stone-200 rounded-2xl p-5 shadow-xs space-y-2 text-xs">
-                  <h4 className="font-bold text-sm text-[#183a24]">{f.item}</h4>
-                  <div className="grid grid-cols-2 gap-2 bg-stone-50 p-2.5 rounded-xl border border-stone-200/60 text-[11px]">
+                  <h3 className="font-bold text-sm text-[#183a24]">{f.item}</h3>
+                  <div className="grid grid-cols-2 gap-2 bg-stone-50 p-2.5 rounded-xl border border-stone-200/60 text-xs">
                     <div><strong>Salt Ratio:</strong> {f.saltConcentration}</div>
                     <div><strong>Temperature:</strong> {f.optimumTempF}</div>
                     <div><strong>Ferment Time:</strong> {f.durationDays}</div>
                   </div>
-                  <ul className="list-disc pl-4 space-y-1 text-stone-600 text-[11px] pt-1">
+                  <ul className="list-disc pl-4 space-y-1 text-stone-600 text-xs pt-1">
                     {f.criticalRules.map((r, i) => (
                       <li key={i}>{r}</li>
                     ))}
@@ -304,9 +304,9 @@ export const PreservationTracker: React.FC<PreservationTrackerProps> = ({
       {activeTab === 'freezing' && (
         <div className="bg-white border border-stone-200 rounded-2xl p-5 shadow-xs space-y-4 text-xs">
           <div>
-            <h3 className="font-bold text-sm text-[#183a24] font-serif-botanical">
+            <h2 className="font-bold text-sm text-[#183a24] font-serif-botanical">
               NCHFP Boiling Water Blanching Timetable for Freezing
-            </h3>
+            </h2>
             <p className="text-stone-600 mt-0.5">
               Blanching stops enzymatic action that ruins color, texture, and vitamins during frozen storage. Plunge immediately into ice water for the exact same duration after boiling.
             </p>
@@ -330,7 +330,7 @@ export const PreservationTracker: React.FC<PreservationTrackerProps> = ({
                     <td className="py-2 px-3">{b.blanchMethod}</td>
                     <td className="py-2 px-3 font-mono font-bold text-indigo-700">{b.minutes} min</td>
                     <td className="py-2 px-3 font-mono font-bold text-sky-700">{b.coolDownMinutes} min</td>
-                    <td className="py-2 px-3 text-[11px]">{b.notes}</td>
+                    <td className="py-2 px-3 text-xs">{b.notes}</td>
                   </tr>
                 ))}
               </tbody>
@@ -344,9 +344,9 @@ export const PreservationTracker: React.FC<PreservationTrackerProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {CURING_GUIDES.map(c => (
             <div key={c.crop} className="bg-white border border-stone-200 rounded-2xl p-5 shadow-xs space-y-3 text-xs">
-              <h4 className="font-bold text-sm text-[#183a24]">{c.crop} Curing Protocol</h4>
+              <h3 className="font-bold text-sm text-[#183a24]">{c.crop} Curing Protocol</h3>
 
-              <div className="bg-[#f6f8f6] p-3 rounded-xl border border-stone-200 space-y-1.5 text-[11px]">
+              <div className="bg-[#f6f8f6] p-3 rounded-xl border border-stone-200 space-y-1.5 text-xs">
                 <div className="flex justify-between">
                   <span className="text-stone-500">Curing Temp:</span>
                   <span className="font-semibold text-stone-800">{c.temperatureF}</span>
@@ -363,12 +363,12 @@ export const PreservationTracker: React.FC<PreservationTrackerProps> = ({
 
               <div>
                 <span className="font-semibold text-stone-800 block mb-0.5">Signs of Done:</span>
-                <p className="text-stone-600 leading-relaxed text-[11px]">{c.signsOfDone}</p>
+                <p className="text-stone-600 leading-relaxed text-xs">{c.signsOfDone}</p>
               </div>
 
               <div className="pt-2 border-t border-stone-100">
                 <span className="font-semibold text-stone-800 block mb-0.5">Cellar Storage:</span>
-                <p className="text-stone-600 leading-relaxed text-[11px]">{c.longTermStorageConditions}</p>
+                <p className="text-stone-600 leading-relaxed text-xs">{c.longTermStorageConditions}</p>
               </div>
             </div>
           ))}
@@ -383,10 +383,10 @@ export const PreservationTracker: React.FC<PreservationTrackerProps> = ({
             onSubmit={handleLogBatch}
             className="bg-white border border-stone-200 rounded-2xl p-5 shadow-xs space-y-4 text-xs"
           >
-            <h3 className="font-bold text-sm text-[#183a24] font-serif-botanical flex items-center gap-2">
+            <h2 className="font-bold text-sm text-[#183a24] font-serif-botanical flex items-center gap-2">
               <Plus className="w-4 h-4 text-emerald-700" />
               Log New Preserved Harvest Batch
-            </h3>
+            </h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
               <div className="sm:col-span-2">
@@ -480,8 +480,8 @@ export const PreservationTracker: React.FC<PreservationTrackerProps> = ({
             {pantryItems.map(item => (
               <div key={item.id} className="bg-white border border-stone-200 rounded-2xl p-4 shadow-xs space-y-2 text-xs">
                 <div className="flex items-start justify-between">
-                  <h4 className="font-bold text-stone-900 text-sm">{item.cropName}</h4>
-                  <span className="px-2 py-0.5 bg-stone-100 text-stone-700 rounded-md font-mono text-[10px] uppercase font-semibold">
+                  <h3 className="font-bold text-stone-900 text-sm">{item.cropName}</h3>
+                  <span className="px-2 py-0.5 bg-stone-100 text-stone-700 rounded-md font-mono text-2xs uppercase font-semibold">
                     {item.preservationType.replace('-', ' ')}
                   </span>
                 </div>
@@ -492,13 +492,13 @@ export const PreservationTracker: React.FC<PreservationTrackerProps> = ({
                   <span>Location: <strong>{item.storageLocation}</strong></span>
                 </div>
 
-                <div className="text-[11px] text-stone-500 flex justify-between pt-1 border-t border-stone-100">
+                <div className="text-xs text-stone-500 flex justify-between pt-1 border-t border-stone-100">
                   <span>Prepared: {item.datePrepared}</span>
                   <span>Safe Until: <strong className="text-stone-800">{item.bestByDate}</strong></span>
                 </div>
 
                 {item.testedSourceReference && (
-                  <p className="text-[10px] text-stone-400 italic">
+                  <p className="text-2xs text-stone-400 italic font-serif-botanical">
                     Procedure: {item.testedSourceReference}
                   </p>
                 )}
